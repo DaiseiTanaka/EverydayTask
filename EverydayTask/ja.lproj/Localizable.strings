@@ -1,0 +1,42 @@
+/* 
+  Localizable.strings
+  EverydayTask
+
+  Created by 田中大誓 on 2023/06/14.
+  
+*/
+
+// Task View
+"Today" = "今日";
+"Every day" = "毎日";
+"Once a week" = "週一";
+"Once a month" = "月一";
+"Regularly" = "定期的なタスク";
+
+// Alart
+"Edit this task?" = "編集";
+"Delete this task?" = "削除";
+
+// Task Setting View
+"Title" = "タイトル";
+"Input Title" = "タイトルを入力";
+"Detail" = "詳細";
+"Input Detail" = "詳細を入力";
+"Repeat" = "繰り返し";
+"1 /Day" = "1 /日";
+"1 /Week" = "1 /週";
+"1 /Month" = "1 /月";
+"Custom" = "カスタム";
+"Sunday" = "日曜日";
+"Monday" = "月曜日";
+"Tuesday" = "火曜日";
+"Wednesday" = "水曜日";
+"Thursday" = "木曜日";
+"Friday" = "金曜日";
+"Saturday" = "土曜日";
+"Accent color" = "タスクのアクセントカラー";
+"Select accent color" = "アクセントカラー";
+"Notification" = "通知";
+"Add notification" = "通知を追加";
+"Cancel" = "キャンセル";
+"OK" = "保存";

@@ -11,6 +11,23 @@
 		355B976D2A2D9F0900BD0772 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B976C2A2D9F0900BD0772 /* ContentView.swift */; };
 		355B976F2A2D9F0B00BD0772 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 355B976E2A2D9F0B00BD0772 /* Assets.xcassets */; };
 		355B97722A2D9F0B00BD0772 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 355B97712A2D9F0B00BD0772 /* Preview Assets.xcassets */; };
+		355B977C2A2DA46E00BD0772 /* Tasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B977B2A2DA46E00BD0772 /* Tasks.swift */; };
+		355B977E2A2DA4F400BD0772 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B977D2A2DA4F400BD0772 /* CalendarView.swift */; };
+		355B97872A2DA77F00BD0772 /* RKViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B97802A2DA77F00BD0772 /* RKViewController.swift */; };
+		355B97882A2DA77F00BD0772 /* RKManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B97812A2DA77F00BD0772 /* RKManager.swift */; };
+		355B97892A2DA77F00BD0772 /* RKWeekdayHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B97822A2DA77F00BD0772 /* RKWeekdayHeader.swift */; };
+		355B978A2A2DA77F00BD0772 /* RKMonth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B97832A2DA77F00BD0772 /* RKMonth.swift */; };
+		355B978B2A2DA77F00BD0772 /* RKCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B97842A2DA77F00BD0772 /* RKCell.swift */; };
+		355B978C2A2DA77F00BD0772 /* RKColorSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B97852A2DA77F00BD0772 /* RKColorSettings.swift */; };
+		355B978D2A2DA77F00BD0772 /* RKDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B97862A2DA77F00BD0772 /* RKDate.swift */; };
+		355B978F2A2DE7F500BD0772 /* TaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B978E2A2DE7F500BD0772 /* TaskView.swift */; };
+		3585CA302A370956002A090C /* WeeklyAndMonthlyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3585CA2F2A370956002A090C /* WeeklyAndMonthlyListView.swift */; };
+		3585CA322A370972002A090C /* WeeklyAndMonthlyDetailListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3585CA312A370972002A090C /* WeeklyAndMonthlyDetailListView.swift */; };
+		35ADE3C92A39D1F0004F3E67 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 35ADE3CB2A39D1F0004F3E67 /* Localizable.strings */; };
+		35ADE3CE2A39E547004F3E67 /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35ADE3CD2A39E547004F3E67 /* PickerView.swift */; };
+		35CCF3442A2E172600C91B80 /* TaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CCF3432A2E172600C91B80 /* TaskViewModel.swift */; };
+		35CCF3462A2EEB0A00C91B80 /* TaskCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CCF3452A2EEB0A00C91B80 /* TaskCell.swift */; };
+		35CCF3482A2EFCA500C91B80 /* TaskSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CCF3472A2EFCA500C91B80 /* TaskSettingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +36,24 @@
 		355B976C2A2D9F0900BD0772 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		355B976E2A2D9F0B00BD0772 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		355B97712A2D9F0B00BD0772 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		355B977B2A2DA46E00BD0772 /* Tasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tasks.swift; sourceTree = "<group>"; };
+		355B977D2A2DA4F400BD0772 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		355B97802A2DA77F00BD0772 /* RKViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RKViewController.swift; sourceTree = "<group>"; };
+		355B97812A2DA77F00BD0772 /* RKManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RKManager.swift; sourceTree = "<group>"; };
+		355B97822A2DA77F00BD0772 /* RKWeekdayHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RKWeekdayHeader.swift; sourceTree = "<group>"; };
+		355B97832A2DA77F00BD0772 /* RKMonth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RKMonth.swift; sourceTree = "<group>"; };
+		355B97842A2DA77F00BD0772 /* RKCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RKCell.swift; sourceTree = "<group>"; };
+		355B97852A2DA77F00BD0772 /* RKColorSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RKColorSettings.swift; sourceTree = "<group>"; };
+		355B97862A2DA77F00BD0772 /* RKDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RKDate.swift; sourceTree = "<group>"; };
+		355B978E2A2DE7F500BD0772 /* TaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskView.swift; sourceTree = "<group>"; };
+		3585CA2F2A370956002A090C /* WeeklyAndMonthlyListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyAndMonthlyListView.swift; sourceTree = "<group>"; };
+		3585CA312A370972002A090C /* WeeklyAndMonthlyDetailListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyAndMonthlyDetailListView.swift; sourceTree = "<group>"; };
+		35ADE3CA2A39D1F0004F3E67 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		35ADE3CC2A39D1F7004F3E67 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		35ADE3CD2A39E547004F3E67 /* PickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerView.swift; sourceTree = "<group>"; };
+		35CCF3432A2E172600C91B80 /* TaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModel.swift; sourceTree = "<group>"; };
+		35CCF3452A2EEB0A00C91B80 /* TaskCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCell.swift; sourceTree = "<group>"; };
+		35CCF3472A2EFCA500C91B80 /* TaskSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskSettingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +87,12 @@
 			isa = PBXGroup;
 			children = (
 				355B976A2A2D9F0900BD0772 /* EverydayTaskApp.swift */,
+				35ADE3CB2A39D1F0004F3E67 /* Localizable.strings */,
 				355B976C2A2D9F0900BD0772 /* ContentView.swift */,
+				355B977F2A2DA77F00BD0772 /* CalendarView */,
+				355B977A2A2DA45200BD0772 /* Model */,
+				355B97782A2DA44900BD0772 /* Views */,
+				355B97792A2DA44D00BD0772 /* ViewModel */,
 				355B976E2A2D9F0B00BD0772 /* Assets.xcassets */,
 				355B97702A2D9F0B00BD0772 /* Preview Content */,
 			);
@@ -65,6 +105,50 @@
 				355B97712A2D9F0B00BD0772 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		355B97782A2DA44900BD0772 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				355B977D2A2DA4F400BD0772 /* CalendarView.swift */,
+				35CCF3452A2EEB0A00C91B80 /* TaskCell.swift */,
+				3585CA2F2A370956002A090C /* WeeklyAndMonthlyListView.swift */,
+				3585CA312A370972002A090C /* WeeklyAndMonthlyDetailListView.swift */,
+				355B978E2A2DE7F500BD0772 /* TaskView.swift */,
+				35CCF3472A2EFCA500C91B80 /* TaskSettingView.swift */,
+				35ADE3CD2A39E547004F3E67 /* PickerView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		355B97792A2DA44D00BD0772 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				35CCF3432A2E172600C91B80 /* TaskViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		355B977A2A2DA45200BD0772 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				355B977B2A2DA46E00BD0772 /* Tasks.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		355B977F2A2DA77F00BD0772 /* CalendarView */ = {
+			isa = PBXGroup;
+			children = (
+				355B97802A2DA77F00BD0772 /* RKViewController.swift */,
+				355B97812A2DA77F00BD0772 /* RKManager.swift */,
+				355B97822A2DA77F00BD0772 /* RKWeekdayHeader.swift */,
+				355B97832A2DA77F00BD0772 /* RKMonth.swift */,
+				355B97842A2DA77F00BD0772 /* RKCell.swift */,
+				355B97852A2DA77F00BD0772 /* RKColorSettings.swift */,
+				355B97862A2DA77F00BD0772 /* RKDate.swift */,
+			);
+			path = CalendarView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -109,6 +193,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ja,
 			);
 			mainGroup = 355B975E2A2D9F0900BD0772;
 			productRefGroup = 355B97682A2D9F0900BD0772 /* Products */;
@@ -126,6 +211,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				355B97722A2D9F0B00BD0772 /* Preview Assets.xcassets in Resources */,
+				35ADE3C92A39D1F0004F3E67 /* Localizable.strings in Resources */,
 				355B976F2A2D9F0B00BD0772 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,12 +223,40 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				355B97882A2DA77F00BD0772 /* RKManager.swift in Sources */,
 				355B976D2A2D9F0900BD0772 /* ContentView.swift in Sources */,
+				35ADE3CE2A39E547004F3E67 /* PickerView.swift in Sources */,
+				355B97872A2DA77F00BD0772 /* RKViewController.swift in Sources */,
+				355B978F2A2DE7F500BD0772 /* TaskView.swift in Sources */,
+				355B978C2A2DA77F00BD0772 /* RKColorSettings.swift in Sources */,
+				35CCF3482A2EFCA500C91B80 /* TaskSettingView.swift in Sources */,
+				355B978A2A2DA77F00BD0772 /* RKMonth.swift in Sources */,
+				35CCF3442A2E172600C91B80 /* TaskViewModel.swift in Sources */,
+				355B978B2A2DA77F00BD0772 /* RKCell.swift in Sources */,
+				3585CA322A370972002A090C /* WeeklyAndMonthlyDetailListView.swift in Sources */,
+				35CCF3462A2EEB0A00C91B80 /* TaskCell.swift in Sources */,
+				355B97892A2DA77F00BD0772 /* RKWeekdayHeader.swift in Sources */,
+				355B978D2A2DA77F00BD0772 /* RKDate.swift in Sources */,
+				355B977C2A2DA46E00BD0772 /* Tasks.swift in Sources */,
+				355B977E2A2DA4F400BD0772 /* CalendarView.swift in Sources */,
 				355B976B2A2D9F0900BD0772 /* EverydayTaskApp.swift in Sources */,
+				3585CA302A370956002A090C /* WeeklyAndMonthlyListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		35ADE3CB2A39D1F0004F3E67 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				35ADE3CA2A39D1F0004F3E67 /* en */,
+				35ADE3CC2A39D1F7004F3E67 /* ja */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		355B97732A2D9F0B00BD0772 /* Debug */ = {
@@ -270,11 +384,13 @@
 				DEVELOPMENT_TEAM = NZ6NQZK56A;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -282,9 +398,12 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = myproject.EverydayTask;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -299,11 +418,13 @@
 				DEVELOPMENT_TEAM = NZ6NQZK56A;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -311,9 +432,12 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = myproject.EverydayTask;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
