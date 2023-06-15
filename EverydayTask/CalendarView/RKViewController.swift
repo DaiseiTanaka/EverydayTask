@@ -15,9 +15,7 @@ struct RKViewController: View {
     @Binding var isPresented: Bool
     
     @ObservedObject var rkManager: RKManager
-    
-    //@State var numberOfMonth: Int
-    
+        
     var body: some View {
         ZStack {
             ScrollViewReader { (proxy: ScrollViewProxy) in
