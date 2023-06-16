@@ -17,11 +17,11 @@ struct CalendarView: View {
     
     var body: some View {
         RKViewController(taskViewModel: taskViewModel, isPresented: $trueFlag, rkManager: taskViewModel.rkManager)
-            .overlay(alignment: .top) {
-                if taskViewModel.selectedTasks.count == 1 {
-                    Text("\(taskViewModel.returnContinuousCount(task: taskViewModel.selectedTasks[0]))")
-                }
-            }
+//            .overlay(alignment: .top) {
+//                if taskViewModel.selectedTasks.count == 1 {
+//                    Text("\(taskViewModel.returnContinuousCount(task: taskViewModel.selectedTasks[0]))")
+//                }
+//            }
     }
 }
 

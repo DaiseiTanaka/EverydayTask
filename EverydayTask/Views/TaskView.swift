@@ -70,7 +70,7 @@ extension TaskView {
                 Spacer()
             }
             LazyVGrid(columns: columns, spacing: 10) {
-                ForEach(returnSelectedDateTasks()[0], id: \.id) { task in
+                ForEach(taskViewModel.returnSelectedDateTasks(date: rkManager.selectedDate)[0], id: \.id) { task in
                     TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task)
                         .onTapGesture {
                             updateCalendar(task: task)
@@ -90,7 +90,7 @@ extension TaskView {
     
     private var regularlyTaskList: some View {
         VStack(spacing: 10) {
-            if returnSelectedDateTasks()[1].count != 0 || returnSelectedDateTasks()[2].count != 0 {
+            if taskViewModel.returnSelectedDateTasks(date: rkManager.selectedDate)[1].count != 0 || taskViewModel.returnSelectedDateTasks(date: rkManager.selectedDate)[2].count != 0 {
                 HStack {
                     Text("Regularly")
                         .font(.subheadline)
@@ -101,7 +101,7 @@ extension TaskView {
             }
             
             LazyVGrid(columns: columns, spacing: 10) {
-                ForEach(returnSelectedDateTasks()[1], id: \.id) { task in
+                ForEach(taskViewModel.returnSelectedDateTasks(date: rkManager.selectedDate)[1], id: \.id) { task in
                     TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task)
                         .onTapGesture {
                             updateCalendar(task: task)
@@ -110,7 +110,7 @@ extension TaskView {
                             longTapTaskAction(task: task)
                         }
                 }
-                ForEach(returnSelectedDateTasks()[2], id: \.id) { task in
+                ForEach(taskViewModel.returnSelectedDateTasks(date: rkManager.selectedDate)[2], id: \.id) { task in
                     TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task)
                         .onTapGesture {
                             updateCalendar(task: task)
@@ -134,100 +134,7 @@ extension TaskView {
         
         return month + "/" + day
     }
-    
-    // 選択した日付に関連するタスクを返す
-    private func returnSelectedDateTasks() -> [[Tasks]] {
-        let tasks = taskViewModel.tasks
-        // 最終的に返すリスト
-        var selectedDateTasks: [[Tasks]] = []
         
-        var dailyTasks: [Tasks] = []
-        var weeklyTasks: [Tasks] = []
-        var monthlyTasks: [Tasks] = []
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = Locale(identifier: "ja_JP")
-        
-        for taskIndex in 0..<tasks.count {
-            let task = tasks[taskIndex]
-            let selectedDate = rkManager.selectedDate
-            
-            let addedDate = task.addedDate.addingTimeInterval(-60*60*24*1)
-            let spanType = task.spanType
-            let spanDate = task.spanDate
-            let doneDate = task.doneDate
-            let weekdayIndex = taskViewModel.returnWeekdayFromDate(date: selectedDate)
-            
-            // 選択した日付よりも前にタスクを追加していた場合
-            if addedDate < selectedDate {
-                switch spanType {
-                case .everyDay:
-                    dailyTasks.append(task)
-                case .everyWeekday:
-                    // rkManager.selectedDateがspanDate内にある場合
-                    if spanDate.contains(weekdayIndex) {
-                        dailyTasks.append(task)
-                    }
-                case .everyWeek:
-                    // 一度もタスクを実行していない場合
-                    if doneDate.count == 0 {
-                        weeklyTasks.append(task)
-                    }
-                    // rkManager.selectedDateと同じ週のdateがtask.doneDate内に無いとき or に表示
-                    for doneDateIndex in 0..<doneDate.count {
-                        let date = doneDate[doneDateIndex]
-                        let doneDateDate = calendar.component(.day, from: date)
-                        let selectedDateDate = calendar.component(.day, from: selectedDate)
-                        let doneDateWeekIndex = calendar.component(.weekOfYear, from: date)
-                        let selectedWeekIndex = calendar.component(.weekOfYear, from: selectedDate)
-                        // doneDate[index]の週と、選択中の週が同じ場合
-                        if doneDateWeekIndex == selectedWeekIndex {
-                            // doneDate[index]の日付と、選択中の日付が同じ場合
-                            if doneDateDate == selectedDateDate {
-                                weeklyTasks.append(task)
-                            }
-                            break
-                        }
-                        // doneDate内に選択中の日付と同じ週のdoneDate[index]が無い場合
-                        if doneDateIndex == doneDate.count-1 {
-                            weeklyTasks.append(task)
-                        }
-                    }
-                    
-                case .everyMonth:
-                    // 一度もタスクを実行していない場合
-                    if doneDate.count == 0 {
-                        monthlyTasks.append(task)
-                    }
-                    // rkManager.selectedDateと同じ月のdateがtask.doneDate内に無いときに表示
-                    for doneDateIndex in 0..<doneDate.count {
-                        let date = doneDate[doneDateIndex]
-                        let doneDateDate = calendar.component(.day, from: date)
-                        let selectedDateDate = calendar.component(.day, from: selectedDate)
-                        let doneDateMonth = calendar.component(.month, from: date)
-                        let selectedMonth = calendar.component(.month, from: selectedDate)
-                        // doneDate[index]の週と、選択中の月が同じ場合
-                        if doneDateMonth == selectedMonth  {
-                            // doneDate[index]の日付と、選択中の日付が同じ場合
-                            if doneDateDate == selectedDateDate {
-                                monthlyTasks.append(task)
-                            }
-                            break
-                        }
-                        // doneDate内に選択中の日付と同じ月のdoneDate[index]が無い場合
-                        if doneDateIndex == doneDate.count-1 {
-                            monthlyTasks.append(task)
-                        }
-                    }
-                }
-            }
-        }
-        // リストをspanTypeごとに並び替え
-        selectedDateTasks.append(dailyTasks)
-        selectedDateTasks.append(weeklyTasks)
-        selectedDateTasks.append(monthlyTasks)
-        return selectedDateTasks
-    }
-    
     private var addTaskButton: some View {
         HStack(spacing: 10) {
 //            if taskViewModel.selectedTasks.count == 1 {

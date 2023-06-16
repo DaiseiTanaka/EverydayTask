@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import WidgetKit
 
 class TaskViewModel: ObservableObject {
     
@@ -265,6 +266,99 @@ class TaskViewModel: ObservableObject {
         return continuousCount
     }
     
+    // 選択した日付に関連するタスクを返す
+    func returnSelectedDateTasks(date: Date) -> [[Tasks]] {
+        let tasks = tasks
+        // 最終的に返すリスト
+        var selectedDateTasks: [[Tasks]] = []
+        
+        var dailyTasks: [Tasks] = []
+        var weeklyTasks: [Tasks] = []
+        var monthlyTasks: [Tasks] = []
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "ja_JP")
+        
+        for taskIndex in 0..<tasks.count {
+            let task = tasks[taskIndex]
+            let selectedDate = date
+            
+            let addedDate = task.addedDate.addingTimeInterval(-60*60*24*1)
+            let spanType = task.spanType
+            let spanDate = task.spanDate
+            let doneDate = task.doneDate
+            let weekdayIndex = returnWeekdayFromDate(date: selectedDate)
+            
+            // 選択した日付よりも前にタスクを追加していた場合
+            if addedDate < selectedDate {
+                switch spanType {
+                case .everyDay:
+                    dailyTasks.append(task)
+                case .everyWeekday:
+                    // rkManager.selectedDateがspanDate内にある場合
+                    if spanDate.contains(weekdayIndex) {
+                        dailyTasks.append(task)
+                    }
+                case .everyWeek:
+                    // 一度もタスクを実行していない場合
+                    if doneDate.count == 0 {
+                        weeklyTasks.append(task)
+                    }
+                    // rkManager.selectedDateと同じ週のdateがtask.doneDate内に無いとき or に表示
+                    for doneDateIndex in 0..<doneDate.count {
+                        let date = doneDate[doneDateIndex]
+                        let doneDateDate = calendar.component(.day, from: date)
+                        let selectedDateDate = calendar.component(.day, from: selectedDate)
+                        let doneDateWeekIndex = calendar.component(.weekOfYear, from: date)
+                        let selectedWeekIndex = calendar.component(.weekOfYear, from: selectedDate)
+                        // doneDate[index]の週と、選択中の週が同じ場合
+                        if doneDateWeekIndex == selectedWeekIndex {
+                            // doneDate[index]の日付と、選択中の日付が同じ場合
+                            if doneDateDate == selectedDateDate {
+                                weeklyTasks.append(task)
+                            }
+                            break
+                        }
+                        // doneDate内に選択中の日付と同じ週のdoneDate[index]が無い場合
+                        if doneDateIndex == doneDate.count-1 {
+                            weeklyTasks.append(task)
+                        }
+                    }
+                    
+                case .everyMonth:
+                    // 一度もタスクを実行していない場合
+                    if doneDate.count == 0 {
+                        monthlyTasks.append(task)
+                    }
+                    // rkManager.selectedDateと同じ月のdateがtask.doneDate内に無いときに表示
+                    for doneDateIndex in 0..<doneDate.count {
+                        let date = doneDate[doneDateIndex]
+                        let doneDateDate = calendar.component(.day, from: date)
+                        let selectedDateDate = calendar.component(.day, from: selectedDate)
+                        let doneDateMonth = calendar.component(.month, from: date)
+                        let selectedMonth = calendar.component(.month, from: selectedDate)
+                        // doneDate[index]の週と、選択中の月が同じ場合
+                        if doneDateMonth == selectedMonth  {
+                            // doneDate[index]の日付と、選択中の日付が同じ場合
+                            if doneDateDate == selectedDateDate {
+                                monthlyTasks.append(task)
+                            }
+                            break
+                        }
+                        // doneDate内に選択中の日付と同じ月のdoneDate[index]が無い場合
+                        if doneDateIndex == doneDate.count-1 {
+                            monthlyTasks.append(task)
+                        }
+                    }
+                }
+            }
+        }
+        // リストをspanTypeごとに並び替え
+        selectedDateTasks.append(dailyTasks)
+        selectedDateTasks.append(weeklyTasks)
+        selectedDateTasks.append(monthlyTasks)
+        return selectedDateTasks
+    }
+    
     
     // MARK: - UserDefaultsにデータを保存
     func saveTasks(tasks: [Tasks]) {
@@ -274,6 +368,7 @@ class TaskViewModel: ObservableObject {
             return
         }
         UserDefaults.standard.set(data, forKey: "tasks")
+        saveUnfinishedTasksForWidget()
         print("😄👍: tasksの保存に成功しました。")
     }
     
@@ -291,6 +386,43 @@ class TaskViewModel: ObservableObject {
         return tasks
     }
 
+    // Widget用にデータを保存
+    func saveUnfinishedTasksForWidget() {
+        let taskCount = returnTaskCount(date: Date())
+        let finishedTaskCount = returnDoneTaskCount(date: Date())
+        let unfinishedTaskCount = taskCount - finishedTaskCount
+        
+        let allUnfinishedTaskTitleList: [[Tasks]] = returnSelectedDateTasks(date: Date())
+        var allUnfinishedTaskTitleListTitle: [String] = []
+        var todayUnfinishedTaskTitleListTitle: [String] = []
+        var futureUnfinishedTaskTitleListTitle: [String] = []
+        
+        for tasks in allUnfinishedTaskTitleList {
+            for taskIndex in 0..<tasks.count {
+                let title = tasks[taskIndex].title
+                let taskSpanType = tasks[taskIndex].spanType
+                if !isDone(task: tasks[taskIndex], date: Date()) {
+                    if taskSpanType == .everyDay || taskSpanType == .everyWeekday {
+                        todayUnfinishedTaskTitleListTitle.append(title)
+                    } else {
+                        futureUnfinishedTaskTitleListTitle.append(title)
+                    }
+                    allUnfinishedTaskTitleListTitle.append(title)
+                }
+            }
+        }
+        
+        let userDefaults = UserDefaults(suiteName: "group.myproject.EverydayTask.widget")
+        if let userDefaults = userDefaults {
+            userDefaults.synchronize()
+            userDefaults.setValue(unfinishedTaskCount, forKeyPath: "unfinishedTaskCount")
+            userDefaults.setValue(allUnfinishedTaskTitleListTitle, forKeyPath: "allUnfinishedTaskTitleListTitle")
+            userDefaults.setValue(todayUnfinishedTaskTitleListTitle, forKeyPath: "todayUnfinishedTaskTitleListTitle")
+            userDefaults.setValue(futureUnfinishedTaskTitleListTitle, forKeyPath: "futureUnfinishedTaskTitleListTitle")
+        }
+        // Widgetを更新
+        WidgetCenter.shared.reloadTimelines(ofKind: "EverydayTaskWidget")
+    }
 }
 
 // MARK: - 通知関連

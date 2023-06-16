@@ -58,6 +58,8 @@ struct ContentView: View {
             }
             if phase == .inactive {
                 print("\nバックグラウンドorフォアグラウンド直前")
+                // Widget用のデータを更新
+                taskViewModel.saveUnfinishedTasksForWidget()
             }
         }
         // タスクを編集したらアプリのバッジの数を更新
