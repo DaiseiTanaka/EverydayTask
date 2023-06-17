@@ -15,6 +15,7 @@ struct CalendarView: View {
     
     var body: some View {
         RKViewController(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, isPresented: $trueFlag, tappedBackground: true)
+        
 //            .overlay(alignment: .top) {
 //                if taskViewModel.selectedTasks.count == 1 {
 //                    Text("\(taskViewModel.returnContinuousCount(task: taskViewModel.selectedTasks[0]))")
