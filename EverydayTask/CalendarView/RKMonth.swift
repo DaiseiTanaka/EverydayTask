@@ -10,27 +10,22 @@ import SwiftUI
 
 struct RKMonth: View {
     @ObservedObject var taskViewModel: TaskViewModel
-
+    @ObservedObject var rkManager: RKManager
     @Binding var isPresented: Bool
     
-    @ObservedObject var rkManager: RKManager
     
     let monthOffset: Int
+    @Binding var tappedBackground: Bool
     
-    
+    private let cellWidthPhone = CGFloat(min(UIScreen.main.bounds.width, UIScreen.main.bounds.height) / 7 - 22/7)
     let calendarUnitYMD = Set<Calendar.Component>([.year, .month, .day])
     let daysPerWeek = 7
     var monthsArray: [[Date]] {
         monthArray()
     }
     
-    let isPhoneFlag: Bool = UIDevice.current.userInterfaceIdiom == .phone
-    let cellWidthPhone = CGFloat(min(UIScreen.main.bounds.width, UIScreen.main.bounds.height) / 7 - 22/7)
-    @State private var cellWidthPad   = CGFloat(UIScreen.main.bounds.width / 7 - 22/7)
-
-
     var body: some View {
-        VStack(alignment: HorizontalAlignment.center, spacing: 10) {
+        VStack(alignment: HorizontalAlignment.center, spacing: 5) {
             Text(getMonthHeader()).foregroundColor(self.rkManager.colors.monthHeaderColor)
             VStack(alignment: .leading, spacing: 3) {
                 ForEach(monthsArray, id:  \.self) { row in
@@ -40,16 +35,16 @@ struct RKMonth: View {
                                 if self.isThisMonth(date: column) {
                                     RKCell(taskViewModel: taskViewModel,
                                            rkDate: RKDate(
-                                        date: column,
-                                        rkManager: self.rkManager,
-                                        isDisabled: !self.isEnabled(date: column),
-                                        isToday: self.isToday(date: column),
-                                        isSelected: self.isSpecialDate(date: column),
-                                        isBetweenStartAndEnd: self.isBetweenStartAndEnd(date: column),
-                                        taskCount: taskViewModel.returnTaskCount(date: column),
-                                        doneTaskCount: taskViewModel.returnDoneTaskCount(date: column)),
-                                           cellWidth: isPhoneFlag ? self.cellWidthPhone : self.cellWidthPad
+                                            date: column,
+                                            rkManager: self.rkManager,
+                                            isDisabled: !self.isEnabled(date: column),
+                                            isToday: self.isToday(date: column),
+                                            isSelected: self.isSpecialDate(date: column),
+                                            isBetweenStartAndEnd: self.isBetweenStartAndEnd(date: column),
+                                            taskCount: taskViewModel.returnTaskCount(date: column),
+                                            doneTaskCount: taskViewModel.returnDoneTaskCount(date: column))
                                     )
+                                    .frame(width: cellWidthPhone, height: cellWidthPhone*1.5)
                                     .onTapGesture {
                                         self.dateTapped(date: column)
                                     }
@@ -60,9 +55,16 @@ struct RKMonth: View {
                                             }
                                     }
                                 } else {
+                                    // 日付のない空白の部分
                                     VStack {
-                                        Text("").frame(width: isPhoneFlag ? self.cellWidthPhone : self.cellWidthPad, height: isPhoneFlag ? self.cellWidthPhone*1.5 : self.cellWidthPad)
+                                        Text(" ")
+                                            .frame(width: cellWidthPhone, height: cellWidthPhone*1.5)
                                         Spacer()
+                                    }
+                                    // 余白をタップしたら、現在の日付を選択し、カレンダーを下までスクロールする
+                                    .onTapGesture {
+                                        rkManager.selectedDate = Date()
+                                        tappedBackground.toggle()
                                     }
                                 }
                             }
@@ -76,7 +78,6 @@ struct RKMonth: View {
             rkManager.colors.monthBackColor
         )
         .onTapGesture {
-            print("Tapped background")
             rkManager.selectedDate = Date()
         }
     }
@@ -98,16 +99,16 @@ struct RKMonth: View {
         }
         //print(rkManager.selectedDate)
     }
-        
+    
     func isSameDay(date1: Date, date2: Date) -> Bool {
         let calendar = Calendar.current
         
         return calendar.isDate(date1, inSameDayAs: date2)
     }
-
-     func isThisMonth(date: Date) -> Bool {
-         return self.rkManager.calendar.isDate(date, equalTo: firstOfMonthForOffset(), toGranularity: .month)
-     }
+    
+    func isThisMonth(date: Date) -> Bool {
+        return self.rkManager.calendar.isDate(date, equalTo: firstOfMonthForOffset(), toGranularity: .month)
+    }
     
     func monthArray() -> [[Date]] {
         var rowArray = [[Date]]()
@@ -180,18 +181,18 @@ struct RKMonth: View {
     func isToday(date: Date) -> Bool {
         return RKFormatAndCompareDate(date: date, referenceDate: Date())
     }
-     
+    
     func isSpecialDate(date: Date) -> Bool {
         return isSelectedDate(date: date) ||
-            isStartDate(date: date) ||
-            isEndDate(date: date) ||
-            isOneOfSelectedDates(date: date)
+        isStartDate(date: date) ||
+        isEndDate(date: date) ||
+        isOneOfSelectedDates(date: date)
     }
     
     func isOneOfSelectedDates(date: Date) -> Bool {
         return self.rkManager.selectedDatesContains(date: date)
     }
-
+    
     func isSelectedDate(date: Date) -> Bool {
         if rkManager.selectedDate == nil {
             return false

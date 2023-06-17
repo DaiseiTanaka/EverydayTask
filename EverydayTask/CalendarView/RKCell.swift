@@ -13,67 +13,69 @@ struct RKCell: View {
     
     var rkDate: RKDate
     
-    var cellWidth: CGFloat
-    
     var body: some View {
         VStack(spacing: 0) {
-            ZStack {
-                Text(rkDate.getText())
-                    .fontWeight(rkDate.getFontWeight())
-                    .foregroundColor(rkDate.getTextColor())
-                    .font(.system(size: 12))
-            }
-            .frame(maxWidth: .infinity)
-            .background(rkDate.getBackgroundColor())
+            dateText
             
             Spacer(minLength: 0)
             
             // 当日の全てのタスクを表示中
             if taskViewModel.selectedTasks.count != 1 {
-                ZStack {
-                    VStack {
-                        Spacer(minLength: 0)
-                        returnTaskAccentColor()
-                            .cornerRadius(5)
-                            .frame(maxHeight: rkDate.returnRectangleHeight())
-                    }
-                    
-                    if rkDate.returnPercentage() != 0 {
-                        VStack {
-                            Spacer()
-                            Text("\(rkDate.returnPercentage())%")
-                                .foregroundColor(.white)
-                                .font(.footnote.bold())
-                            // 1/1は表示しない
-//                            if rkDate.taskCount > 1 {
-                            // 分数を表示
-//                                Text("\(rkDate.doneTaskCount)/\(rkDate.taskCount)")
-//                                    .foregroundColor(.white)
-//                                    .font(.footnote.bold())
-//                                    .padding(.bottom, 2)
-//                            }
-                        }
-                    }
-                }
+                allTasks
             // 特定のタスクを選択中
             } else {
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        if rkDate.returnPercentage() != 0 {
-                            Image(systemName: "checkmark.circle")
-                                .font(.title)
-                                .foregroundColor(returnTaskAccentColor())
-                        }
-                        Spacer()
-                    }
-                    Spacer()
-                }
+                specificTask
+            }
+        }
+    }
+}
+
+extension RKCell {
+    var dateText: some View {
+        ZStack {
+            Text(rkDate.getText())
+                .fontWeight(rkDate.getFontWeight())
+                .foregroundColor(rkDate.getTextColor())
+                .font(.system(size: 12))
+        }
+        .frame(maxWidth: .infinity)
+        .background(rkDate.getBackgroundColor())
+    }
+    
+    var allTasks: some View {
+        ZStack {
+            VStack {
+                Spacer(minLength: 0)
+                returnTaskAccentColor()
+                    .cornerRadius(5)
+                    .frame(maxHeight: rkDate.returnRectangleHeight())
             }
             
+            if rkDate.returnPercentage() != 0 {
+                VStack {
+                    Spacer()
+                    Text("\(rkDate.returnPercentage())%")
+                        .foregroundColor(.white)
+                        .font(.footnote.bold())
+                }
+            }
         }
-        .frame(width: cellWidth, height: cellWidth*1.5)
+    }
+    
+    var specificTask: some View {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                if rkDate.returnPercentage() != 0 {
+                    Image(systemName: "checkmark.circle")
+                        .font(.title)
+                        .foregroundColor(returnTaskAccentColor())
+                }
+                Spacer()
+            }
+            Spacer()
+        }
     }
     
     private func returnTaskAccentColor() -> Color {
@@ -99,8 +101,8 @@ struct RKCell: View {
             return color
         }
     }
-    
 }
+
 
 #if DEBUG
 //struct RKCell_Previews : PreviewProvider {

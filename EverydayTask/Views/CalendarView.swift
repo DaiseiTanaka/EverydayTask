@@ -12,11 +12,9 @@ struct CalendarView: View {
     @ObservedObject var taskViewModel: TaskViewModel
 
     @State private var trueFlag = true
-    //@State private var rkManager1 = RKManager(calendar: Calendar.current, minimumDate: Date().addingTimeInterval(-60*60*24*7), maximumDate: Date(), mode: 0)
-    //@State private var numberOfMonth: Int = 2
     
     var body: some View {
-        RKViewController(taskViewModel: taskViewModel, isPresented: $trueFlag, rkManager: taskViewModel.rkManager)
+        RKViewController(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, isPresented: $trueFlag, tappedBackground: true)
 //            .overlay(alignment: .top) {
 //                if taskViewModel.selectedTasks.count == 1 {
 //                    Text("\(taskViewModel.returnContinuousCount(task: taskViewModel.selectedTasks[0]))")

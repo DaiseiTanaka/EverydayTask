@@ -11,43 +11,47 @@ import SwiftUI
 struct RKViewController: View {
     
     @ObservedObject var taskViewModel: TaskViewModel
-    
-    @Binding var isPresented: Bool
-    
     @ObservedObject var rkManager: RKManager
-        
+
+    @Binding var isPresented: Bool
+    @State var tappedBackground: Bool
+
     var body: some View {
-        ZStack {
-            ScrollViewReader { (proxy: ScrollViewProxy) in
+        ScrollViewReader { (proxy: ScrollViewProxy) in
+            ZStack {
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack {
                         ForEach(0..<taskViewModel.numberOfMonth, id: \.self) { index in
-                            RKMonth(taskViewModel: taskViewModel, isPresented: self.$isPresented, rkManager: self.rkManager, monthOffset: index)
+                            RKMonth(taskViewModel: taskViewModel, rkManager: self.rkManager, isPresented: self.$isPresented, monthOffset: index, tappedBackground: self.$tappedBackground)
                                 .id(index)
                         }
                         .padding(.top, 20)
                     }
                     .padding(.bottom, 360)
                 }
-                .listStyle(.plain)
+                // 画面がロードされた時は下へスクロール
                 .onAppear {
                     scrollToThisMonth(proxy: proxy)
                 }
-//                .onChange(of: taskViewModel.tasks) { _ in
-//                    scrollToThisMonth(proxy: proxy)
-//                }
-//                .onChange(of: taskViewModel.selectedTasks) { _ in
-//                    scrollToThisMonth(proxy: proxy)
-//                }
+                // 選択している日が今日の時は下へスクロール
                 .onChange(of: rkManager.selectedDate) { newValue in
                     if taskViewModel.isSameDay(date1: newValue, date2: Date()) {
                         scrollToThisMonth(proxy: proxy)
                     }
                 }
-            }
-            VStack {
-                RKWeekdayHeader(rkManager: self.rkManager)
-                Spacer()
+                // カレンダーの余白をタップした時は下へスクロール
+                .onChange(of: tappedBackground) { _ in
+                    scrollToThisMonth(proxy: proxy)
+                }
+                
+                VStack {
+                    RKWeekdayHeader(rkManager: self.rkManager)
+                    Spacer()
+                }
+                // ヘッダーをタップすると下へスクロール
+                .onTapGesture {
+                    scrollToThisMonth(proxy: proxy)
+                }
             }
         }
     }
