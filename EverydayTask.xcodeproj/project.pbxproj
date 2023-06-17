@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		353C5EED2A3E025400FDFFE5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 353C5EEF2A3E025400FDFFE5 /* Localizable.strings */; };
 		355B976B2A2D9F0900BD0772 /* EverydayTaskApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B976A2A2D9F0900BD0772 /* EverydayTaskApp.swift */; };
 		355B976D2A2D9F0900BD0772 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B976C2A2D9F0900BD0772 /* ContentView.swift */; };
 		355B976F2A2D9F0B00BD0772 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 355B976E2A2D9F0B00BD0772 /* Assets.xcassets */; };
@@ -23,7 +24,7 @@
 		355B978F2A2DE7F500BD0772 /* TaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B978E2A2DE7F500BD0772 /* TaskView.swift */; };
 		3585CA302A370956002A090C /* WeeklyAndMonthlyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3585CA2F2A370956002A090C /* WeeklyAndMonthlyListView.swift */; };
 		3585CA322A370972002A090C /* WeeklyAndMonthlyDetailListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3585CA312A370972002A090C /* WeeklyAndMonthlyDetailListView.swift */; };
-		35ADE3C92A39D1F0004F3E67 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 35ADE3CB2A39D1F0004F3E67 /* Localizable.strings */; };
+		35ADE3C92A39D1F0004F3E67 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 35ADE3CB2A39D1F0004F3E67 /* InfoPlist.strings */; };
 		35ADE3CE2A39E547004F3E67 /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35ADE3CD2A39E547004F3E67 /* PickerView.swift */; };
 		35ADE3D62A3B4821004F3E67 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35ADE3D52A3B4821004F3E67 /* WidgetKit.framework */; };
 		35ADE3D82A3B4821004F3E67 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35ADE3D72A3B4821004F3E67 /* SwiftUI.framework */; };
@@ -62,6 +63,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		353C5EEE2A3E025400FDFFE5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		353C5EF02A3E025900FDFFE5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		355B97672A2D9F0900BD0772 /* EverydayTask.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EverydayTask.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		355B976A2A2D9F0900BD0772 /* EverydayTaskApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EverydayTaskApp.swift; sourceTree = "<group>"; };
 		355B976C2A2D9F0900BD0772 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -79,8 +82,8 @@
 		355B978E2A2DE7F500BD0772 /* TaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskView.swift; sourceTree = "<group>"; };
 		3585CA2F2A370956002A090C /* WeeklyAndMonthlyListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyAndMonthlyListView.swift; sourceTree = "<group>"; };
 		3585CA312A370972002A090C /* WeeklyAndMonthlyDetailListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyAndMonthlyDetailListView.swift; sourceTree = "<group>"; };
-		35ADE3CA2A39D1F0004F3E67 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		35ADE3CC2A39D1F7004F3E67 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		35ADE3CA2A39D1F0004F3E67 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		35ADE3CC2A39D1F7004F3E67 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		35ADE3CD2A39E547004F3E67 /* PickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerView.swift; sourceTree = "<group>"; };
 		35ADE3D32A3B4821004F3E67 /* EverydayTaskWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EverydayTaskWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		35ADE3D52A3B4821004F3E67 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -142,7 +145,8 @@
 			children = (
 				35ADE3EA2A3B49F9004F3E67 /* EverydayTask.entitlements */,
 				355B976A2A2D9F0900BD0772 /* EverydayTaskApp.swift */,
-				35ADE3CB2A39D1F0004F3E67 /* Localizable.strings */,
+				353C5EEF2A3E025400FDFFE5 /* Localizable.strings */,
+				35ADE3CB2A39D1F0004F3E67 /* InfoPlist.strings */,
 				355B976C2A2D9F0900BD0772 /* ContentView.swift */,
 				355B977F2A2DA77F00BD0772 /* CalendarView */,
 				355B977A2A2DA45200BD0772 /* Model */,
@@ -310,7 +314,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				355B97722A2D9F0B00BD0772 /* Preview Assets.xcassets in Resources */,
-				35ADE3C92A39D1F0004F3E67 /* Localizable.strings in Resources */,
+				353C5EED2A3E025400FDFFE5 /* Localizable.strings in Resources */,
+				35ADE3C92A39D1F0004F3E67 /* InfoPlist.strings in Resources */,
 				355B976F2A2D9F0B00BD0772 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -372,13 +377,22 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		35ADE3CB2A39D1F0004F3E67 /* Localizable.strings */ = {
+		353C5EEF2A3E025400FDFFE5 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				353C5EEE2A3E025400FDFFE5 /* en */,
+				353C5EF02A3E025900FDFFE5 /* ja */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		35ADE3CB2A39D1F0004F3E67 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
 				35ADE3CA2A39D1F0004F3E67 /* en */,
 				35ADE3CC2A39D1F7004F3E67 /* ja */,
 			);
-			name = Localizable.strings;
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -506,7 +520,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = EverydayTask/EverydayTask.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 1.1;
 				DEVELOPMENT_ASSET_PATHS = "\"EverydayTask/Preview Content\"";
 				DEVELOPMENT_TEAM = NZ6NQZK56A;
 				ENABLE_PREVIEWS = YES;
@@ -542,7 +556,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = EverydayTask/EverydayTask.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 1.1;
 				DEVELOPMENT_ASSET_PATHS = "\"EverydayTask/Preview Content\"";
 				DEVELOPMENT_TEAM = NZ6NQZK56A;
 				ENABLE_PREVIEWS = YES;

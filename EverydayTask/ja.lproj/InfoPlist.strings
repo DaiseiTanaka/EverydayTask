@@ -1,0 +1,10 @@
+/* 
+ InfoPlist.strings
+  EverydayTask
+
+  Created by 田中大誓 on 2023/06/14.
+  
+*/
+
+// App display name
+CFBundleDisplayName = "毎日TODO";
