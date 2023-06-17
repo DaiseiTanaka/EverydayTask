@@ -33,12 +33,12 @@ struct RKViewController: View {
                 .onAppear {
                     scrollToThisMonth(proxy: proxy)
                 }
-                .onChange(of: taskViewModel.tasks) { _ in
-                    scrollToThisMonth(proxy: proxy)
-                }
-                .onChange(of: taskViewModel.selectedTasks) { _ in
-                    scrollToThisMonth(proxy: proxy)
-                }
+//                .onChange(of: taskViewModel.tasks) { _ in
+//                    scrollToThisMonth(proxy: proxy)
+//                }
+//                .onChange(of: taskViewModel.selectedTasks) { _ in
+//                    scrollToThisMonth(proxy: proxy)
+//                }
                 .onChange(of: rkManager.selectedDate) { newValue in
                     if taskViewModel.isSameDay(date1: newValue, date2: Date()) {
                         scrollToThisMonth(proxy: proxy)
