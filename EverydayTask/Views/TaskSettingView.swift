@@ -27,7 +27,7 @@ struct TaskSettingView: View {
     ]
     
     @State private var focusTitleTextField: Bool = false
-    @State private var focusDetailTextField: Bool = false
+    @FocusState private var focusedField: Bool
 
     var body: some View {
         NavigationView {
@@ -40,9 +40,18 @@ struct TaskSettingView: View {
                 }
                 // 詳細を入力
                 Section( header: Text("Detail:")) {
-                    TextField("Input Detail", text: $task.detail, onEditingChanged: { begin in
-                        self.focusDetailTextField = begin
-                    })
+                    ZStack(alignment: .topLeading) {
+                        TextEditor(text: $task.detail)
+                            .focused($focusedField)
+                            .padding(.horizontal, -4)
+                            .frame(height: 100)
+                        if task.detail.isEmpty {
+                            Text("Input Detail")
+                                .foregroundColor(Color(uiColor: .placeholderText))
+                                .padding(.vertical, 8)
+                                .allowsHitTesting(false)
+                        }
+                    }
                 }
                 // スパンを入力
                 Section( header: Text("Repeat:")) {
@@ -53,6 +62,8 @@ struct TaskSettingView: View {
                             .tag(TaskSpanType.everyWeek)
                         Text("1 /Month")
                             .tag(TaskSpanType.everyMonth)
+                        Text("1 Time")
+                            .tag(TaskSpanType.oneTime)
                         Text("Custom")
                             .tag(TaskSpanType.everyWeekday)
                     }
@@ -97,8 +108,9 @@ struct TaskSettingView: View {
             }
             .navigationBarItems(leading: cancelButton, trailing: okButton)
         }
+        .navigationBarTitleDisplayMode(.inline)
         // 画面タップでキーボードを閉じる
-        .simultaneousGesture(focusTitleTextField || focusDetailTextField ? TapGesture().onEnded {
+        .simultaneousGesture(focusTitleTextField || focusedField ? TapGesture().onEnded {
             UIApplication.shared.closeKeyboard()
         } : nil)
         .onDisappear {
@@ -113,6 +125,13 @@ extension TaskSettingView {
     private var selectedSpanTypeView: some View {
         List {
             switch task.spanType {
+            case .oneTime:
+                HStack {
+                    Text("One time")
+                        .font(.subheadline)
+                    Spacer()
+                    Image(systemName: "checkmark")
+                }
             case .everyDay:
                 HStack {
                     Text("Every day")

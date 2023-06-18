@@ -128,7 +128,7 @@ struct RKMonth: View {
         headerDateFormatter.calendar = rkManager.calendar
         //headerDateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yyyy MM月", options: 0, locale: rkManager.calendar.locale)
         
-        headerDateFormatter.dateFormat = "yyyy年 MM月"
+        headerDateFormatter.dateFormat = "yyyy/ MM"
         return headerDateFormatter.string(from: firstOfMonthForOffset()).uppercased()
     }
     

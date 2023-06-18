@@ -11,7 +11,11 @@
 "Every day" = "毎日";
 "Once a week" = "週一";
 "Once a month" = "月一";
+"One time" = "無期限のタスク";
 "Regularly" = "定期的なタスク";
+
+// All Task View
+"All Tasks" = "全てのタスク";
 
 // Alart
 "Edit this task?" = "編集";
@@ -26,6 +30,7 @@
 "1 /Day" = "1 /日";
 "1 /Week" = "1 /週";
 "1 /Month" = "1 /月";
+"1 Time" = "無期限";
 "Custom" = "カスタム";
 "Sunday" = "日曜日";
 "Monday" = "月曜日";

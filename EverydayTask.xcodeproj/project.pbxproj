@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		353C5EED2A3E025400FDFFE5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 353C5EEF2A3E025400FDFFE5 /* Localizable.strings */; };
+		353C5EF22A3EF41200FDFFE5 /* AllTaskListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353C5EF12A3EF41200FDFFE5 /* AllTaskListView.swift */; };
+		353C5EF42A3EF84100FDFFE5 /* AllTaskCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353C5EF32A3EF84100FDFFE5 /* AllTaskCell.swift */; };
 		355B976B2A2D9F0900BD0772 /* EverydayTaskApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B976A2A2D9F0900BD0772 /* EverydayTaskApp.swift */; };
 		355B976D2A2D9F0900BD0772 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B976C2A2D9F0900BD0772 /* ContentView.swift */; };
 		355B976F2A2D9F0B00BD0772 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 355B976E2A2D9F0B00BD0772 /* Assets.xcassets */; };
@@ -65,6 +67,8 @@
 /* Begin PBXFileReference section */
 		353C5EEE2A3E025400FDFFE5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		353C5EF02A3E025900FDFFE5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		353C5EF12A3EF41200FDFFE5 /* AllTaskListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllTaskListView.swift; sourceTree = "<group>"; };
+		353C5EF32A3EF84100FDFFE5 /* AllTaskCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllTaskCell.swift; sourceTree = "<group>"; };
 		355B97672A2D9F0900BD0772 /* EverydayTask.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EverydayTask.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		355B976A2A2D9F0900BD0772 /* EverydayTaskApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EverydayTaskApp.swift; sourceTree = "<group>"; };
 		355B976C2A2D9F0900BD0772 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -171,6 +175,8 @@
 			children = (
 				355B977D2A2DA4F400BD0772 /* CalendarView.swift */,
 				35CCF3452A2EEB0A00C91B80 /* TaskCell.swift */,
+				353C5EF32A3EF84100FDFFE5 /* AllTaskCell.swift */,
+				353C5EF12A3EF41200FDFFE5 /* AllTaskListView.swift */,
 				3585CA2F2A370956002A090C /* WeeklyAndMonthlyListView.swift */,
 				3585CA312A370972002A090C /* WeeklyAndMonthlyDetailListView.swift */,
 				355B978E2A2DE7F500BD0772 /* TaskView.swift */,
@@ -347,8 +353,10 @@
 				355B978B2A2DA77F00BD0772 /* RKCell.swift in Sources */,
 				3585CA322A370972002A090C /* WeeklyAndMonthlyDetailListView.swift in Sources */,
 				35CCF3462A2EEB0A00C91B80 /* TaskCell.swift in Sources */,
+				353C5EF42A3EF84100FDFFE5 /* AllTaskCell.swift in Sources */,
 				355B97892A2DA77F00BD0772 /* RKWeekdayHeader.swift in Sources */,
 				355B978D2A2DA77F00BD0772 /* RKDate.swift in Sources */,
+				353C5EF22A3EF41200FDFFE5 /* AllTaskListView.swift in Sources */,
 				355B977C2A2DA46E00BD0772 /* Tasks.swift in Sources */,
 				355B977E2A2DA4F400BD0772 /* CalendarView.swift in Sources */,
 				355B976B2A2D9F0900BD0772 /* EverydayTaskApp.swift in Sources */,
@@ -520,7 +528,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = EverydayTask/EverydayTask.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1;
+				CURRENT_PROJECT_VERSION = 1.2;
 				DEVELOPMENT_ASSET_PATHS = "\"EverydayTask/Preview Content\"";
 				DEVELOPMENT_TEAM = NZ6NQZK56A;
 				ENABLE_PREVIEWS = YES;
@@ -556,7 +564,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = EverydayTask/EverydayTask.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1;
+				CURRENT_PROJECT_VERSION = 1.2;
 				DEVELOPMENT_ASSET_PATHS = "\"EverydayTask/Preview Content\"";
 				DEVELOPMENT_TEAM = NZ6NQZK56A;
 				ENABLE_PREVIEWS = YES;

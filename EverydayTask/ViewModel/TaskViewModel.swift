@@ -23,7 +23,7 @@ class TaskViewModel: ObservableObject {
     
     @Published var showTaskSettingView: Bool
     @Published var showTaskSettingAlart: Bool
-    
+    @Published var showAllTaskListViewFlag: Bool
     @Published var showCalendarFlag: Bool
                 
     init() {
@@ -37,6 +37,7 @@ class TaskViewModel: ObservableObject {
         self.latestDate = Date()
         self.showTaskSettingView = false
         self.showTaskSettingAlart = false
+        self.showAllTaskListViewFlag = false
         showCalendarFlag = true
         
         self.tasks = loadTasks() ?? Tasks.defaulData
@@ -154,13 +155,30 @@ class TaskViewModel: ObservableObject {
         return weekdayIndex
     }
     
+    // Date -> 0/0
+    func returnDayString(date: Date) -> String {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "ja_JP")
+        let dayDC = Calendar.current.dateComponents([.month, .day], from: date)
+        let month: String = String(dayDC.month!)
+        let day: String = String(dayDC.day!)
+        
+        return month + "/" + day
+    }
+    
     // 選択した日付のタスクが実行されているかbool型で返す
     func isDone(task: Tasks, date: Date) -> Bool {
         let doneDates = task.doneDate
-        for doneIndex in 0..<doneDates.count {
-            let doneDate = doneDates[doneIndex]
-            if isSameDay(date1: date, date2: doneDate) {
-                return true
+        let spanType = task.spanType
+        // １日一回のタスクの場合、タスクがableの時は実行可能にする
+        if spanType == .oneTime && task.able == true {
+            return false
+        } else {
+            for doneIndex in 0..<doneDates.count {
+                let doneDate = doneDates[doneIndex]
+                if isSameDay(date1: date, date2: doneDate) {
+                    return true
+                }
             }
         }
         return false
@@ -275,6 +293,7 @@ class TaskViewModel: ObservableObject {
         var dailyTasks: [Tasks] = []
         var weeklyTasks: [Tasks] = []
         var monthlyTasks: [Tasks] = []
+        var simpleTasks: [Tasks] = []
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "ja_JP")
         
@@ -287,10 +306,13 @@ class TaskViewModel: ObservableObject {
             let spanDate = task.spanDate
             let doneDate = task.doneDate
             let weekdayIndex = returnWeekdayFromDate(date: selectedDate)
+            let able = task.able
             
             // 選択した日付よりも前にタスクを追加していた場合
-            if addedDate < selectedDate {
+            if addedDate < selectedDate && able {
                 switch spanType {
+                case .oneTime:
+                    simpleTasks.append(task)
                 case .everyDay:
                     dailyTasks.append(task)
                 case .everyWeekday:
@@ -356,6 +378,7 @@ class TaskViewModel: ObservableObject {
         selectedDateTasks.append(dailyTasks)
         selectedDateTasks.append(weeklyTasks)
         selectedDateTasks.append(monthlyTasks)
+        selectedDateTasks.append(simpleTasks)
         return selectedDateTasks
     }
     
@@ -376,8 +399,17 @@ class TaskViewModel: ObservableObject {
         let jsonDecoder = JSONDecoder()
         guard let data = UserDefaults.standard.data(forKey: "tasks"),
               let tasks = try? jsonDecoder.decode([Tasks].self, from: data) else {
-            print("😭: tasksのロードに失敗しました。")
-            return Tasks.defaulData
+            // Tasksを変更した場合、構造体に合わせてtasksを更新する
+            guard let data = UserDefaults.standard.data(forKey: "tasks"), let tasks = try? jsonDecoder.decode([prevTasks].self, from: data) else {
+                print("😭: tasksのロードに失敗しました。")
+                return Tasks.defaulData
+            }
+            var newTasks: [Tasks] = []
+            for taskIndex in 0..<tasks.count {
+                newTasks.append(Tasks(title: tasks[taskIndex].title, detail: tasks[taskIndex].detail, addedDate: tasks[taskIndex].addedDate, spanType: tasks[taskIndex].spanType, spanDate: tasks[taskIndex].spanDate, doneDate: tasks[taskIndex].doneDate, notification: tasks[taskIndex].notification, notificationHour: tasks[taskIndex].notificationHour, notificationMin: tasks[taskIndex].notificationMin, accentColor: tasks[taskIndex].accentColor, able: true))
+            }
+            print("😄: prevTasksの構造体に合わせてデータを更新しました。")
+            return newTasks
         }
         print("😄👍: tasksのロードに成功しました。")
         for task in tasks {
@@ -385,29 +417,37 @@ class TaskViewModel: ObservableObject {
         }
         return tasks
     }
-
+    
     // Widget用にデータを保存
     func saveUnfinishedTasksForWidget() {
         let taskCount = returnTaskCount(date: Date())
         let finishedTaskCount = returnDoneTaskCount(date: Date())
         let unfinishedTaskCount = taskCount - finishedTaskCount
         
-        let allUnfinishedTaskTitleList: [[Tasks]] = returnSelectedDateTasks(date: Date())
-        var allUnfinishedTaskTitleListTitle: [String] = []
-        var todayUnfinishedTaskTitleListTitle: [String] = []
-        var futureUnfinishedTaskTitleListTitle: [String] = []
+        let allUnfinishedTaskList: [[Tasks]] = returnSelectedDateTasks(date: Date())
+        var allUnfinishedTaskTitleList: [String] = []
+        var todayUnfinishedTaskTitleList: [String] = []
+        var futureUnfinishedTaskTitleList: [String] = []
+        var oneTimeUnfinishedTaskTitleList: [String] = []
         
-        for tasks in allUnfinishedTaskTitleList {
+        for tasks in allUnfinishedTaskList {
             for taskIndex in 0..<tasks.count {
-                let title = tasks[taskIndex].title
-                let taskSpanType = tasks[taskIndex].spanType
-                if !isDone(task: tasks[taskIndex], date: Date()) {
+                let task = tasks[taskIndex]
+                let title = task.title
+                let taskSpanType = task.spanType
+                let doneDate = task.doneDate
+                if taskSpanType == .oneTime {
+                    // まだタスクを実施していない場合
+                    oneTimeUnfinishedTaskTitleList.append(title)
+                    allUnfinishedTaskTitleList.append(title)
+                    
+                } else if !isDone(task: tasks[taskIndex], date: Date()) {
                     if taskSpanType == .everyDay || taskSpanType == .everyWeekday {
-                        todayUnfinishedTaskTitleListTitle.append(title)
+                        todayUnfinishedTaskTitleList.append(title)
                     } else {
-                        futureUnfinishedTaskTitleListTitle.append(title)
+                        futureUnfinishedTaskTitleList.append(title)
                     }
-                    allUnfinishedTaskTitleListTitle.append(title)
+                    allUnfinishedTaskTitleList.append(title)
                 }
             }
         }
@@ -416,9 +456,11 @@ class TaskViewModel: ObservableObject {
         if let userDefaults = userDefaults {
             userDefaults.synchronize()
             userDefaults.setValue(unfinishedTaskCount, forKeyPath: "unfinishedTaskCount")
-            userDefaults.setValue(allUnfinishedTaskTitleListTitle, forKeyPath: "allUnfinishedTaskTitleListTitle")
-            userDefaults.setValue(todayUnfinishedTaskTitleListTitle, forKeyPath: "todayUnfinishedTaskTitleListTitle")
-            userDefaults.setValue(futureUnfinishedTaskTitleListTitle, forKeyPath: "futureUnfinishedTaskTitleListTitle")
+            userDefaults.setValue(allUnfinishedTaskTitleList, forKeyPath: "allUnfinishedTaskTitleList")
+            userDefaults.setValue(todayUnfinishedTaskTitleList, forKeyPath: "todayUnfinishedTaskTitleList")
+            userDefaults.setValue(futureUnfinishedTaskTitleList, forKeyPath: "futureUnfinishedTaskTitleList")
+            userDefaults.setValue(oneTimeUnfinishedTaskTitleList, forKeyPath: "oneTimeUnfinishedTaskTitleList")
+
         }
         // Widgetを更新
         WidgetCenter.shared.reloadTimelines(ofKind: "EverydayTaskWidget")

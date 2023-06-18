@@ -101,7 +101,7 @@ struct TaskCell: View {
         .frame(height: 90)
         .frame(maxWidth: .infinity)
         .cornerRadius(10)
-        .shadow(color: !taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .black.opacity(0.4) : .clear, radius: 3, x: 0, y: 3)
+        .shadow(color: !taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .black.opacity(0.2) : .clear, radius: 7, x: 0, y: 3)
         .overlay {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(lineWidth: 3)
@@ -134,6 +134,8 @@ extension TaskCell {
 //            }
 //        } else {
             switch span {
+            case .oneTime:
+                return "One time"
             case .everyDay:
                 return "Every day"
             case .everyWeek:
@@ -200,37 +202,53 @@ extension TaskCell {
     private func tapDoneTaskButtonAction(task: Tasks) {
         let selectedDate = rkManager.selectedDate
 
-        // 選択したタスクがまだ実行済みではなかった場合 -> 実行履歴に追加
-        if !taskViewModel.isDone(task: task, date: selectedDate) {
+        if task.spanType == .oneTime {
             generator.notificationOccurred(.success)
-            
             if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
                 withAnimation {
                     // 実行済みにする
                     taskViewModel.tasks[index].doneDate.append(selectedDate)
+                    // タスクを非表示にする
+                    taskViewModel.tasks[index].able = false
                     // doneDateを並び替える
-                    //because: タスクを完了した後に、そのタスクより過去のタスクを完了すると、
-                    //WeeklyAndMonthlyDetailListViewにタスクを表示するときに順番が完了順で表示されてしまうから。
                     taskViewModel.tasks[index].doneDate.sort()
                     updateSelectedTasks(index: index)
                 }
             }
-            // 選択したタスクが実行済みであった場合 -> 実行履歴を削除
+            
         } else {
-            let impactLight = UIImpactFeedbackGenerator(style: .rigid)
-            impactLight.impactOccurred()
-
-            if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
-                // タスクを未達成の状態にする
-                let selectedTaskDoneDates = taskViewModel.tasks[index].doneDate
-                for doneDateIndex in 0..<selectedTaskDoneDates.count {
-                    let doneDate = selectedTaskDoneDates[doneDateIndex]
-                    if taskViewModel.isSameDay(date1: selectedDate, date2: doneDate) {
-                        // 上書き
-                        withAnimation {
-                            taskViewModel.tasks[index].doneDate.remove(at: doneDateIndex)
-                            taskViewModel.tasks[index].doneDate.sort()
-                            updateSelectedTasks(index: index)
+            // 選択したタスクがまだ実行済みではなかった場合 -> 実行履歴に追加
+            if !taskViewModel.isDone(task: task, date: selectedDate) {
+                generator.notificationOccurred(.success)
+                
+                if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
+                    withAnimation {
+                        // 実行済みにする
+                        taskViewModel.tasks[index].doneDate.append(selectedDate)
+                        // doneDateを並び替える
+                        //because: タスクを完了した後に、そのタスクより過去のタスクを完了すると、
+                        //WeeklyAndMonthlyDetailListViewにタスクを表示するときに順番が完了順で表示されてしまうから。
+                        taskViewModel.tasks[index].doneDate.sort()
+                        updateSelectedTasks(index: index)
+                    }
+                }
+                // 選択したタスクが実行済みであった場合 -> 実行履歴を削除
+            } else {
+                let impactLight = UIImpactFeedbackGenerator(style: .rigid)
+                impactLight.impactOccurred()
+                
+                if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
+                    // タスクを未達成の状態にする
+                    let selectedTaskDoneDates = taskViewModel.tasks[index].doneDate
+                    for doneDateIndex in 0..<selectedTaskDoneDates.count {
+                        let doneDate = selectedTaskDoneDates[doneDateIndex]
+                        if taskViewModel.isSameDay(date1: selectedDate, date2: doneDate) {
+                            // 上書き
+                            withAnimation {
+                                taskViewModel.tasks[index].doneDate.remove(at: doneDateIndex)
+                                taskViewModel.tasks[index].doneDate.sort()
+                                updateSelectedTasks(index: index)
+                            }
                         }
                     }
                 }

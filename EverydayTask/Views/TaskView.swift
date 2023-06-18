@@ -20,13 +20,21 @@ struct TaskView: View {
             todaysTaskList
                 .padding(.top, 10)
             regularlyTaskList
-                .padding(.bottom, 60)
+            
+            oneTimeTaskList
+                .padding(.bottom, 80)
         }
         .overlay(alignment: .bottomTrailing) {
             addTaskButton
         }
         .sheet(isPresented: $taskViewModel.showTaskSettingView, content: {
             TaskSettingView(rkManager: rkManager, taskViewModel: taskViewModel, task: taskViewModel.editTask, selectedWeekdays: taskViewModel.editTask.spanDate)
+        })
+        .overlay(alignment: .bottomLeading) {
+            allTaskButton
+        }
+        .sheet(isPresented: $taskViewModel.showAllTaskListViewFlag, content: {
+            AllTaskListView(taskViewModel: taskViewModel, rkManager: rkManager)
         })
         .confirmationDialog(taskViewModel.editTask.title, isPresented: $taskViewModel.showTaskSettingAlart, titleVisibility: .visible) {
             Button("Edit this task?") {
@@ -46,7 +54,7 @@ extension TaskView {
     private var todaysTaskList: some View {
         VStack(spacing: 10) {
             HStack {
-                Text(returnDayString(date: rkManager.selectedDate))
+                Text(taskViewModel.returnDayString(date: rkManager.selectedDate))
                     .foregroundColor(.secondary)
                     .padding(.leading, 15)
                 
@@ -88,6 +96,7 @@ extension TaskView {
         return taskViewModel.isSameDay(date1: rkManager.selectedDate, date2: Date())
     }
     
+    // 定期的なタスク
     private var regularlyTaskList: some View {
         VStack(spacing: 10) {
             if taskViewModel.returnSelectedDateTasks(date: rkManager.selectedDate)[1].count != 0 || taskViewModel.returnSelectedDateTasks(date: rkManager.selectedDate)[2].count != 0 {
@@ -123,63 +132,69 @@ extension TaskView {
             .padding(.horizontal, 10)
         }
     }
-
-    // Date -> 0/0
-    private func returnDayString(date: Date) -> String {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = Locale(identifier: "ja_JP")
-        let dayDC = Calendar.current.dateComponents([.month, .day], from: date)
-        let month: String = String(dayDC.month!)
-        let day: String = String(dayDC.day!)
-        
-        return month + "/" + day
-    }
-        
-    private var addTaskButton: some View {
-        HStack(spacing: 10) {
-//            if taskViewModel.selectedTasks.count == 1 {
-//                // タスク編集
-//                Button {
-//                    
-//                } label: {
-//                    Image(systemName: "trash")
-//                        .font(.title2)
-//                        .foregroundColor(.white)
-//                        .padding(10)
-//                        .background(.red.opacity(0.7))
-//                        .clipShape(Circle())
-//                        .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 3)
-//                }
-//                //
-//                Button {
-//                    
-//                } label: {
-//                    Image(systemName: "pencil")
-//                        .font(.title2)
-//                        .foregroundColor(.white)
-//                        .padding(10)
-//                        .background(.green.opacity(0.7))
-//                        .clipShape(Circle())
-//                        .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 3)
-//                }
-//            }
-            
-            Button {
-                let impactLight = UIImpactFeedbackGenerator(style: .rigid)
-                impactLight.impactOccurred()
-                
-                taskViewModel.editTask = Tasks(title: "", detail: "", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue")
-                taskViewModel.showTaskSettingView = true
-            } label: {
-                Image(systemName: "plus")
-                    .font(.title)
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(.tint.opacity(0.7))
-                    .clipShape(Circle())
-                    .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 3)
-                    .padding(.trailing)
+    
+    // 一度のみのタスク
+    private var oneTimeTaskList: some View {
+        VStack(spacing: 10) {
+            if taskViewModel.returnSelectedDateTasks(date: rkManager.selectedDate)[3].count != 0 {
+                HStack {
+                    Text("One time")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .padding(.leading, 15)
+                    Spacer()
+                }
             }
+            
+            LazyVGrid(columns: columns, spacing: 10) {
+                ForEach(taskViewModel.returnSelectedDateTasks(date: rkManager.selectedDate)[3], id: \.id) { task in
+                    TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task)
+                        .onTapGesture {
+                            updateCalendar(task: task)
+                        }
+                        .onLongPressGesture() {
+                            longTapTaskAction(task: task)
+                        }
+                }
+            }
+            .padding(.horizontal, 10)
+        }
+    }
+
+    private var addTaskButton: some View {
+        Button {
+            let impactLight = UIImpactFeedbackGenerator(style: .rigid)
+            impactLight.impactOccurred()
+            
+            taskViewModel.editTask = Tasks(title: "", detail: "", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", able: true)
+            taskViewModel.showTaskSettingView = true
+        } label: {
+            Image(systemName: "plus")
+                .font(.title)
+                .foregroundColor(.white)
+                .padding()
+                .background(.tint.opacity(0.7))
+                .clipShape(Circle())
+                .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 3)
+                .padding(.trailing)
+        }
+    }
+    
+    private var allTaskButton: some View {
+        Button {
+            let impactLight = UIImpactFeedbackGenerator(style: .rigid)
+            impactLight.impactOccurred()
+            
+            taskViewModel.showAllTaskListViewFlag = true
+        } label: {
+            Image(systemName: "list.bullet")
+                .font(.title)
+                .foregroundColor(.white)
+                .padding()
+                .background(.green.opacity(0.7))
+                .clipShape(Circle())
+                .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 3)
+                .padding(.leading)
         }
     }
     
@@ -189,7 +204,7 @@ extension TaskView {
         impactLight.impactOccurred()
         
         // spanTypeによってCalendarViewの種類を変える
-        if task.spanType == .everyDay || task.spanType == .everyWeekday {
+        if task.spanType == .everyDay || task.spanType == .everyWeekday || task.spanType == .oneTime {
             taskViewModel.showCalendarFlag = true
         } else {
             if taskViewModel.selectedTasks != [task] {
