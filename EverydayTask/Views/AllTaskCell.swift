@@ -42,11 +42,11 @@ struct AllTaskCell: View {
                         
             Spacer(minLength: 0)
             
-            Toggle("", isOn: $task.able)
+            Toggle("", isOn: $task.isAble)
                 .frame(width: 50)
-                .onChange(of: task.able) { newValue in
+                .onChange(of: task.isAble) { newValue in
                     if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
-                        taskViewModel.tasks[index].able = newValue
+                        taskViewModel.tasks[index].isAble = newValue
                     }
                 }
             
@@ -61,7 +61,7 @@ extension AllTaskCell {
             Text(task.title)
                 .lineLimit(1)
                 .font(.body.bold())
-                .foregroundColor(task.able ? Color(UIColor.label) : .secondary)
+                .foregroundColor(task.isAble ? Color(UIColor.label) : .secondary)
 
             Text(task.detail)
                 .font(.footnote)

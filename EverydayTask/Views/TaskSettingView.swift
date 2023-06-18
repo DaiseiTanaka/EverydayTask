@@ -28,87 +28,30 @@ struct TaskSettingView: View {
     
     @State private var focusTitleTextField: Bool = false
     @FocusState private var focusedField: Bool
+    @State private var showDeleteAlart: Bool = false
 
     var body: some View {
         NavigationView {
             Form {
                 // タイトルを入力
-                Section( header: Text("Title:")) {
-                    TextField("Input Title", text: $task.title, onEditingChanged: { begin in
-                        self.focusTitleTextField = begin
-                    })
-                }
+                title
                 // 詳細を入力
-                Section( header: Text("Detail:")) {
-                    ZStack(alignment: .topLeading) {
-                        TextEditor(text: $task.detail)
-                            .focused($focusedField)
-                            .padding(.horizontal, -4)
-                            .frame(height: 100)
-                        if task.detail.isEmpty {
-                            Text("Input Detail")
-                                .foregroundColor(Color(uiColor: .placeholderText))
-                                .padding(.vertical, 8)
-                                .allowsHitTesting(false)
-                        }
-                    }
-                }
+                detail
                 // スパンを入力
-                Section( header: Text("Repeat:")) {
-                    Picker("Every Weekdays", selection: $task.spanType) {
-                        Text("1 /Day")
-                            .tag(TaskSpanType.everyDay)
-                        Text("1 /Week")
-                            .tag(TaskSpanType.everyWeek)
-                        Text("1 /Month")
-                            .tag(TaskSpanType.everyMonth)
-                        Text("1 Time")
-                            .tag(TaskSpanType.oneTime)
-                        Text("Custom")
-                            .tag(TaskSpanType.everyWeekday)
-                    }
-                    .pickerStyle(.segmented)
-                    
-                    // 選択中のスパンを表示
-                    selectedSpanTypeView
-                }
+                span
                 // アクセントカラーを入力
-                Section( header: Text("Accent color:")) {
-                    Picker("Select accent color", selection: $task.accentColor) {
-                        ForEach(taskViewModel.accentColors, id: \.self) { color in
-                            HStack {
-                                Circle()
-                                    .frame(width: 30)
-                                    .foregroundColor(taskViewModel.returnColor(color: color))
-                                Text(color)
-                            }
-                        }
-                    }
-                    .pickerStyle(.navigationLink)
-                }
-                
+                accentColor
                 // 毎日のタスク or 各週のタスクの場合のみ通知を設定可能
                 if task.spanType == .everyDay || task.spanType == .everyWeekday {
                     // 通知
-                    Section( header: Text("Notification:")) {
-                        HStack {
-                            if task.notification {
-                                Image(systemName: "bell.badge")
-                            } else {
-                                Image(systemName: "bell.slash")
-                            }
-                            Toggle("Add notification", isOn: $task.notification)
-                        }
-                        // 通知オンだった場合
-                        if task.notification {
-                            PickerView(hourSelected: $task.notificationHour, minSelected: $task.notificationMin)
-                        }
-                    }
+                    notification
                 }
+                deleteButton
             }
             .navigationBarItems(leading: cancelButton, trailing: okButton)
         }
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         // 画面タップでキーボードを閉じる
         .simultaneousGesture(focusTitleTextField || focusedField ? TapGesture().onEnded {
             UIApplication.shared.closeKeyboard()
@@ -117,10 +60,113 @@ struct TaskSettingView: View {
             taskViewModel.showCalendarFlag = true
             taskViewModel.selectedTasks = taskViewModel.tasks
         }
+        .confirmationDialog(task.title, isPresented: $showDeleteAlart, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) {
+                taskViewModel.removeTasks(task: task)
+                dismiss()
+            }
+        } message: {
+            Text("This operation cannot be undone.")
+        }
     }
 }
 
 extension TaskSettingView {
+    
+    private var title: some View {
+        Section( header: Text("Title:")) {
+            TextField("Input Title", text: $task.title, onEditingChanged: { begin in
+                self.focusTitleTextField = begin
+            })
+        }
+    }
+    
+    private var detail: some View {
+        Section( header: Text("Detail:")) {
+            ZStack(alignment: .topLeading) {
+                TextEditor(text: $task.detail)
+                    .focused($focusedField)
+                    .padding(.horizontal, -4)
+                    .frame(height: 100)
+                if task.detail.isEmpty {
+                    Text("Input Detail")
+                        .foregroundColor(Color(uiColor: .placeholderText))
+                        .padding(.vertical, 8)
+                        .allowsHitTesting(false)
+                }
+            }
+        }
+    }
+    
+    private var span: some View {
+        Section( header: Text("Repeat:")) {
+            Picker("Every Weekdays", selection: $task.spanType) {
+                Text("1 /Day")
+                    .tag(TaskSpanType.everyDay)
+                Text("1 /Week")
+                    .tag(TaskSpanType.everyWeek)
+                Text("1 /Month")
+                    .tag(TaskSpanType.everyMonth)
+                Text("1 Time")
+                    .tag(TaskSpanType.oneTime)
+                Text("Custom")
+                    .tag(TaskSpanType.everyWeekday)
+            }
+            .pickerStyle(.segmented)
+            
+            // 選択中のスパンを表示
+            selectedSpanTypeView
+        }
+    }
+    
+    private var accentColor: some View {
+        Section( header: Text("Accent color:")) {
+            Picker("Select accent color", selection: $task.accentColor) {
+                ForEach(taskViewModel.accentColors, id: \.self) { color in
+                    HStack {
+                        Circle()
+                            .frame(width: 30)
+                            .foregroundColor(taskViewModel.returnColor(color: color))
+                        Text(color)
+                    }
+                }
+            }
+            .pickerStyle(.navigationLink)
+        }
+    }
+    
+    private var notification: some View {
+        Section( header: Text("Notification:")) {
+            HStack {
+                if task.notification {
+                    Image(systemName: "bell.badge")
+                } else {
+                    Image(systemName: "bell.slash")
+                }
+                Toggle("Add notification", isOn: $task.notification)
+            }
+            // 通知オンだった場合
+            if task.notification {
+                PickerView(hourSelected: $task.notificationHour, minSelected: $task.notificationMin)
+            }
+        }
+    }
+    
+    private var deleteButton: some View {
+        Section {
+            Button {
+                // 削除するか確認するアラートを表示
+                showDeleteAlart = true
+            } label: {
+                HStack {
+                    Spacer()
+                    Text("Delete this task")
+                        .foregroundColor(.red)
+                    Spacer()
+                }
+            }
+        }
+    }
     
     private var selectedSpanTypeView: some View {
         List {

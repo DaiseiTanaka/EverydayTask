@@ -62,9 +62,10 @@ struct ContentView: View {
                 taskViewModel.saveUnfinishedTasksForWidget()
             }
         }
-        // タスクを編集したらアプリのバッジの数を更新
+        // タスクを編集したらアプリのバッジの数を更新 & tasksを保存
         .onChange(of: taskViewModel.tasks) { _ in
             returnBadgeNumber()
+            taskViewModel.saveTasks(tasks: taskViewModel.tasks)
         }
         // 日付が変わったらカレンダーを更新
         .onChange(of: returnTodayDay()) { _ in

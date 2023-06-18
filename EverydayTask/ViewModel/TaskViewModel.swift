@@ -132,8 +132,6 @@ class TaskViewModel: ObservableObject {
                 tasks.insert(task, at: 0)
             }
         }
-
-        saveTasks(tasks: tasks)
     }
     
     // タスクを削除
@@ -142,7 +140,6 @@ class TaskViewModel: ObservableObject {
             return
         }
         tasks.remove(at: index)
-        saveTasks(tasks: tasks)
     }
     
     // MARK: - 日付関連
@@ -170,8 +167,8 @@ class TaskViewModel: ObservableObject {
     func isDone(task: Tasks, date: Date) -> Bool {
         let doneDates = task.doneDate
         let spanType = task.spanType
-        // １日一回のタスクの場合、タスクがableの時は実行可能にする
-        if spanType == .oneTime && task.able == true {
+        // １日一回のタスクの場合、タスクがisAbleの時は実行可能にする
+        if spanType == .oneTime && task.isAble == true {
             return false
         } else {
             for doneIndex in 0..<doneDates.count {
@@ -306,10 +303,10 @@ class TaskViewModel: ObservableObject {
             let spanDate = task.spanDate
             let doneDate = task.doneDate
             let weekdayIndex = returnWeekdayFromDate(date: selectedDate)
-            let able = task.able
+            let isAble = task.isAble
             
-            // 選択した日付よりも前にタスクを追加していた場合
-            if addedDate < selectedDate && able {
+            // 選択した日付よりも前にタスクを追加していた場合 & タスクが実施可能（isAble）の時
+            if addedDate < selectedDate && isAble {
                 switch spanType {
                 case .oneTime:
                     simpleTasks.append(task)
@@ -406,7 +403,7 @@ class TaskViewModel: ObservableObject {
             }
             var newTasks: [Tasks] = []
             for taskIndex in 0..<tasks.count {
-                newTasks.append(Tasks(title: tasks[taskIndex].title, detail: tasks[taskIndex].detail, addedDate: tasks[taskIndex].addedDate, spanType: tasks[taskIndex].spanType, spanDate: tasks[taskIndex].spanDate, doneDate: tasks[taskIndex].doneDate, notification: tasks[taskIndex].notification, notificationHour: tasks[taskIndex].notificationHour, notificationMin: tasks[taskIndex].notificationMin, accentColor: tasks[taskIndex].accentColor, able: true))
+                newTasks.append(Tasks(title: tasks[taskIndex].title, detail: tasks[taskIndex].detail, addedDate: tasks[taskIndex].addedDate, spanType: tasks[taskIndex].spanType, spanDate: tasks[taskIndex].spanDate, doneDate: tasks[taskIndex].doneDate, notification: tasks[taskIndex].notification, notificationHour: tasks[taskIndex].notificationHour, notificationMin: tasks[taskIndex].notificationMin, accentColor: tasks[taskIndex].accentColor, isAble: true))
             }
             print("😄: prevTasksの構造体に合わせてデータを更新しました。")
             return newTasks

@@ -209,7 +209,7 @@ extension TaskCell {
                     // 実行済みにする
                     taskViewModel.tasks[index].doneDate.append(selectedDate)
                     // タスクを非表示にする
-                    taskViewModel.tasks[index].able = false
+                    taskViewModel.tasks[index].isAble = false
                     // doneDateを並び替える
                     taskViewModel.tasks[index].doneDate.sort()
                     updateSelectedTasks(index: index)
@@ -255,7 +255,6 @@ extension TaskCell {
             }
         }
         print("doneTaskButtonTapped! selectedTasks:\n\(taskViewModel.selectedTasks)")
-        taskViewModel.saveTasks(tasks: taskViewModel.tasks)
     }
     
     // タスクを完了した時に表示するタスクを更新する
