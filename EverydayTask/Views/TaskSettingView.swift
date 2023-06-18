@@ -51,7 +51,7 @@ struct TaskSettingView: View {
             .navigationBarItems(leading: cancelButton, trailing: okButton)
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
+        //.navigationBarBackButtonHidden(true)
         // 画面タップでキーボードを閉じる
         .simultaneousGesture(focusTitleTextField || focusedField ? TapGesture().onEnded {
             UIApplication.shared.closeKeyboard()

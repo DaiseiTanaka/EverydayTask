@@ -16,6 +16,7 @@
 
 // All Task View
 "All Tasks" = "全てのタスク";
+"Hidden" = "非表示";
 
 // Alart
 "Edit this task?" = "編集";

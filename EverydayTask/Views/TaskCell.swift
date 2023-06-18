@@ -254,6 +254,7 @@ extension TaskCell {
                 }
             }
         }
+        taskViewModel.saveTasks(tasks: taskViewModel.tasks)
         print("doneTaskButtonTapped! selectedTasks:\n\(taskViewModel.selectedTasks)")
     }
     

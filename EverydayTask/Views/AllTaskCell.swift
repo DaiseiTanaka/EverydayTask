@@ -42,16 +42,17 @@ struct AllTaskCell: View {
                         
             Spacer(minLength: 0)
             
-            Toggle("", isOn: $task.isAble)
-                .frame(width: 50)
-                .onChange(of: task.isAble) { newValue in
-                    if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
-                        taskViewModel.tasks[index].isAble = newValue
-                    }
-                }
-            
+            isAbleToggle
         }
         .padding(.vertical, 3)
+        .onDisappear {
+            if taskViewModel.showAllTaskListViewFlag == false {
+                if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
+                    taskViewModel.tasks[index].isAble = task.isAble
+                    taskViewModel.saveTasks(tasks: taskViewModel.tasks)
+                }
+            }
+        }
     }
 }
 
@@ -101,6 +102,18 @@ extension AllTaskCell {
                         .lineLimit(1)
                 }
             }
+        }
+    }
+    
+    private var isAbleToggle: some View {
+        VStack(alignment: .trailing, spacing: 2) {
+            if !task.isAble {
+                Text("Hidden")
+                    .foregroundColor(.secondary)
+                    .font(.footnote)
+            }
+            Toggle("", isOn: $task.isAble)
+                .frame(width: 50)
         }
     }
     

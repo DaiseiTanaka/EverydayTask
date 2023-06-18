@@ -132,6 +132,7 @@ class TaskViewModel: ObservableObject {
                 tasks.insert(task, at: 0)
             }
         }
+        saveTasks(tasks: tasks)
     }
     
     // タスクを削除
@@ -140,6 +141,7 @@ class TaskViewModel: ObservableObject {
             return
         }
         tasks.remove(at: index)
+        saveTasks(tasks: tasks)
     }
     
     // MARK: - 日付関連
