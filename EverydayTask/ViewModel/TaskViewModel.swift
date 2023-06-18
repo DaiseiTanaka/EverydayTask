@@ -199,14 +199,18 @@ class TaskViewModel: ObservableObject {
             let spanDate = task.spanDate
             let addedDate = task.addedDate.addingTimeInterval(-60*60*24*1)
             let weekdayIndex = returnWeekdayFromDate(date: date)
-            // タスクを追加した日以降
-            if addedDate <= date {
-                // 毎日行うタスクの場合
-                if spanType == .everyDay {
-                    taskCount += 1
-                // 決まった曜日に行うタスクの場合
-                } else if spanType == .everyWeekday && spanDate.contains(weekdayIndex) {
-                    taskCount += 1
+            let isAble = task.isAble
+            // タスクがisAbleの時
+            if isAble {
+                // タスクを追加した日以降
+                if addedDate <= date {
+                    // 毎日行うタスクの場合
+                    if spanType == .everyDay {
+                        taskCount += 1
+                        // 決まった曜日に行うタスクの場合
+                    } else if spanType == .everyWeekday && spanDate.contains(weekdayIndex) {
+                        taskCount += 1
+                    }
                 }
             }
         }
@@ -224,16 +228,19 @@ class TaskViewModel: ObservableObject {
             let spanType = task.spanType
             let spanDate = task.spanDate
             let weekdayIndex = returnWeekdayFromDate(date: date)
+            let isAble = task.isAble
             
-            for dateIndex in 0..<doneDates.count {
-                let doneDate = doneDates[dateIndex]
-                if isSameDay(date1: doneDate, date2: date) {
-                    if spanType == .everyDay {
-                        doneTaskCount += 1
-
-                    } else if spanType == .everyWeekday && spanDate.contains(weekdayIndex) {
-                        doneTaskCount += 1
-
+            if isAble {
+                for dateIndex in 0..<doneDates.count {
+                    let doneDate = doneDates[dateIndex]
+                    if isSameDay(date1: doneDate, date2: date) {
+                        if spanType == .everyDay {
+                            doneTaskCount += 1
+                            
+                        } else if spanType == .everyWeekday && spanDate.contains(weekdayIndex) {
+                            doneTaskCount += 1
+                            
+                        }
                     }
                 }
             }
@@ -417,10 +424,6 @@ class TaskViewModel: ObservableObject {
     
     // Widget用にデータを保存
     func saveUnfinishedTasksForWidget() {
-        let taskCount = returnTaskCount(date: Date())
-        let finishedTaskCount = returnDoneTaskCount(date: Date())
-        let unfinishedTaskCount = taskCount - finishedTaskCount
-        
         let allUnfinishedTaskList: [[Tasks]] = returnSelectedDateTasks(date: Date())
         var allUnfinishedTaskTitleList: [String] = []
         var todayUnfinishedTaskTitleList: [String] = []
@@ -432,12 +435,12 @@ class TaskViewModel: ObservableObject {
                 let task = tasks[taskIndex]
                 let title = task.title
                 let taskSpanType = task.spanType
-                let doneDate = task.doneDate
+
                 if taskSpanType == .oneTime {
                     // まだタスクを実施していない場合
                     oneTimeUnfinishedTaskTitleList.append(title)
                     allUnfinishedTaskTitleList.append(title)
-                    
+                    todayUnfinishedTaskTitleList.append(title)
                 } else if !isDone(task: tasks[taskIndex], date: Date()) {
                     if taskSpanType == .everyDay || taskSpanType == .everyWeekday {
                         todayUnfinishedTaskTitleList.append(title)
@@ -448,6 +451,7 @@ class TaskViewModel: ObservableObject {
                 }
             }
         }
+        let unfinishedTaskCount = todayUnfinishedTaskTitleList.count
         
         let userDefaults = UserDefaults(suiteName: "group.myproject.EverydayTask.widget")
         if let userDefaults = userDefaults {
