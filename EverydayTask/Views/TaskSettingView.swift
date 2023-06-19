@@ -46,6 +46,9 @@ struct TaskSettingView: View {
                     // 通知
                     notification
                 }
+                
+                isAbleToggle
+            
                 deleteButton
             }
             .navigationBarItems(leading: cancelButton, trailing: okButton)
@@ -149,6 +152,12 @@ extension TaskSettingView {
             if task.notification {
                 PickerView(hourSelected: $task.notificationHour, minSelected: $task.notificationMin)
             }
+        }
+    }
+    
+    private var isAbleToggle: some View {
+        Section( header: Text("Visibility:"), footer: Text("Hidden tasks can be checked from the task list view.")) {
+            Toggle(task.isAble ? "Show" : "Hidden", isOn: $task.isAble)
         }
     }
     

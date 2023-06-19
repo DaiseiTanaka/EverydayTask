@@ -106,7 +106,7 @@ struct EverydayTaskWidgetEntryView : View {
     var entry: Provider.Entry
     let columns: [GridItem] = Array(repeating: .init(.flexible(minimum: 110, maximum: 300)), count: 2)
     let lineLimitSmall: Int = 5
-    let lineLimitMedium: Int = 10
+    let lineLimitMedium: Int = 9
     let lineLimitLarge: Int = 20
     var previewList: [Tasks] {
         if !entry.allUnfinishedTaskList.isEmpty {
@@ -140,6 +140,36 @@ struct EverydayTaskWidgetEntryView : View {
             return previewListCount
         }
     }
+    
+    // タスクのアクセントカラーをString型からColor型へ変換する
+    private func returnColor(color: String) -> Color {
+        switch color {
+        case "Label":
+            return Color(UIColor.label)
+        case "Black":
+            return Color.black
+        case "Gray":
+            return Color.gray
+        case "Red":
+            return Color.red
+        case "Pink":
+            return Color.pink
+        case "Orange":
+            return Color.orange
+        case "Cyan":
+            return Color.cyan
+        case "Blue":
+            return Color.blue
+        case "Indigo":
+            return Color.indigo
+        case "Yellow":
+            return Color.yellow
+        case "Green":
+            return Color.green
+        default:
+            return Color.blue
+        }
+    }
 }
 
 extension EverydayTaskWidgetEntryView {
@@ -161,9 +191,15 @@ extension EverydayTaskWidgetEntryView {
             .padding(.vertical, 8)
             
             VStack(spacing: 4) {
-                ForEach(previewList[0..<returnLineLimit(limit: lineLimitSmall)], id: \.id) { title in
+                ForEach(previewList[0..<returnLineLimit(limit: lineLimitSmall)], id: \.id) { task in
                     HStack {
-                        Text(title.title)
+                        // タスクのアクセントカラー
+                        Rectangle()
+                            .frame(width: 5, height: 15)
+                            .cornerRadius(5)
+                            .foregroundColor(returnColor(color: task.accentColor))
+                        
+                        Text(task.title)
                             .font(.footnote)
                         Spacer()
                     }
@@ -204,27 +240,42 @@ extension EverydayTaskWidgetEntryView {
             
             Spacer(minLength: 0)
             
-            VStack {
+            VStack(spacing: 0) {
                 LazyVGrid(columns: columns, spacing: 8) {
-                    ForEach(previewList[0..<returnLineLimit(limit: lineLimitMedium)], id: \.id) { title in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(title.title)
-                                .font(.footnote)
-                                .lineLimit(1)
+                    ForEach(previewList[0..<returnLineLimit(limit: lineLimitMedium)], id: \.id) { task in
+                        VStack(spacing: 4) {
+                            HStack {
+                                // タスクのアクセントカラー
+                                Rectangle()
+                                    .frame(width: 5, height: 15)
+                                    .cornerRadius(5)
+                                    .foregroundColor(returnColor(color: task.accentColor))
+                                Text(task.title)
+                                    .font(.footnote)
+                                    .lineLimit(1)
+                                Spacer()
+                            }
                             Divider()
+                        }
+                    }
+                    if previewListCount > lineLimitMedium {
+                        HStack {
+                            Text("+ \(previewListCount-returnLineLimit(limit: lineLimitMedium))")
+                                .font(.footnote)
+                            Spacer()
                         }
                     }
                 }
                 
                 Spacer(minLength: 0)
                 
-                if previewListCount > lineLimitMedium {
-                    HStack {
-                        Text("+ \(previewListCount-returnLineLimit(limit: lineLimitMedium))")
-                            .font(.footnote)
-                        Spacer()
-                    }
-                }
+//                if previewListCount > lineLimitMedium {
+//                    HStack {
+//                        Text("+ \(previewListCount-returnLineLimit(limit: lineLimitMedium))")
+//                            .font(.footnote)
+//                        Spacer()
+//                    }
+//                }
             }
             .padding(.trailing)
             .padding(.vertical, 15)
@@ -253,13 +304,21 @@ extension EverydayTaskWidgetEntryView {
             
             Spacer(minLength: 0)
             
-            VStack {
-                LazyVGrid(columns: columns, spacing: 15) {
-                    ForEach(previewList[0..<returnLineLimit(limit: lineLimitLarge)], id: \.id) { title in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(title.title)
-                                .font(.footnote)
-                                .lineLimit(1)
+            VStack(spacing: 4) {
+                LazyVGrid(columns: columns, spacing: 10) {
+                    ForEach(previewList[0..<returnLineLimit(limit: lineLimitLarge)], id: \.id) { task in
+                        VStack(spacing: 4) {
+                            HStack {
+                                // タスクのアクセントカラー
+                                Rectangle()
+                                    .frame(width: 5, height: 15)
+                                    .cornerRadius(5)
+                                    .foregroundColor(returnColor(color: task.accentColor))
+                                Text(task.title)
+                                    .font(.footnote)
+                                    .lineLimit(1)
+                                Spacer()
+                            }
                             Divider()
                         }
                     }
@@ -318,7 +377,36 @@ struct EverydayTaskWidget: Widget {
 
 struct EverydayTaskWidget_Previews: PreviewProvider {
     static let sampleList: [[Tasks]] = [
-        
+        // Every day
+        [Tasks(title: "Task1", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true),
+         Tasks(title: "Task2", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
+         Tasks(title: "Task3", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
+          Tasks(title: "Task4", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
+         Tasks(title: "Task5", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
+         Tasks(title: "Task6", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
+          Tasks(title: "Task7", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
+         Tasks(title: "Task8", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
+         Tasks(title: "Task9", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
+          Tasks(title: "Task10", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
+         Tasks(title: "Task11", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
+         Tasks(title: "Task12", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
+          Tasks(title: "Task13", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
+         Tasks(title: "Task14", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
+        Tasks(title: "Task15", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
+        Tasks(title: "Task16", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
+         Tasks(title: "Task17", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
+        Tasks(title: "Task18", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
+        Tasks(title: "Task19", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
+         Tasks(title: "Task20", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
+        Tasks(title: "Task21", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
+        Tasks(title: "Task22", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
+         Tasks(title: "Task23", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true)],
+        // Every week
+        [Tasks(title: "Task", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)],
+        // Every month
+        [Tasks(title: "Task", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)],
+        // One time
+        [Tasks(title: "Task", detail: "", addedDate: Date(), spanType: .oneTime, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Red", isAble: true)]
     ]
     static var previews: some View {
         Group {

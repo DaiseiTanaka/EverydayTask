@@ -49,3 +49,5 @@
 "Delete this task" = "このタスクを削除する";
 "Delete" = "削除";
 "This operation cannot be undone." = "この操作は取り消せません。";
+"Show" = "表示";
+"Hidden tasks can be checked from the task list view." = "非表示にしたタスクは、タスク一覧画面から確認できます。";
