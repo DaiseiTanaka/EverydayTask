@@ -31,7 +31,7 @@ struct TaskView: View {
             TaskSettingView(rkManager: rkManager, taskViewModel: taskViewModel, task: taskViewModel.editTask, selectedWeekdays: taskViewModel.editTask.spanDate)
         })
         .overlay(alignment: .bottomLeading) {
-            allTaskButton
+            showAllTaskButton
         }
         .sheet(isPresented: $taskViewModel.showAllTaskListViewFlag, content: {
             AllTaskListView(taskViewModel: taskViewModel, rkManager: rkManager)
@@ -180,7 +180,7 @@ extension TaskView {
         }
     }
     
-    private var allTaskButton: some View {
+    private var showAllTaskButton: some View {
         Button {
             let impactLight = UIImpactFeedbackGenerator(style: .rigid)
             impactLight.impactOccurred()

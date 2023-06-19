@@ -10,70 +10,47 @@ import SwiftUI
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), unfinishedTaskCount: 0, allUnfinishedTaskTitleList: [], todayUnfinishedTaskTitleList: [], futureUnfinishedTaskTitleList: [], oneTimeUnfinishedTaskTitleList: [])
+        SimpleEntry(date: Date(), allUnfinishedTaskList: [])
     }
     
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let sampleList: [WidgetTask] = [
-            WidgetTask(title: "Task1", id: UUID().uuidString),
-            WidgetTask(title: "Task2", id: UUID().uuidString),
-            WidgetTask(title: "Task3", id: UUID().uuidString),
-            WidgetTask(title: "Task4", id: UUID().uuidString),
-            WidgetTask(title: "Task5", id: UUID().uuidString),
-            WidgetTask(title: "Task6", id: UUID().uuidString),
-            WidgetTask(title: "Task7", id: UUID().uuidString),
-            WidgetTask(title: "Task8", id: UUID().uuidString),
-            WidgetTask(title: "Task9", id: UUID().uuidString),
-            WidgetTask(title: "Task10", id: UUID().uuidString),
-            WidgetTask(title: "Task11", id: UUID().uuidString),
-            WidgetTask(title: "Task12", id: UUID().uuidString)
-            
+        let sampleList: [[Tasks]] = [
+            // Every day
+            [Tasks(title: "Task1", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true),
+             Tasks(title: "Task2", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
+             Tasks(title: "Task3", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
+              Tasks(title: "Task4", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true)],
+            // Every week
+            [Tasks(title: "Task", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)],
+            // Every month
+            [Tasks(title: "Task", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)],
+            // One time
+            [Tasks(title: "Task", detail: "", addedDate: Date(), spanType: .oneTime, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Red", isAble: true)]
         ]
-        let entry = SimpleEntry(date: Date(), unfinishedTaskCount: sampleList.count, allUnfinishedTaskTitleList: sampleList, todayUnfinishedTaskTitleList: sampleList, futureUnfinishedTaskTitleList: [], oneTimeUnfinishedTaskTitleList: [])
+        let entry = SimpleEntry(date: Date(), allUnfinishedTaskList: sampleList)
         completion(entry)
     }
     
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         var entries: [SimpleEntry] = []
-        
-        var unfinishedTaskCount = 0
-        var allUnfinishedTaskTitleListInput: [String] = []
-        var todayUnfinishedTaskTitleListInput: [String] = []
-        var futureUnfinishedTaskTitleListInput: [String] = []
-        var oneTimeUnfinishedTaskTitleListInput: [String] = []
-        //
+        var unfinishedTasks: [[Tasks]] = []
+
         let userDefaults = UserDefaults(suiteName: "group.myproject.EverydayTask.widget")
         if let userDefaults = userDefaults {
-            unfinishedTaskCount = userDefaults.integer(forKey: "unfinishedTaskCount")
-            allUnfinishedTaskTitleListInput = userDefaults.stringArray(forKey: "allUnfinishedTaskTitleList") ?? []
-            todayUnfinishedTaskTitleListInput = userDefaults.stringArray(forKey: "todayUnfinishedTaskTitleList") ?? []
-            futureUnfinishedTaskTitleListInput = userDefaults.stringArray(forKey: "futureUnfinishedTaskTitleList") ?? []
-            oneTimeUnfinishedTaskTitleListInput = userDefaults.stringArray(forKey: "oneTimeUnfinishedTaskTitleList") ?? []
-
+            let jsonDecoder = JSONDecoder()
+            guard let data = userDefaults.data(forKey: "unfinishedTasks"),
+                  let tasks = try? jsonDecoder.decode([[Tasks]].self, from: data) else {
+                print("😭: tasksのロードに失敗しました。")
+                return
+            }
+            unfinishedTasks = tasks
         }
-        
-        var allUnfinishedTaskTitleList: [WidgetTask] = []
-        var todayUnfinishedTaskTitleList: [WidgetTask] = []
-        var futureUnfinishedTaskTitleList: [WidgetTask] = []
-        var oneTimeUnfinishedTaskTitleList: [WidgetTask] = []
-        for num in 0..<allUnfinishedTaskTitleListInput.count {
-            allUnfinishedTaskTitleList.append(WidgetTask(title: allUnfinishedTaskTitleListInput[num], id: UUID().uuidString))
-        }
-        for num in 0..<todayUnfinishedTaskTitleListInput.count {
-            todayUnfinishedTaskTitleList.append(WidgetTask(title: todayUnfinishedTaskTitleListInput[num], id: UUID().uuidString))
-        }
-        for num in 0..<futureUnfinishedTaskTitleListInput.count {
-            futureUnfinishedTaskTitleList.append(WidgetTask(title: futureUnfinishedTaskTitleListInput[num], id: UUID().uuidString))
-        }
-        for num in 0..<oneTimeUnfinishedTaskTitleListInput.count {
-            oneTimeUnfinishedTaskTitleList.append(WidgetTask(title: oneTimeUnfinishedTaskTitleListInput[num], id: UUID().uuidString))
-        }
-        
+            
         // Generate a timeline consisting of five entries an hour apart, starting from the current date.
         let currentDate = Date()
         for hourOffset in 0 ..< 5 {
             let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, unfinishedTaskCount: unfinishedTaskCount, allUnfinishedTaskTitleList: allUnfinishedTaskTitleList, todayUnfinishedTaskTitleList: todayUnfinishedTaskTitleList, futureUnfinishedTaskTitleList: futureUnfinishedTaskTitleList, oneTimeUnfinishedTaskTitleList: oneTimeUnfinishedTaskTitleList)
+            let entry = SimpleEntry(date: entryDate, allUnfinishedTaskList: unfinishedTasks)
             entries.append(entry)
         }
         
@@ -84,11 +61,44 @@ struct Provider: TimelineProvider {
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let unfinishedTaskCount: Int
-    let allUnfinishedTaskTitleList: [WidgetTask]
-    let todayUnfinishedTaskTitleList: [WidgetTask]
-    let futureUnfinishedTaskTitleList: [WidgetTask]
-    let oneTimeUnfinishedTaskTitleList: [WidgetTask]
+    let allUnfinishedTaskList: [[Tasks]]
+}
+
+struct Tasks: Codable, Identifiable, Equatable, Hashable {
+    var id = UUID()
+    var title: String
+    var detail: String
+    var addedDate: Date
+    var spanType: TaskSpanType
+    var spanDate: [Int]
+    var doneDate: [Date]
+    var notification: Bool
+    var notificationHour: Int
+    var notificationMin: Int
+    var accentColor: String
+    var isAble: Bool
+    
+    init(title: String, detail: String, addedDate: Date, spanType: TaskSpanType, spanDate: [Int], doneDate: [Date], notification: Bool, notificationHour: Int, notificationMin: Int, accentColor: String, isAble: Bool) {
+        self.title = title
+        self.detail = detail
+        self.addedDate = addedDate
+        self.spanType = spanType
+        self.spanDate = spanDate
+        self.doneDate = doneDate
+        self.notification = notification
+        self.notificationHour = notificationHour
+        self.notificationMin = notificationMin
+        self.accentColor = accentColor
+        self.isAble = isAble
+    }
+}
+
+enum TaskSpanType: Codable {
+    case oneTime
+    case everyDay
+    case everyWeek
+    case everyMonth
+    case everyWeekday
 }
 
 struct EverydayTaskWidgetEntryView : View {
@@ -98,9 +108,19 @@ struct EverydayTaskWidgetEntryView : View {
     let lineLimitSmall: Int = 5
     let lineLimitMedium: Int = 10
     let lineLimitLarge: Int = 20
+    var previewList: [Tasks] {
+        if !entry.allUnfinishedTaskList.isEmpty {
+            return entry.allUnfinishedTaskList[0]
+        } else {
+            return []
+        }
+    }
+    var previewListCount: Int {
+        previewList.count
+    }
     
     var body: some View {
-        if entry.todayUnfinishedTaskTitleList.count != 0 {
+        if !previewList.isEmpty {
             switch family {
             case .systemSmall: EverydayTaskSmall
             case .systemMedium: EverydayTaskMedium
@@ -114,11 +134,10 @@ struct EverydayTaskWidgetEntryView : View {
     
     // リストに表示するタスクの最大値を返す
     private func returnLineLimit(limit: Int) -> Int {
-        let listCount = entry.todayUnfinishedTaskTitleList.count
-        if listCount > limit {
+        if previewListCount > limit {
             return limit
         } else {
-            return listCount
+            return previewListCount
         }
     }
 }
@@ -133,7 +152,7 @@ extension EverydayTaskWidgetEntryView {
                     .cornerRadius(5)
                 
                 Spacer()
-                Text("\(entry.unfinishedTaskCount)")
+                Text("\(previewListCount)")
                     .font(.title.bold())
                 //                Text(entry.date, style: .time)
                 //                    .font(.caption)
@@ -142,7 +161,7 @@ extension EverydayTaskWidgetEntryView {
             .padding(.vertical, 8)
             
             VStack(spacing: 4) {
-                ForEach(entry.todayUnfinishedTaskTitleList[0..<returnLineLimit(limit: lineLimitSmall)], id: \.id) { title in
+                ForEach(previewList[0..<returnLineLimit(limit: lineLimitSmall)], id: \.id) { title in
                     HStack {
                         Text(title.title)
                             .font(.footnote)
@@ -150,9 +169,9 @@ extension EverydayTaskWidgetEntryView {
                     }
                     Divider()
                 }
-                if entry.todayUnfinishedTaskTitleList.count > lineLimitSmall {
+                if previewListCount > lineLimitSmall {
                     HStack {
-                        Text("+ \(entry.todayUnfinishedTaskTitleList.count-returnLineLimit(limit: lineLimitSmall))")
+                        Text("+ \(previewListCount-returnLineLimit(limit: lineLimitSmall))")
                             .font(.footnote)
                         Spacer()
                     }
@@ -176,7 +195,7 @@ extension EverydayTaskWidgetEntryView {
                 
                 Spacer()
                 
-                Text("\(entry.unfinishedTaskCount)")
+                Text("\(previewListCount)")
                     .font(.title.bold())
             }
             .padding(.top)
@@ -187,7 +206,7 @@ extension EverydayTaskWidgetEntryView {
             
             VStack {
                 LazyVGrid(columns: columns, spacing: 8) {
-                    ForEach(entry.todayUnfinishedTaskTitleList[0..<returnLineLimit(limit: lineLimitMedium)], id: \.id) { title in
+                    ForEach(previewList[0..<returnLineLimit(limit: lineLimitMedium)], id: \.id) { title in
                         VStack(alignment: .leading, spacing: 4) {
                             Text(title.title)
                                 .font(.footnote)
@@ -199,9 +218,9 @@ extension EverydayTaskWidgetEntryView {
                 
                 Spacer(minLength: 0)
                 
-                if entry.todayUnfinishedTaskTitleList.count > lineLimitMedium {
+                if previewListCount > lineLimitMedium {
                     HStack {
-                        Text("+ \(entry.todayUnfinishedTaskTitleList.count-returnLineLimit(limit: lineLimitMedium))")
+                        Text("+ \(previewListCount-returnLineLimit(limit: lineLimitMedium))")
                             .font(.footnote)
                         Spacer()
                     }
@@ -224,7 +243,7 @@ extension EverydayTaskWidgetEntryView {
                 
                 Spacer()
                 
-                Text("\(entry.unfinishedTaskCount)")
+                Text("\(previewListCount)")
                     .font(.title.bold())
                     .lineLimit(1)
             }
@@ -236,7 +255,7 @@ extension EverydayTaskWidgetEntryView {
             
             VStack {
                 LazyVGrid(columns: columns, spacing: 15) {
-                    ForEach(entry.todayUnfinishedTaskTitleList[0..<returnLineLimit(limit: lineLimitLarge)], id: \.id) { title in
+                    ForEach(previewList[0..<returnLineLimit(limit: lineLimitLarge)], id: \.id) { title in
                         VStack(alignment: .leading, spacing: 4) {
                             Text(title.title)
                                 .font(.footnote)
@@ -246,9 +265,9 @@ extension EverydayTaskWidgetEntryView {
                     }
                 }
                 Spacer()
-                if entry.todayUnfinishedTaskTitleList.count > lineLimitLarge {
+                if previewListCount > lineLimitLarge {
                     HStack {
-                        Text("+ \(entry.todayUnfinishedTaskTitleList.count-returnLineLimit(limit: lineLimitLarge))")
+                        Text("+ \(previewListCount-returnLineLimit(limit: lineLimitLarge))")
                             .font(.footnote)
                         Spacer()
                     }
@@ -281,12 +300,8 @@ extension EverydayTaskWidgetEntryView {
                     .padding()
             }
         }
-        .background(entry.todayUnfinishedTaskTitleList.count != 0 ? Color(UIColor.systemBackground) : .black)
+        .background(.black)
     }
-}
-
-struct WidgetTask: Identifiable {
-    let title, id: String
 }
 
 struct EverydayTaskWidget: Widget {
@@ -302,41 +317,18 @@ struct EverydayTaskWidget: Widget {
 }
 
 struct EverydayTaskWidget_Previews: PreviewProvider {
-    static let sampleList: [WidgetTask] = [
-        //                WidgetTask(title: "Task111111111111111111111111111111111", id: UUID().uuidString),
-        //        WidgetTask(title: "Task2", id: UUID().uuidString),
-        //        WidgetTask(title: "Task3", id: UUID().uuidString),
-        //        WidgetTask(title: "Task4", id: UUID().uuidString),
-        //        WidgetTask(title: "Task5", id: UUID().uuidString),
-        //        WidgetTask(title: "Task6", id: UUID().uuidString),
-        //        WidgetTask(title: "Task7", id: UUID().uuidString),
-        //        WidgetTask(title: "Task8", id: UUID().uuidString),
-        //        WidgetTask(title: "Task9", id: UUID().uuidString),
-        //        WidgetTask(title: "Task10", id: UUID().uuidString),
-        //        WidgetTask(title: "Task11", id: UUID().uuidString),
-        //        WidgetTask(title: "Task12", id: UUID().uuidString),
-        //        WidgetTask(title: "Task13", id: UUID().uuidString),
-        //        WidgetTask(title: "Task14", id: UUID().uuidString),
-        //        WidgetTask(title: "Task15", id: UUID().uuidString),
-        //        WidgetTask(title: "Task16", id: UUID().uuidString),
-        //        WidgetTask(title: "Task17", id: UUID().uuidString),
-        //        WidgetTask(title: "Task18", id: UUID().uuidString),
-        //        WidgetTask(title: "Task19", id: UUID().uuidString),
-        //        WidgetTask(title: "Task20", id: UUID().uuidString),
-        //        WidgetTask(title: "Task21", id: UUID().uuidString),
-        //        WidgetTask(title: "Task22", id: UUID().uuidString),
-        //        WidgetTask(title: "Task23", id: UUID().uuidString)
+    static let sampleList: [[Tasks]] = [
         
     ]
     static var previews: some View {
         Group {
-            EverydayTaskWidgetEntryView(entry: SimpleEntry(date: Date(), unfinishedTaskCount: sampleList.count, allUnfinishedTaskTitleList: sampleList, todayUnfinishedTaskTitleList: sampleList, futureUnfinishedTaskTitleList: [], oneTimeUnfinishedTaskTitleList: []))
+            EverydayTaskWidgetEntryView(entry: SimpleEntry(date: Date(), allUnfinishedTaskList: sampleList))
                 .previewContext(WidgetPreviewContext(family: .systemSmall))
-            EverydayTaskWidgetEntryView(entry: SimpleEntry(date: Date(), unfinishedTaskCount: sampleList.count, allUnfinishedTaskTitleList: sampleList, todayUnfinishedTaskTitleList: sampleList, futureUnfinishedTaskTitleList: [], oneTimeUnfinishedTaskTitleList: []))
+            EverydayTaskWidgetEntryView(entry: SimpleEntry(date: Date(), allUnfinishedTaskList: sampleList))
                 .previewContext(WidgetPreviewContext(family: .systemMedium))
-            EverydayTaskWidgetEntryView(entry: SimpleEntry(date: Date(), unfinishedTaskCount: sampleList.count, allUnfinishedTaskTitleList: sampleList, todayUnfinishedTaskTitleList: sampleList, futureUnfinishedTaskTitleList: [], oneTimeUnfinishedTaskTitleList: []))
+            EverydayTaskWidgetEntryView(entry: SimpleEntry(date: Date(), allUnfinishedTaskList: sampleList))
                 .previewContext(WidgetPreviewContext(family: .systemLarge))
-            EverydayTaskWidgetEntryView(entry: SimpleEntry(date: Date(), unfinishedTaskCount: sampleList.count, allUnfinishedTaskTitleList: sampleList, todayUnfinishedTaskTitleList: sampleList, futureUnfinishedTaskTitleList: [], oneTimeUnfinishedTaskTitleList: []))
+            EverydayTaskWidgetEntryView(entry: SimpleEntry(date: Date(), allUnfinishedTaskList: sampleList))
                 .previewContext(WidgetPreviewContext(family: .systemExtraLarge))
         }
     }

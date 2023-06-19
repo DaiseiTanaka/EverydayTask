@@ -35,7 +35,7 @@ struct ContentView: View {
             if taskViewModel.showCalendarFlag {
                 CalendarView(rkManager: rkManager, taskViewModel: taskViewModel)
             } else {
-                WeeklyAndMonthlyDetailListView(taskViewModel: taskViewModel, task: taskViewModel.selectedTasks[0])
+                WeeklyAndMonthlyDetailListView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: taskViewModel.selectedTasks[0])
             }
         }
         .sheet(isPresented: $isPresented) {

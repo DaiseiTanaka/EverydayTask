@@ -194,9 +194,6 @@ struct RKMonth: View {
     }
     
     func isSelectedDate(date: Date) -> Bool {
-        if rkManager.selectedDate == nil {
-            return false
-        }
         return RKFormatAndCompareDate(date: date, referenceDate: rkManager.selectedDate)
     }
     

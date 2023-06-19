@@ -201,8 +201,9 @@ extension TaskCell {
     // タスク実施ボタンをタップした時のアクション
     private func tapDoneTaskButtonAction(task: Tasks) {
         let selectedDate = rkManager.selectedDate
-
-        if task.spanType == .oneTime {
+        let spanType = task.spanType
+        
+        if spanType == .oneTime {
             generator.notificationOccurred(.success)
             if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
                 withAnimation {
@@ -216,7 +217,7 @@ extension TaskCell {
                 }
             }
             
-        } else {
+        } else if spanType == .everyDay || spanType == .everyWeekday {
             // 選択したタスクがまだ実行済みではなかった場合 -> 実行履歴に追加
             if !taskViewModel.isDone(task: task, date: selectedDate) {
                 generator.notificationOccurred(.success)
@@ -225,10 +226,6 @@ extension TaskCell {
                     withAnimation {
                         // 実行済みにする
                         taskViewModel.tasks[index].doneDate.append(selectedDate)
-                        // doneDateを並び替える
-                        //because: タスクを完了した後に、そのタスクより過去のタスクを完了すると、
-                        //WeeklyAndMonthlyDetailListViewにタスクを表示するときに順番が完了順で表示されてしまうから。
-                        taskViewModel.tasks[index].doneDate.sort()
                         updateSelectedTasks(index: index)
                     }
                 }
@@ -253,7 +250,70 @@ extension TaskCell {
                     }
                 }
             }
+            
+        } else if spanType == .everyWeek {
+            if !taskViewModel.isDone(task: task, date: selectedDate) {
+                generator.notificationOccurred(.success)
+                if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
+                    withAnimation {
+                        taskViewModel.tasks[index].doneDate.append(selectedDate)
+                        // WeeklyAndMonthlyDetailListViewに日付順で表示するため
+                        taskViewModel.tasks[index].doneDate.sort()
+                        updateSelectedTasks(index: index)
+                    }
+                }
+            } else {
+                let impactLight = UIImpactFeedbackGenerator(style: .rigid)
+                impactLight.impactOccurred()
+                if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
+                    // タスクを未達成の状態にする
+                    let selectedTaskDoneDates = taskViewModel.tasks[index].doneDate
+                    for doneDateIndex in 0..<selectedTaskDoneDates.count {
+                        let doneDate = selectedTaskDoneDates[doneDateIndex]
+                        if taskViewModel.isSameWeek(date1: selectedDate, date2: doneDate) {
+                            // 上書き
+                            withAnimation {
+                                taskViewModel.tasks[index].doneDate.remove(at: doneDateIndex)
+                                taskViewModel.tasks[index].doneDate.sort()
+                                updateSelectedTasks(index: index)
+                            }
+                        }
+                    }
+                }
+            }
+            
+        } else if spanType == .everyMonth {
+            if !taskViewModel.isDone(task: task, date: selectedDate) {
+                generator.notificationOccurred(.success)
+                if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
+                    withAnimation {
+                        taskViewModel.tasks[index].doneDate.append(selectedDate)
+                        // WeeklyAndMonthlyDetailListViewに日付順で表示するため
+                        taskViewModel.tasks[index].doneDate.sort()
+                        updateSelectedTasks(index: index)
+                    }
+                }
+            } else {
+                let impactLight = UIImpactFeedbackGenerator(style: .rigid)
+                impactLight.impactOccurred()
+                if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
+                    // タスクを未達成の状態にする
+                    let selectedTaskDoneDates = taskViewModel.tasks[index].doneDate
+                    for doneDateIndex in 0..<selectedTaskDoneDates.count {
+                        let doneDate = selectedTaskDoneDates[doneDateIndex]
+                        if taskViewModel.isSameMonth(date1: selectedDate, date2: doneDate) {
+                            // 上書き
+                            withAnimation {
+                                taskViewModel.tasks[index].doneDate.remove(at: doneDateIndex)
+                                taskViewModel.tasks[index].doneDate.sort()
+                                updateSelectedTasks(index: index)
+                            }
+                        }
+                    }
+                }
+            }
         }
+        
         taskViewModel.saveTasks(tasks: taskViewModel.tasks)
         print("doneTaskButtonTapped! selectedTasks:\n\(taskViewModel.selectedTasks)")
     }
