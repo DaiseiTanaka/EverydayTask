@@ -156,7 +156,7 @@ extension TaskSettingView {
     }
     
     private var isAbleToggle: some View {
-        Section( header: Text("Visibility:"), footer: Text("Hidden tasks can be checked from the task list view.")) {
+        Section( header: Text("Hidden:"), footer: Text("Hidden tasks do not appear on your calendar. They can be checked from the all task list view.")) {
             Toggle(task.isAble ? "Show" : "Hidden", isOn: $task.isAble)
         }
     }

@@ -341,6 +341,58 @@ class TaskViewModel: ObservableObject {
         return selectedDateTasks
     }
     
+    // 選択した日付に関連するタスクのうち、未達成のものを返す
+    func returnSelectedDateUnFinishedTasks(date: Date) -> [[Tasks]] {
+        let tasks = tasks
+        // 最終的に返すリスト
+        var selectedDateTasks: [[Tasks]] = []
+        
+        var dailyTasks: [Tasks] = []
+        var weeklyTasks: [Tasks] = []
+        var monthlyTasks: [Tasks] = []
+        var simpleTasks: [Tasks] = []
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "ja_JP")
+        
+        for task in tasks {
+            let selectedDate = date
+            let addedDate = task.addedDate.addingTimeInterval(-60*60*24*1)
+            let spanType = task.spanType
+            let spanDate = task.spanDate
+            let weekdayIndex = returnWeekdayFromDate(date: selectedDate)
+            let isAble = task.isAble
+            
+            // 選択した日付よりも前にタスクを追加していた場合 & タスクが実施可能（isAble）の時
+            if addedDate < selectedDate && isAble {
+                // タスクが未達成の時
+                if !isDone(task: task, date: selectedDate) {
+                    switch spanType {
+                    case .oneTime:
+                        simpleTasks.append(task)
+                    case .everyDay:
+                        dailyTasks.append(task)
+                    case .everyWeekday:
+                        // rkManager.selectedDateがspanDate内にある場合 -> 選択した日付が、タスク実施日である
+                        if spanDate.contains(weekdayIndex) {
+                            dailyTasks.append(task)
+                        }
+                    case .everyWeek:
+                        weeklyTasks.append(task)
+                        
+                    case .everyMonth:
+                        monthlyTasks.append(task)
+                    }
+                }
+            }
+        }
+        // リストをspanTypeごとに並び替え
+        selectedDateTasks.append(dailyTasks)
+        selectedDateTasks.append(weeklyTasks)
+        selectedDateTasks.append(monthlyTasks)
+        selectedDateTasks.append(simpleTasks)
+        return selectedDateTasks
+    }
+    
     // 選択した日付のタスクが実行されているかbool型で返す
     // true: 実行されている, false: まだ実行していない
     func isDone(task: Tasks, date: Date) -> Bool {
@@ -428,7 +480,8 @@ class TaskViewModel: ObservableObject {
     
     // Widget用にデータを保存
     func saveUnfinishedTasksForWidget() {
-        let todayTasks: [[Tasks]] = returnSelectedDateTasks(date: Date())
+        let todayTasks: [[Tasks]] = returnSelectedDateUnFinishedTasks(date: Date())
+        
         let jsonEncoder = JSONEncoder()
         guard let data = try? jsonEncoder.encode(todayTasks) else {
             print("😭: allUnfinishedTaskListの保存に失敗しました。")

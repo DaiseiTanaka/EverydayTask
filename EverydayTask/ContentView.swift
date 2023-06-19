@@ -50,6 +50,8 @@ struct ContentView: View {
                 print("\nバックグラウンド！")
                 // 通知を設定
                 taskViewModel.setNotification()
+                // tasksを保存
+                taskViewModel.saveTasks(tasks: taskViewModel.tasks)
             }
             if phase == .active {
                 print("\nフォアグラウンド！")

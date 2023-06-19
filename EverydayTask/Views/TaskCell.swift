@@ -39,65 +39,22 @@ struct TaskCell: View {
     
     var body: some View {
         HStack {
-            // タスクのアクセントカラー
-            Rectangle()
-                .frame(width: 7)
-                .cornerRadius(5)
-                .foregroundColor(taskViewModel.returnColor(color: task.accentColor))
-                .padding(.top, 25)
+            accentColor
             
             VStack(alignment: .leading) {
-                // タスクのタイトル
-                Text(task.title)
-                    .font(.headline)
-                    .foregroundColor(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .secondary : .primary)
-                    .lineLimit(1)
-                    .padding(.trailing, 20)
-                    .padding(.leading, 10)
+                title
                 
-                // タスクの詳細
-                Text(task.detail)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-                    .padding(.leading, 10)
+                detail
                 
                 Spacer(minLength: 0)
                 
-                // タスクのスパン
-                HStack(spacing: 3) {
-                    if task.spanType == .everyDay || task.spanType == .everyWeekday {
-                        if task.notification {
-                            Image(systemName: "bell.badge")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        } else {
-                            Image(systemName: "bell.slash")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                    } else {
-                        Image(systemName: "calendar")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    if task.spanType == .everyWeekday {
-                        spanImage
-                    } else {
-                        Text(returnSpanString(span: task.spanType))
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .lineLimit(1)
-                    }
-                }
+                span
                 
             }
             Spacer()
         }
         .padding(4)
         .background(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? Color(UIColor.systemGray6) : Color("cellBackground"))
-//        .background(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .ultraThinMaterial : .ultraThickMaterial)
         .frame(height: 90)
         .frame(maxWidth: .infinity)
         .cornerRadius(10)
@@ -118,6 +75,64 @@ struct TaskCell: View {
 }
 
 extension TaskCell {
+    
+    private var accentColor: some View {
+        // タスクのアクセントカラー
+        Rectangle()
+            .frame(width: 7)
+            .cornerRadius(5)
+            .foregroundColor(taskViewModel.returnColor(color: task.accentColor))
+            .padding(.top, 25)
+    }
+    
+    private var title: some View {
+        // タスクのタイトル
+        Text(task.title)
+            .font(.headline)
+            .foregroundColor(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .secondary : .primary)
+            .lineLimit(1)
+            .padding(.trailing, 20)
+            .padding(.leading, 10)
+    }
+    
+    private var detail: some View {
+        // タスクの詳細
+        Text(task.detail)
+            .font(.footnote)
+            .foregroundColor(.secondary)
+            .lineLimit(2)
+            .padding(.leading, 10)
+    }
+    
+    private var span: some View {
+        // タスクのスパン
+        HStack(spacing: 3) {
+            if task.spanType == .everyDay || task.spanType == .everyWeekday {
+                if task.notification {
+                    Image(systemName: "bell.badge")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                } else {
+                    Image(systemName: "bell.slash")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            } else {
+                Image(systemName: "calendar")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            if task.spanType == .everyWeekday {
+                spanImage
+            } else {
+                Text(returnSpanString(span: task.spanType))
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+            }
+        }
+    }
     
     private func returnSpanString(span: TaskSpanType) -> String {
 //        if locale.identifier == "ja" {
