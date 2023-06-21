@@ -117,6 +117,18 @@ extension TaskCell {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
+            } else if task.spanType == .everyWeek {
+                Image(systemName: "w.circle")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            } else if task.spanType == .everyMonth {
+                Image(systemName: "m.circle")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            } else if task.spanType == .oneTime {
+                Image(systemName: "1.circle")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
             } else {
                 Image(systemName: "calendar")
                     .font(.subheadline)

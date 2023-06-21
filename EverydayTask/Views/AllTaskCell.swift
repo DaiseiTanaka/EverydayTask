@@ -49,7 +49,6 @@ struct AllTaskCell: View {
             if taskViewModel.showAllTaskListViewFlag == false {
                 if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
                     taskViewModel.tasks[index].isAble = task.isAble
-                    taskViewModel.saveTasks(tasks: taskViewModel.tasks)
                 }
             }
         }
@@ -72,35 +71,48 @@ extension AllTaskCell {
             Spacer(minLength: 0)
             
             // タスクのスパン
-            HStack(spacing: 3) {
-                Text("\(taskViewModel.returnDayString(date: task.addedDate)) ~ ")
-                    .font(.footnote)
+            span
+        }
+    }
+    
+    private var span: some View {
+        // タスクのスパン
+        HStack(spacing: 3) {
+            if task.spanType == .everyDay || task.spanType == .everyWeekday {
+                if task.notification {
+                    Image(systemName: "bell.badge")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                } else {
+                    Image(systemName: "bell.slash")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            } else if task.spanType == .everyWeek {
+                Image(systemName: "w.circle")
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
-
-                if task.spanType == .everyDay || task.spanType == .everyWeekday {
-                    if task.notification {
-                        Image(systemName: "bell.badge")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    } else {
-                        Image(systemName: "bell.slash")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                } else {
-                    Image(systemName: "calendar")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                
-                if task.spanType == .everyWeekday {
-                    spanImage
-                } else {
-                    Text(returnSpanString(span: task.spanType))
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
-                }
+            } else if task.spanType == .everyMonth {
+                Image(systemName: "m.circle")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            } else if task.spanType == .oneTime {
+                Image(systemName: "1.circle")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            } else {
+                Image(systemName: "calendar")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            if task.spanType == .everyWeekday {
+                spanImage
+            } else {
+                Text(returnSpanString(span: task.spanType))
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
             }
         }
     }

@@ -49,7 +49,7 @@ struct TaskSettingView: View {
                 
                 isAbleToggle
             
-                deleteButton
+                //deleteButton
             }
             .navigationBarItems(leading: cancelButton, trailing: okButton)
         }

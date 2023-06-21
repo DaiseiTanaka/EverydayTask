@@ -14,45 +14,121 @@ struct AllTaskListView: View {
     @Environment(\.dismiss) var dismiss
     
     @State private var toggleFlag: Bool = true
+    @State private var showSortAlart: Bool = false
     
     var body: some View {
         NavigationView {
             List {
-                ForEach(Array(returnSortedAllTask(tasks: taskViewModel.tasks).enumerated()), id: \.element) { index, tasks in
-                    if tasks.count != 0 {
-                        Section(header: Text(returnHeaderText(index: index))) {
-                            ForEach(tasks, id: \.id) { task in
-                                NavigationLink(destination: TaskSettingView(rkManager: rkManager,
-                                                                            taskViewModel: taskViewModel,
-                                                                            task: task,
-                                                                            selectedWeekdays: task.spanDate)) {
-                                    AllTaskCell(taskViewModel: taskViewModel, task: task)
-                                }
-                            }
+                Section(header:
+                            HStack {
+                    Spacer()
+                    Text("\(taskViewModel.tasks.count)")
+                    Text(taskViewModel.tasks.count == 1 ? "item" : "items")
+                }
+                ) {
+                    ForEach(Array(returnSortedTasks(key: taskViewModel.sortKey).enumerated()), id: \.element) { index, task in
+                        NavigationLink(destination: TaskSettingView(rkManager: rkManager,
+                                                                    taskViewModel: taskViewModel,
+                                                                    task: task,
+                                                                    selectedWeekdays: task.spanDate)) {
+                            AllTaskCell(taskViewModel: taskViewModel, task: task)
                         }
                     }
+                    .onDelete(perform: rowRemove)
                 }
             }
             .navigationTitle("All Tasks")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        dismiss()
-                    }) {
-                        Image(systemName: "xmark")
-                            .foregroundColor(.secondary)
-                            .font(.title3)
-                    }
+                    sortButton
+                }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    dismissButton
+                }
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Spacer()
+                    addTaskButton
                 }
             }
+        }
+        .confirmationDialog("Sorted by", isPresented: $showSortAlart, titleVisibility: .visible) {
+            Button(LocalizedStringKey(returnSortKeyString(sortKey: .spanType))) {
+                taskViewModel.sortKey = .spanType
+            }
+            Button(LocalizedStringKey(returnSortKeyString(sortKey: .addedDate))) {
+                taskViewModel.sortKey = .addedDate
+            }
+            Button(LocalizedStringKey(returnSortKeyString(sortKey: .title))) {
+                taskViewModel.sortKey = .title
+            }
+        }
+        .onDisappear {
+            taskViewModel.saveTasks(tasks: taskViewModel.tasks)
         }
     }
 }
 
 extension AllTaskListView {
     
-    private var ableButton: some View {
-        Image(systemName: "")
+    private var addTaskButton: some View {
+        Button {
+            let impactLight = UIImpactFeedbackGenerator(style: .rigid)
+            impactLight.impactOccurred()
+            
+            taskViewModel.editTask = Tasks(title: "", detail: "", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)
+            taskViewModel.showTaskSettingView = true
+        } label: {
+            Image(systemName: "plus")
+                .font(.title3)
+                .foregroundColor(Color(UIColor.systemBackground))
+                .padding(8)
+                .background(.tint)
+                .clipShape(Circle())
+        }
+    }
+    
+    private var sortButton: some View {
+        Button(action: {
+            showSortAlart = true
+        }) {
+            Image(systemName: "arrow.up.arrow.down")
+                .foregroundColor(.secondary)
+                .font(.subheadline)
+        }
+    }
+    
+    private var dismissButton: some View {
+        Button(action: {
+            dismiss()
+        }) {
+            Image(systemName: "xmark")
+                .foregroundColor(.secondary)
+                .font(.title3)
+        }
+    }
+    
+    private func returnSortedTasks(key: SortKey) -> [Tasks] {
+        let tasks = taskViewModel.tasks
+        var sortedTasks: [Tasks] = []
+        switch key {
+        case .title:
+            sortedTasks = tasks.sorted(by: {$0.title < $1.title})
+            return sortedTasks
+        case .addedDate:
+            sortedTasks = tasks.sorted(by: {$0.addedDate < $1.addedDate})
+            return sortedTasks
+        case .spanType:
+            sortedTasks = returnSortedTasksBySpanType(tasks: tasks)
+            return sortedTasks
+        }
+    }
+    
+    // 行削除処理
+    private func rowRemove(offsets: IndexSet) {
+        var sortedTasks = returnSortedTasks(key: taskViewModel.sortKey)
+        sortedTasks.remove(atOffsets: offsets)
+        taskViewModel.tasks = sortedTasks.sorted(by: {$0.addedDate < $1.addedDate})
+        
     }
     
     // ヘッダーのテキストを返す
@@ -64,14 +140,33 @@ extension AllTaskListView {
         else { return "One time" }
     }
     
+    // sortKeyをStringへ変換
+    private func returnSortKeyString(sortKey: SortKey) -> String {
+        switch sortKey {
+        case .title:
+            if taskViewModel.sortKey == .title {
+                return "〉Title"
+            } else {
+                return "Title"
+            }
+        case .addedDate:
+            if taskViewModel.sortKey == .addedDate {
+                return "〉Added date"
+            } else {
+                return"Added date"
+            }
+        case .spanType:
+            if taskViewModel.sortKey == .spanType {
+                return "〉Span type"
+            } else {
+                return"Span type"
+            }
+        }
+    }
+    
     // 全てのタスクをspanTypeごとに仕分けして返す
-    /// returnSortedAllTask[0] = everyDayTasks
-    /// returnSortedAllTask[1] = everyWeekTasks
-    /// returnSortedAllTask[2] = everyMonthTasks
-    /// returnSortedAllTask[3] = everyWeekdayTasks
-    /// returnSortedAllTask[4] = oneTimeTasks
-    private func returnSortedAllTask(tasks: [Tasks]) -> [[Tasks]] {
-        var sortedAllTasks: [[Tasks]] = []
+    private func returnSortedTasksBySpanType(tasks: [Tasks]) -> [Tasks] {
+        var sortedAllTasks: [Tasks] = []
         var everyDayTasks: [Tasks] = []
         var everyWeekTasks: [Tasks] = []
         var everyMonthTasks: [Tasks] = []
@@ -93,11 +188,7 @@ extension AllTaskListView {
                 everyWeekdayTasks.append(task)
             }
         }
-        sortedAllTasks.append(everyDayTasks)
-        sortedAllTasks.append(everyWeekTasks)
-        sortedAllTasks.append(everyMonthTasks)
-        sortedAllTasks.append(everyWeekdayTasks)
-        sortedAllTasks.append(oneTimeTasks)
+        sortedAllTasks = everyDayTasks + everyWeekTasks + everyMonthTasks + everyWeekdayTasks + oneTimeTasks
 
         return sortedAllTasks
     }

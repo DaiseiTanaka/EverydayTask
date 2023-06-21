@@ -21,7 +21,7 @@ struct PickerView: View {
             VStack {
                 HStack(spacing: 0) {
                     //時間単位のPicker
-                    Picker(selection: self.$hourSelected, label: Text("hour")) {
+                    Picker(selection: self.$hourSelected, label: Text("")) {
                         ForEach(self.hours, id: \.self) { hour in
                             Text("\(hour)")
                                 .tag(hour)
@@ -31,11 +31,11 @@ struct PickerView: View {
                     .compositingGroup()
                     .clipped(antialiased: true)
                     //時間単位を表すテキスト
-                    Text("hour")
+                    Text(":")
                         .font(.headline)
                     
                     //分単位のPicker
-                    Picker(selection: self.$minSelected, label: Text("minute")) {
+                    Picker(selection: self.$minSelected, label: Text("")) {
                         ForEach(self.minutes, id: \.self) { min in
                             Text("\(min)")
                                 .tag(min)
@@ -46,7 +46,7 @@ struct PickerView: View {
                     .clipped(antialiased: true)
                     
                     //分単位を表すテキスト
-                    Text("min")
+                    Text("")
                         .font(.headline)
                 }
                 .padding(.horizontal)

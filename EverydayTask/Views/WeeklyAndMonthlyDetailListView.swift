@@ -49,8 +49,8 @@ extension WeeklyAndMonthlyDetailListView {
             HStack {
                 Spacer()
                 Rectangle()
-                    .foregroundColor(returnContinuousCondition(index: index, date: date) ? returnCellBackgroundColor(opacity: cellOpacity) : .clear)
-                    .frame(width: 5, height: returnContinuousCondition(index: index, date: date) ? 13 : 20)
+                    .foregroundColor(returnContinuousCondition(index: index, task: task) ? returnCellBackgroundColor(opacity: cellOpacity) : .clear)
+                    .frame(width: 5, height: returnContinuousCondition(index: index, task: task) ? 13 : 20)
                 Spacer()
             }
         }
@@ -65,28 +65,32 @@ extension WeeklyAndMonthlyDetailListView {
     }
     
     // Cellの間のラインが繋がるかどうかのBoolを返す　→ true: 表示する
-    private func returnContinuousCondition(index: Int, date: Date) -> Bool {
+    private func returnContinuousCondition(index: Int, task: Tasks) -> Bool {
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "ja_JP")
-        
-        if index == task.doneDate.count - 1 {
+        let doneDate = task.doneDate.sorted()
+        if index == doneDate.count - 1 {
             return false
         }
+        let date = doneDate[index]
+        let nextDate = doneDate[index+1]
         
         switch task.spanType {
         case .everyWeek:
             let weekDC = calendar.component(.weekOfYear, from: date)
-            let nextWeekDC = calendar.component(.weekOfYear, from: task.doneDate[index + 1])
+            let nextWeekDC = calendar.component(.weekOfYear, from: nextDate)
             let weekDiff = nextWeekDC - weekDC
             if weekDiff != 1 {
                 return false
             }
             
         case .everyMonth:
-            let dayDC = Calendar.current.dateComponents([.month, .day], from: date)
-            let nextDayDC = Calendar.current.dateComponents([.month, .day], from: task.doneDate[index + 1])
+            let dayDC = Calendar.current.dateComponents([.year, .month], from: date)
+            let nextDayDC = Calendar.current.dateComponents([.year, .month], from: nextDate)
+            let sameYear: Bool = dayDC.year == nextDayDC.year
             let dayDiff = nextDayDC.month! - dayDC.month!
-            if dayDiff != 1 {
+            // 1ヶ月差かつ同じ年
+            if dayDiff != 1 || !sameYear{
                 return false
             }
             

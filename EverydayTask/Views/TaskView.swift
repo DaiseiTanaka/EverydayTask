@@ -16,23 +16,22 @@ struct TaskView: View {
     let generator = UINotificationFeedbackGenerator()
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            todaysTaskList
-                .padding(.top, 10)
-            regularlyTaskList
-            
-            oneTimeTaskList
-                .padding(.bottom, 80)
+        NavigationView {
+            ScrollView(.vertical, showsIndicators: false) {
+                todaysTaskList
+                    .padding(.top, 10)
+                regularlyTaskList
+                
+                oneTimeTaskList
+                    .padding(.bottom, 80)
+                
+            }
         }
-        .overlay(alignment: .bottomTrailing) {
-            addTaskButton
-        }
+        .overlay(alignment: .bottomLeading) { showAllTaskButton }
+        .overlay(alignment: .bottomTrailing) { addTaskButton }
         .sheet(isPresented: $taskViewModel.showTaskSettingView, content: {
             TaskSettingView(rkManager: rkManager, taskViewModel: taskViewModel, task: taskViewModel.editTask, selectedWeekdays: taskViewModel.editTask.spanDate)
         })
-        .overlay(alignment: .bottomLeading) {
-            showAllTaskButton
-        }
         .sheet(isPresented: $taskViewModel.showAllTaskListViewFlag, content: {
             AllTaskListView(taskViewModel: taskViewModel, rkManager: rkManager)
         })
@@ -40,12 +39,19 @@ struct TaskView: View {
             Button("Edit this task?") {
                 taskViewModel.showTaskSettingView.toggle()
             }
+            Button("Duplicate this task?") {
+                duplicateTask()
+            }
+            Button("Hide this task?") {
+                hideTask()
+            }
             Button("Delete this task?", role: .destructive) {
                 taskViewModel.removeTasks(task: taskViewModel.editTask)
             }
         } message: {
             Text(taskViewModel.editTask.detail)
         }
+        
     }
 }
 
@@ -170,10 +176,10 @@ extension TaskView {
             taskViewModel.showTaskSettingView = true
         } label: {
             Image(systemName: "plus")
-                .font(.title)
-                .foregroundColor(.white)
+                .font(.title2.bold())
+                .foregroundColor(Color(UIColor.systemBackground))
                 .padding()
-                .background(.tint.opacity(0.7))
+                .background(.tint.opacity(0.9))
                 .clipShape(Circle())
                 .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 3)
                 .padding(.trailing)
@@ -188,10 +194,10 @@ extension TaskView {
             taskViewModel.showAllTaskListViewFlag = true
         } label: {
             Image(systemName: "list.bullet")
-                .font(.title)
-                .foregroundColor(.white)
+                .font(.title2.bold())
+                .foregroundColor(Color(UIColor.systemBackground))
                 .padding()
-                .background(.green.opacity(0.7))
+                .background(.green.opacity(0.9))
                 .clipShape(Circle())
                 .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 3)
                 .padding(.leading)
@@ -202,23 +208,23 @@ extension TaskView {
     private func updateCalendar(task: Tasks) {
         let impactLight = UIImpactFeedbackGenerator(style: .rigid)
         impactLight.impactOccurred()
-        
-        // spanTypeによってCalendarViewの種類を変える
-        if task.spanType == .everyDay || task.spanType == .everyWeekday || task.spanType == .oneTime {
-            taskViewModel.showCalendarFlag = true
-        } else {
-            if taskViewModel.selectedTasks != [task] {
+
+        let spanType = task.spanType
+        if taskViewModel.selectedTasks != [task] {
+            // 特定のタスクを表示
+            if spanType == .everyWeek || spanType == .everyMonth {
                 taskViewModel.showCalendarFlag = false
             } else {
                 taskViewModel.showCalendarFlag = true
             }
-        }
-        
-        // 特定のタスクを選択した時 -> 選択したタスクを表示
-        if taskViewModel.selectedTasks != [task] {
-            taskViewModel.selectedTasks = [task]
-            // 選択中のタスクを再度タップした時、全てのタスクを表示する
+            if spanType != .oneTime {
+                taskViewModel.selectedTasks = [task]
+            } else {
+                taskViewModel.selectedTasks = taskViewModel.tasks
+            }
         } else {
+            // 全てのタスクを表示
+            taskViewModel.showCalendarFlag = true
             taskViewModel.selectedTasks = taskViewModel.tasks
         }
         // rkManagerを更新　→ カレンダーの表示形式を更新
@@ -233,7 +239,22 @@ extension TaskView {
         generator.notificationOccurred(.success)
         taskViewModel.editTask = task
         taskViewModel.showTaskSettingView = true
-        
+    }
+    
+    private func duplicateTask() {
+        let selectedTask = taskViewModel.editTask
+        let addTask = Tasks(title: selectedTask.title, detail: selectedTask.detail, addedDate: Date(), spanType: selectedTask.spanType, spanDate: selectedTask.spanDate, doneDate: [], notification: selectedTask.notification, notificationHour: selectedTask.notificationHour, notificationMin: selectedTask.notificationMin, accentColor: selectedTask.accentColor, isAble: selectedTask.isAble)
+        taskViewModel.addTasks(task: addTask)
+    }
+    
+    // タスクを非表示
+    private func hideTask() {
+        let editTask = taskViewModel.editTask
+        guard let index = taskViewModel.tasks.firstIndex(where: { $0.id == editTask.id }) else {
+            return
+        }
+        taskViewModel.tasks[index].isAble = false
+        taskViewModel.saveTasks(tasks: taskViewModel.tasks)
     }
     
 }

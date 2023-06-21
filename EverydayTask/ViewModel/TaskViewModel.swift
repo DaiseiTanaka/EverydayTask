@@ -25,6 +25,7 @@ class TaskViewModel: ObservableObject {
     @Published var showTaskSettingAlart: Bool
     @Published var showAllTaskListViewFlag: Bool
     @Published var showCalendarFlag: Bool
+    @Published var sortKey: SortKey
                 
     init() {
         self.tasks = Tasks.defaulData
@@ -38,7 +39,8 @@ class TaskViewModel: ObservableObject {
         self.showTaskSettingView = false
         self.showTaskSettingAlart = false
         self.showAllTaskListViewFlag = false
-        showCalendarFlag = true
+        self.showCalendarFlag = true
+        self.sortKey = .spanType
         
         self.tasks = loadTasks() ?? Tasks.defaulData
         self.selectedTasks = tasks
@@ -459,17 +461,8 @@ class TaskViewModel: ObservableObject {
         let jsonDecoder = JSONDecoder()
         guard let data = UserDefaults.standard.data(forKey: "tasks"),
               let tasks = try? jsonDecoder.decode([Tasks].self, from: data) else {
-            // Tasksを変更した場合、構造体に合わせてtasksを更新する
-            guard let data = UserDefaults.standard.data(forKey: "tasks"), let tasks = try? jsonDecoder.decode([prevTasks].self, from: data) else {
-                print("😭: tasksのロードに失敗しました。")
-                return Tasks.defaulData
-            }
-            var newTasks: [Tasks] = []
-            for taskIndex in 0..<tasks.count {
-                newTasks.append(Tasks(title: tasks[taskIndex].title, detail: tasks[taskIndex].detail, addedDate: tasks[taskIndex].addedDate, spanType: tasks[taskIndex].spanType, spanDate: tasks[taskIndex].spanDate, doneDate: tasks[taskIndex].doneDate, notification: tasks[taskIndex].notification, notificationHour: tasks[taskIndex].notificationHour, notificationMin: tasks[taskIndex].notificationMin, accentColor: tasks[taskIndex].accentColor, isAble: true))
-            }
-            print("😄: prevTasksの構造体に合わせてデータを更新しました。")
-            return newTasks
+            // 変更前のTasks型のデータをロードする　→ Tasksを変更した時に使う
+            return loadPrevTasks()
         }
         print("😄👍: tasksのロードに成功しました。")
         for task in tasks {
@@ -478,22 +471,35 @@ class TaskViewModel: ObservableObject {
         return tasks
     }
     
+    func loadPrevTasks() -> [Tasks]? {
+        let jsonDecoder = JSONDecoder()
+        // Tasksを変更した場合、構造体に合わせてtasksを更新する
+        guard let data = UserDefaults.standard.data(forKey: "tasks"), let tasks = try? jsonDecoder.decode([prevTasks].self, from: data) else {
+            print("😭: tasksのロードに失敗しました。")
+            return Tasks.defaulData
+        }
+        var newTasks: [Tasks] = []
+        for taskIndex in 0..<tasks.count {
+            newTasks.append(Tasks(title: tasks[taskIndex].title, detail: tasks[taskIndex].detail, addedDate: tasks[taskIndex].addedDate, spanType: tasks[taskIndex].spanType, spanDate: tasks[taskIndex].spanDate, doneDate: tasks[taskIndex].doneDate, notification: tasks[taskIndex].notification, notificationHour: tasks[taskIndex].notificationHour, notificationMin: tasks[taskIndex].notificationMin, accentColor: tasks[taskIndex].accentColor, isAble: true))
+        }
+        print("😄: prevTasksの構造体に合わせてデータを更新しました。")
+        return newTasks
+    }
+    
     // Widget用にデータを保存
     func saveUnfinishedTasksForWidget() {
-        let todayTasks: [[Tasks]] = returnSelectedDateUnFinishedTasks(date: Date())
-        
+        let unfinishedTasks: [[Tasks]] = returnSelectedDateUnFinishedTasks(date: Date())
         let jsonEncoder = JSONEncoder()
-        guard let data = try? jsonEncoder.encode(todayTasks) else {
+        guard let data = try? jsonEncoder.encode(unfinishedTasks) else {
             print("😭: allUnfinishedTaskListの保存に失敗しました。")
             return
         }
-        
+        // App Groupsにデータを保存
         let userDefaults = UserDefaults(suiteName: "group.myproject.EverydayTask.widget")
         if let userDefaults = userDefaults {
             userDefaults.synchronize()
             userDefaults.setValue(data, forKeyPath: "unfinishedTasks")
         }
-
         // Widgetを更新
         WidgetCenter.shared.reloadTimelines(ofKind: "EverydayTaskWidget")
     }

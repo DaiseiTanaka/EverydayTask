@@ -14,20 +14,18 @@ struct Provider: TimelineProvider {
     }
     
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let sampleList: [[Tasks]] = [
-            // Every day
-            [Tasks(title: "Task1", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true),
-             Tasks(title: "Task2", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
-             Tasks(title: "Task3", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
-              Tasks(title: "Task4", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true)],
-            // Every week
-            [Tasks(title: "Task", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)],
-            // Every month
-            [Tasks(title: "Task", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)],
-            // One time
-            [Tasks(title: "Task", detail: "", addedDate: Date(), spanType: .oneTime, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Red", isAble: true)]
-        ]
-        let entry = SimpleEntry(date: Date(), allUnfinishedTaskList: sampleList)
+        var unfinishedTasks: [[Tasks]] = []
+
+        let userDefaults = UserDefaults(suiteName: "group.myproject.EverydayTask.widget")
+        if let userDefaults = userDefaults {
+            let jsonDecoder = JSONDecoder()
+            guard let data = userDefaults.data(forKey: "unfinishedTasks"),
+                  let tasks = try? jsonDecoder.decode([[Tasks]].self, from: data) else {
+                return
+            }
+            unfinishedTasks = tasks
+        }
+        let entry = SimpleEntry(date: Date(), allUnfinishedTaskList: unfinishedTasks)
         completion(entry)
     }
     
@@ -201,7 +199,9 @@ extension EverydayTaskWidgetEntryView {
                         
                         Text(task.title)
                             .font(.footnote)
-                        Spacer()
+                            .lineLimit(1)
+
+                        Spacer(minLength: 0)
                     }
                     Divider()
                 }

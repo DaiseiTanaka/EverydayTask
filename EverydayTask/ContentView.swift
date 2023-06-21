@@ -15,9 +15,9 @@ struct ContentView: View {
     @State private var isPresented: Bool = true
     
     // For half mordal settings
-    @State private var presentationDetent: PresentationDetent = .fraction(0.16)
-    @State private var minViewHeight: PresentationDetent = .fraction(0.16)
-    @State private var maxViewHeight: PresentationDetent = .fraction(0.47)
+    @State private var presentationDetent: PresentationDetent = .fraction(0.5)
+    @State private var minViewHeight: PresentationDetent = .fraction(0.12)
+    @State private var maxViewHeight: PresentationDetent = .fraction(0.5)
     @State private var buttonImage: Image = Image(systemName: "chevron.up.circle")
     
     @State private var badgeNum: Int = 0
@@ -89,7 +89,7 @@ extension ContentView {
             )
             .interactiveDismissDisabled()
             //.overlay(changeViewSizeButton, alignment: .topTrailing)
-            //.presentationBackground(Color(UIColor.systemGray6))
+            .presentationBackground(Color(UIColor.systemBackground))
             //.presentationBackground(.ultraThickMaterial)
     }
     

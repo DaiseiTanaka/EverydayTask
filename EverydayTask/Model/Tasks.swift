@@ -45,15 +45,20 @@ enum TaskSpanType: Codable {
     case everyWeekday
 }
 
+enum SortKey {
+    case title
+    case addedDate
+    case spanType
+}
+
 extension Tasks {
     
     static var previewData: [Tasks] = [
-        Tasks(title: "Task1", detail: "Task for every day", addedDate: Date().addingTimeInterval(-60*60*24*30), spanType: .everyDay, spanDate: [], doneDate: [Date().addingTimeInterval(-60*60*24*17), Date().addingTimeInterval(-60*60*24*6),Date().addingTimeInterval(-60*60*24*5), Date().addingTimeInterval(-60*60*24*4),Date()], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true),
-        Tasks(title: "Task2", detail: "", addedDate: Date().addingTimeInterval(-60*60*24*30), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Red", isAble: true),
-        Tasks(title: "Task3", detail: "", addedDate: Date().addingTimeInterval(-60*60*24*30), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
-        Tasks(title: "Task4", detail: "Once a week", addedDate: Date().addingTimeInterval(-60*60*24*35), spanType: .everyWeek, spanDate: [], doneDate: [Date().addingTimeInterval(-60*60*24*35), Date().addingTimeInterval(-60*60*24*21),Date().addingTimeInterval(-60*60*24*14), Date().addingTimeInterval(-60*60*24*7), Date()], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true)
-//        ,
-//        Tasks(title: "Task5", detail: "Once a month", addedDate: Date().addingTimeInterval(-60*60*24*200), spanType: .everyMonth, spanDate: [], doneDate: [Date().addingTimeInterval(-60*60*24*150), Date().addingTimeInterval(-60*60*24*90),Date().addingTimeInterval(-60*60*24*60), Date().addingTimeInterval(-60*60*24*30), Date()], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black")
+        Tasks(title: "Task1", detail: "Task for every day", addedDate: Date().addingTimeInterval(-60*60*24*70), spanType: .everyDay, spanDate: [], doneDate: [Date().addingTimeInterval(-60*60*24*17), Date().addingTimeInterval(-60*60*24*6),Date().addingTimeInterval(-60*60*24*5), Date().addingTimeInterval(-60*60*24*4),Date()], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true),
+        Tasks(title: "Task2", detail: "", addedDate: Date().addingTimeInterval(-60*60*24*70), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Red", isAble: true),
+        Tasks(title: "Task3", detail: "", addedDate: Date().addingTimeInterval(-60*60*24*70), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
+        Tasks(title: "Task4", detail: "Once a week", addedDate: Date().addingTimeInterval(-60*60*24*35), spanType: .everyWeek, spanDate: [], doneDate: [Date().addingTimeInterval(-60*60*24*35), Date().addingTimeInterval(-60*60*24*21),Date().addingTimeInterval(-60*60*24*14), Date().addingTimeInterval(-60*60*24*7), Date()], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
+        Tasks(title: "Task5", detail: "Once a month", addedDate: Date().addingTimeInterval(-60*60*24*135), spanType: .everyMonth, spanDate: [], doneDate: [Date().addingTimeInterval(-60*60*24*135), Date().addingTimeInterval(-60*60*24*75), Date().addingTimeInterval(-60*60*24*45), Date().addingTimeInterval(-60*60*24*15)], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true)
     ]
     
     static var Data: Tasks =
