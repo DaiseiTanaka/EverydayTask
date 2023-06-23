@@ -271,19 +271,17 @@ extension TaskView {
             
             if showDoneTasks {
                 LazyVGrid(columns: columns, spacing: cellSpace) {
-                    ForEach(taskViewModel.returnSelectedDateTasks(date: rkManager.selectedDate), id: \.self) { tasks in
-                        if !tasks.isEmpty {
-                            ForEach(tasks, id: \.id) { task in
-                                // 実行済みのタスク
-                                if taskViewModel.isDone(task: task, date: rkManager.selectedDate) {
-                                    TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle)
-                                        .onTapGesture {
-                                            updateCalendar(task: task)
-                                        }
-                                        .onLongPressGesture() {
-                                            longTapTaskAction(task: task)
-                                        }
-                                }
+                    if !taskViewModel.returnSelectedDateFinishedTasks(date: rkManager.selectedDate).isEmpty {
+                        ForEach(taskViewModel.returnSelectedDateFinishedTasks(date: rkManager.selectedDate), id: \.id) { task in
+                            // 実行済みのタスク
+                            if taskViewModel.isDone(task: task, date: rkManager.selectedDate) {
+                                TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle)
+                                    .onTapGesture {
+                                        updateCalendar(task: task)
+                                    }
+                                    .onLongPressGesture() {
+                                        longTapTaskAction(task: task)
+                                    }
                             }
                         }
                     }
