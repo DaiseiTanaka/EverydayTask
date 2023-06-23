@@ -174,12 +174,12 @@
 			isa = PBXGroup;
 			children = (
 				355B977D2A2DA4F400BD0772 /* CalendarView.swift */,
+				355B978E2A2DE7F500BD0772 /* TaskView.swift */,
 				35CCF3452A2EEB0A00C91B80 /* TaskCell.swift */,
-				353C5EF32A3EF84100FDFFE5 /* AllTaskCell.swift */,
 				353C5EF12A3EF41200FDFFE5 /* AllTaskListView.swift */,
+				353C5EF32A3EF84100FDFFE5 /* AllTaskCell.swift */,
 				3585CA2F2A370956002A090C /* WeeklyAndMonthlyDetailListCell.swift */,
 				3585CA312A370972002A090C /* WeeklyAndMonthlyDetailListView.swift */,
-				355B978E2A2DE7F500BD0772 /* TaskView.swift */,
 				35CCF3472A2EFCA500C91B80 /* TaskSettingView.swift */,
 				35ADE3CD2A39E547004F3E67 /* PickerView.swift */,
 			);

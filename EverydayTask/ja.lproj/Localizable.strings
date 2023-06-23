@@ -11,8 +11,13 @@
 "Every day" = "毎日";
 "Once a week" = "週一";
 "Once a month" = "月一";
-"One time" = "無期限のタスク";
+"One time" = "1度のみのタスク";
 "Regularly" = "定期的なタスク";
+"Completed tasks" = "完了済み";
+"All tasks for today have been completed!" = "本日のタスクを全て達成しました！";
+"Good job for today." = "お疲れ様でした。";
+"All tasks have been completed." = "全てのタスクが完了済みです。";
+"No tasks have been set." = "タスクは設定されていません。";
 
 // All Task View
 "All Tasks" = "全てのタスク";
@@ -63,3 +68,6 @@
 "This operation cannot be undone." = "この操作は取り消せません。";
 "Show" = "表示";
 "Hidden tasks do not appear on your calendar. They can be checked from the all task list view." = "非表示にしたタスクは、カレンダーに表示されなくなります。これらのタスクは、全てのタスク一覧画面から確認できます。";
+
+// Weekly and Monthly Detail List View
+"No data." = "実施履歴がありません。";

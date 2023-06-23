@@ -16,10 +16,10 @@ struct Provider: TimelineProvider {
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
         var unfinishedTasks: [[Tasks]] = []
 
-        let userDefaults = UserDefaults(suiteName: "group.myproject.EverydayTask.widget")
+        let userDefaults = UserDefaults(suiteName: "group.myproject.EverydayTask.widget2")
         if let userDefaults = userDefaults {
             let jsonDecoder = JSONDecoder()
-            guard let data = userDefaults.data(forKey: "unfinishedTasks"),
+            guard let data = userDefaults.data(forKey: "tasks"),
                   let tasks = try? jsonDecoder.decode([[Tasks]].self, from: data) else {
                 return
             }
@@ -33,10 +33,10 @@ struct Provider: TimelineProvider {
         var entries: [SimpleEntry] = []
         var unfinishedTasks: [[Tasks]] = []
 
-        let userDefaults = UserDefaults(suiteName: "group.myproject.EverydayTask.widget")
+        let userDefaults = UserDefaults(suiteName: "group.myproject.EverydayTask.widget2")
         if let userDefaults = userDefaults {
             let jsonDecoder = JSONDecoder()
-            guard let data = userDefaults.data(forKey: "unfinishedTasks"),
+            guard let data = userDefaults.data(forKey: "tasks"),
                   let tasks = try? jsonDecoder.decode([[Tasks]].self, from: data) else {
                 print("😭: tasksのロードに失敗しました。")
                 return

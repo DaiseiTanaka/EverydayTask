@@ -15,6 +15,8 @@ struct TaskCell: View {
     @Environment(\.locale) var locale
 
     var task: Tasks
+    var cellHeight: CGFloat
+    var cellStyle: TaskCellStyle
     
     let generator = UINotificationFeedbackGenerator()
     
@@ -39,23 +41,16 @@ struct TaskCell: View {
     
     var body: some View {
         HStack {
-            accentColor
-            
-            VStack(alignment: .leading) {
-                title
-                
-                detail
-                
-                Spacer(minLength: 0)
-                
-                span
-                
+            if cellStyle == .oneSmallColumns {
+                oneSmallColumnsCell
+            } else {
+                twoColumnsCell
             }
-            Spacer()
         }
-        .padding(4)
+        .padding(.vertical, 4)
+        .padding(.trailing, 4)
         .background(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? Color(UIColor.systemGray6) : Color("cellBackground"))
-        .frame(height: 90)
+        .frame(height: cellHeight)
         .frame(maxWidth: .infinity)
         .cornerRadius(10)
         .shadow(color: !taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .black.opacity(0.2) : .clear, radius: 7, x: 0, y: 3)
@@ -64,17 +59,53 @@ struct TaskCell: View {
                 .stroke(lineWidth: 3)
                 .fill(taskViewModel.selectedTasks == [task] ? Color.blue.opacity(0.4) : .clear)
         }
-        //.border(taskViewModel.selectedTasks == [task] ? Color.blue.opacity(0.4) : .clear, width: 5)
         .overlay(alignment: .topTrailing) {
             editButton
         }
-        .overlay(alignment: .topLeading) {
+        .overlay(alignment: cellStyle == .oneSmallColumns ? .leading : .topLeading) {
             doneTaskButton
+                .padding(.leading, cellStyle == .oneSmallColumns ? 5 : 0)
         }
     }
 }
 
 extension TaskCell {
+    private var oneSmallColumnsCell: some View {
+        HStack {
+            accentColor
+            
+            VStack(alignment: .leading) {
+                HStack {
+                    title
+                    Spacer(minLength: 0)
+                    span
+                }
+                Spacer(minLength: 0)
+
+                detail
+            }
+            .padding(.leading, 15)
+            .padding(.trailing, 30)
+        }
+    }
+    
+    private var twoColumnsCell: some View {
+        HStack {
+            accentColor
+                .padding(.top, 25)
+            VStack(alignment: .leading) {
+                title
+                
+                detail
+                
+                Spacer(minLength: 0)
+                
+                span
+            }
+            .padding(.leading, 8)
+            Spacer(minLength: 0)
+        }
+    }
     
     private var accentColor: some View {
         // タスクのアクセントカラー
@@ -82,13 +113,12 @@ extension TaskCell {
             .frame(width: 7)
             .cornerRadius(5)
             .foregroundColor(taskViewModel.returnColor(color: task.accentColor))
-            .padding(.top, 25)
     }
     
     private var title: some View {
         // タスクのタイトル
         Text(task.title)
-            .font(.headline)
+            .font(.subheadline.bold())
             .foregroundColor(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .secondary : .primary)
             .lineLimit(1)
             .padding(.trailing, 20)
@@ -233,14 +263,18 @@ extension TaskCell {
         if spanType == .oneTime {
             generator.notificationOccurred(.success)
             if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
-                withAnimation {
-                    // 実行済みにする
-                    taskViewModel.tasks[index].doneDate.append(selectedDate)
-                    // タスクを非表示にする
-                    taskViewModel.tasks[index].isAble = false
-                    // doneDateを並び替える
-                    taskViewModel.tasks[index].doneDate.sort()
-                    updateSelectedTasks(index: index)
+                if !taskViewModel.isDone(task: task, date: selectedDate) {
+                    withAnimation {
+                        // 実行済みにする
+                        taskViewModel.tasks[index].doneDate.append(selectedDate)
+                        updateSelectedTasks(index: index)
+                    }
+                } else {
+                    withAnimation {
+                        // 実行履歴を全て削除する
+                        taskViewModel.tasks[index].doneDate.removeAll()
+                        updateSelectedTasks(index: index)
+                    }
                 }
             }
             
@@ -359,10 +393,11 @@ extension TaskCell {
 }
 
 struct TaskCell_Previews: PreviewProvider {
+    static var taskViewModel = TaskViewModel()
     static let rkManager = RKManager(calendar: Calendar.current, minimumDate: Date().addingTimeInterval(-60*60*24*7), maximumDate: Date(), mode: 0)
         
     static var previews: some View {
-        TaskCell(taskViewModel: TaskViewModel(), rkManager: rkManager, task: Tasks.previewData[0])
+        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: Tasks.previewData[0], cellHeight: 80, cellStyle: .twoColumns)
             .frame(width: UIScreen.main.bounds.width / 2 - 20)
     }
 }

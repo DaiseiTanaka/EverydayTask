@@ -329,9 +329,8 @@ class TaskViewModel: ObservableObject {
                     }
                 case .everyWeek:
                     weeklyTasks.append(task)
-                    
                 case .everyMonth:
-                    monthlyTasks.append(task)
+                    weeklyTasks.append(task)
                 }
             }
         }
@@ -382,7 +381,7 @@ class TaskViewModel: ObservableObject {
                         weeklyTasks.append(task)
                         
                     case .everyMonth:
-                        monthlyTasks.append(task)
+                        weeklyTasks.append(task) // TODO: - リストが更新されない理由を突き止める　6/23
                     }
                 }
             }
@@ -405,8 +404,8 @@ class TaskViewModel: ObservableObject {
         
         switch spanType {
         case .oneTime:
-            // isAble == fasleなら実行されている
-            if !task.isAble {
+            // doneDatesに一つ以上日付が追加されていたなら実行されている
+            if doneDates.count > 0 {
                 return true
             }
             return false
@@ -491,14 +490,15 @@ class TaskViewModel: ObservableObject {
         let unfinishedTasks: [[Tasks]] = returnSelectedDateUnFinishedTasks(date: Date())
         let jsonEncoder = JSONEncoder()
         guard let data = try? jsonEncoder.encode(unfinishedTasks) else {
-            print("😭: allUnfinishedTaskListの保存に失敗しました。")
+            print("😭: widget用のデータの保存に失敗しました。")
             return
         }
         // App Groupsにデータを保存
-        let userDefaults = UserDefaults(suiteName: "group.myproject.EverydayTask.widget")
+        let userDefaults = UserDefaults(suiteName: "group.myproject.EverydayTask.widget2")
         if let userDefaults = userDefaults {
             userDefaults.synchronize()
-            userDefaults.setValue(data, forKeyPath: "unfinishedTasks")
+            userDefaults.setValue(data, forKeyPath: "tasks")
+            print("😄: widget用のデータの保存に成功しました。")
         }
         // Widgetを更新
         WidgetCenter.shared.reloadTimelines(ofKind: "EverydayTaskWidget")

@@ -37,10 +37,18 @@ extension WeeklyAndMonthlyDetailListView {
     }
     
     private var detail: some View {
-        Text(task.detail)
-            .font(.title3)
-            .foregroundColor(.secondary)
-            .padding(.bottom, 10)
+        VStack {
+            Text(task.detail)
+                .font(.title3)
+                .foregroundColor(.secondary)
+                .padding(.bottom, 10)
+            // もしもタスクの実施履歴がなかった場合
+            if task.doneDate.isEmpty {
+                Text("No data.")
+                    .font(.title3.bold())
+                    .foregroundColor(.secondary)
+            }
+        }
     }
     
     private var taskList: some View {

@@ -51,6 +51,59 @@ enum SortKey {
     case spanType
 }
 
+enum TaskCellStyle: String {
+    case oneColumns = "One columns"
+    case oneSmallColumns = "One small columns"
+    case twoColumns = "Two columns"
+    case twoSmallColumns = "Two small columns"
+    case threeColumns = "Three columns"
+    
+    var columns: [GridItem] {
+        switch self {
+        case .oneColumns:
+            return Array(repeating: .init(.flexible(minimum: 10, maximum: 500)), count: 1)
+        case .oneSmallColumns:
+            return Array(repeating: .init(.flexible(minimum: 10, maximum: 500)), count: 1)
+        case .twoColumns:
+            return Array(repeating: .init(.flexible(minimum: 10, maximum: 500)), count: 2)
+        case .twoSmallColumns:
+            return Array(repeating: .init(.flexible(minimum: 10, maximum: 500)), count: 2)
+        case .threeColumns:
+            return Array(repeating: .init(.flexible(minimum: 10, maximum: 500)), count: 3)
+        }
+    }
+    
+    var height: CGFloat {
+        switch self {
+        case .oneColumns:
+            return 80
+        case .oneSmallColumns:
+            return 40
+        case .twoColumns:
+            return 80
+        case .twoSmallColumns:
+            return 60
+        case .threeColumns:
+            return 60
+        }
+    }
+    
+    var space: CGFloat {
+        switch self {
+        case .oneColumns:
+            return 5
+        case .oneSmallColumns:
+            return 5
+        case .twoColumns:
+            return 10
+        case .twoSmallColumns:
+            return 10
+        case .threeColumns:
+            return 10
+        }
+    }
+}
+
 extension Tasks {
     
     static var previewData: [Tasks] = [

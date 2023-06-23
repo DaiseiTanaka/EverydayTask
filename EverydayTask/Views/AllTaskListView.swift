@@ -79,7 +79,7 @@ extension AllTaskListView {
             taskViewModel.showTaskSettingView = true
         } label: {
             Image(systemName: "plus")
-                .font(.title3)
+                .font(.title3.bold())
                 .foregroundColor(Color(UIColor.systemBackground))
                 .padding(8)
                 .background(.tint)

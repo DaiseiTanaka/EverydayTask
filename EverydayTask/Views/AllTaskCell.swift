@@ -44,7 +44,7 @@ struct AllTaskCell: View {
             
             isAbleToggle
         }
-        .padding(.vertical, 3)
+        .frame(height: 55)
         .onDisappear {
             if taskViewModel.showAllTaskListViewFlag == false {
                 if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
@@ -78,6 +78,11 @@ extension AllTaskCell {
     private var span: some View {
         // タスクのスパン
         HStack(spacing: 3) {
+            // addedDate
+            Text("\(taskViewModel.returnDayString(date: task.addedDate)) ~ ")
+                .font(.footnote)
+                .foregroundColor(.secondary)
+            
             if task.spanType == .everyDay || task.spanType == .everyWeekday {
                 if task.notification {
                     Image(systemName: "bell.badge")
