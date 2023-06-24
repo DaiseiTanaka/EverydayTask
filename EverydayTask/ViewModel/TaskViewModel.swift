@@ -135,6 +135,11 @@ class TaskViewModel: ObservableObject {
             }
         }
         saveTasks(tasks: tasks)
+        // 選択中のタスクとカレンダー表示を更新
+        withAnimation {
+            selectedTasks = tasks
+            showCalendarFlag = true
+        }
     }
     
     // タスクを削除
@@ -144,6 +149,11 @@ class TaskViewModel: ObservableObject {
         }
         tasks.remove(at: index)
         saveTasks(tasks: tasks)
+        // 選択中のタスクとカレンダー表示を更新
+        withAnimation {
+            selectedTasks = tasks
+            showCalendarFlag = true
+        }
     }
     
     // MARK: - 日付関連

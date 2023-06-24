@@ -18,17 +18,11 @@ struct AllTaskListView: View {
     
     var body: some View {
         NavigationView {
-            List {
-                Section(header: header) {
-                    ForEach(Array(returnSortedTasks(key: taskViewModel.sortKey).enumerated()), id: \.element) { index, task in
-                        NavigationLink(destination: TaskSettingView(rkManager: rkManager,
-                                                                    taskViewModel: taskViewModel,
-                                                                    task: task,
-                                                                    selectedWeekdays: task.spanDate)) {
-                            AllTaskCell(taskViewModel: taskViewModel, task: task)
-                        }
-                    }
-                    .onDelete(perform: rowRemove)
+            VStack {
+                if returnSortedTasks(key: taskViewModel.sortKey).isEmpty {
+                    emptyView
+                } else {
+                    allTaskList
                 }
             }
             .navigationTitle("All Tasks")
@@ -63,6 +57,17 @@ struct AllTaskListView: View {
 }
 
 extension AllTaskListView {
+    private var emptyView: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("No tasks have been set.")
+                .font(.title3.bold())
+                .foregroundColor(.secondary)
+                .padding(.top)
+            Text("Please add task from the plus button.")
+                .foregroundColor(.secondary)
+            Spacer()
+        }
+    }
     // リストのヘッダー
     private var header: some View {
         HStack {
@@ -70,9 +75,30 @@ extension AllTaskListView {
             if taskViewModel.tasks.count > 1 {
                 Text("\(taskViewModel.tasks.count)")
                 Text("items")
-            } else {
+            } else if taskViewModel.tasks.count != 0 {
                 Text("\(taskViewModel.tasks.count)")
                 Text("item")
+            }
+        }
+    }
+    
+    private var allTaskList: some View {
+        List {
+            Section(header: header) {
+                ForEach(Array(returnSortedTasks(key: taskViewModel.sortKey).enumerated()), id: \.element) { index, task in
+                    AllTaskCell(taskViewModel: taskViewModel, task: task)
+                        .background(
+                            Color(UIColor.systemBackground)
+                                .onTapGesture {
+                                    let impactLight = UIImpactFeedbackGenerator(style: .rigid)
+                                    impactLight.impactOccurred()
+                                    
+                                    taskViewModel.editTask = task
+                                    taskViewModel.showTaskSettingView = true
+                                }
+                        )
+                }
+                .onDelete(perform: rowRemove)
             }
         }
     }

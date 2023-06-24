@@ -32,6 +32,7 @@
 "Delete selected items" = "選択された項目を削除";
 "items" = "件";
 "item" = "件";
+"Please add task from the plus button." = "画面下部のボタンからタスクを追加しましょう。";
 
 // Alart
 "Edit this task?" = "編集";

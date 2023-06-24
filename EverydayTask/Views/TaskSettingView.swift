@@ -59,10 +59,6 @@ struct TaskSettingView: View {
         .simultaneousGesture(focusTitleTextField || focusedField ? TapGesture().onEnded {
             UIApplication.shared.closeKeyboard()
         } : nil)
-        .onDisappear {
-            taskViewModel.showCalendarFlag = true
-            taskViewModel.selectedTasks = taskViewModel.tasks
-        }
         .confirmationDialog(task.title, isPresented: $showDeleteAlart, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
                 taskViewModel.removeTasks(task: task)

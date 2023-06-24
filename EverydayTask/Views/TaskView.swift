@@ -356,10 +356,16 @@ extension TaskView {
             impactLight.impactOccurred()
         }
         
-        if taskViewModel.selectedTasks != [task] {
+        // 特定のタスクを表示中 or タスクが一つしか設定されていない場合ー＞weeklyやmonthlyのタスクを一つだけ設定していた場合は、カレンダーを更新する必要があるため。
+        if taskViewModel.selectedTasks != [task] || taskViewModel.tasks.count == 1 {
             // 特定のタスクを表示
             if spanType == .everyWeek || spanType == .everyMonth {
-                taskViewModel.showCalendarFlag = false
+                // 一つのみかつweekly or monthlyのタスクの場合、カレンダーを表示非表示を切り替える。これがないと、ずっとweeklyAndMonthlyTaskListViewが表示され続けてしまう。
+                if taskViewModel.tasks.count == 1 {
+                    taskViewModel.showCalendarFlag.toggle()
+                } else {
+                    taskViewModel.showCalendarFlag = false
+                }
             } else {
                 taskViewModel.showCalendarFlag = true
             }
