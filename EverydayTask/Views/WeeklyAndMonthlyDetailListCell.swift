@@ -127,7 +127,7 @@ extension WeeklyAndMonthlyDetailListCell {
         let dayDC = Calendar.current.dateComponents([.month], from: date)
         let month: String = String(dayDC.month!)
         
-        return month + "月"
+        return month + "/1 ~"
     }
     
     // Date -> 0/0

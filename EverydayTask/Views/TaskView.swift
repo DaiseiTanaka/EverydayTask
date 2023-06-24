@@ -27,10 +27,10 @@ struct TaskView: View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 20) {
+                    finishedText
+                    
                     if !taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[0].isEmpty {
                         todaysTaskList
-                    } else {
-                        finishedText
                     }
                     
                     if !taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[1].isEmpty || !taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[2].isEmpty {
@@ -120,25 +120,30 @@ extension TaskView {
         return taskViewModel.isSameDay(date1: rkManager.selectedDate, date2: Date())
     }
     
-    // 全てのタスクが終了した場合 or 選択した日付にタスクが設定されていなかった場合
     private var finishedText: some View {
         VStack {
-            if taskViewModel.isSameDay(date1: rkManager.selectedDate, date2: Date()) {
-                VStack(alignment: .leading) {
-                    Text("All tasks for today have been completed!")
+            // 選択された日のタスクが全て達成済みの時
+            if taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[0].count == 0 {
+                // 選択した日付にタスクが設定されていなかった場合
+                if taskViewModel.returnTaskCount(date: rkManager.selectedDate) == 0 {
+                    Text("No tasks have been set.")
                         .bold()
                         .foregroundColor(.secondary)
-                    Text("Good job for today.")
+                // 選択した日付にタスクが設定されており、かつ選択された日が今日の時
+                } else if taskViewModel.isSameDay(date1: rkManager.selectedDate, date2: Date()) {
+                    VStack(alignment: .leading) {
+                        Text("All tasks for today have been completed!")
+                            .bold()
+                            .foregroundColor(.secondary)
+                        Text("Good job for today.")
+                            .foregroundColor(.secondary)
+                    }
+                // 選択した日付にタスクが設定されており、かつ選択された日が今日以外の時
+                } else {
+                    Text("All tasks have been completed.")
+                        .bold()
                         .foregroundColor(.secondary)
                 }
-            } else if taskViewModel.returnTaskCount(date: rkManager.selectedDate) == 0 {
-                Text("No tasks have been set.")
-                    .bold()
-                    .foregroundColor(.secondary)
-            } else {
-                Text("All tasks have been completed.")
-                    .bold()
-                    .foregroundColor(.secondary)
             }
         }
     }
