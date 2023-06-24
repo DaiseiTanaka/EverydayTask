@@ -19,13 +19,7 @@ struct AllTaskListView: View {
     var body: some View {
         NavigationView {
             List {
-                Section(header:
-                            HStack {
-                    Spacer()
-                    Text("\(taskViewModel.tasks.count)")
-                    Text(taskViewModel.tasks.count == 1 ? "item" : "items")
-                }
-                ) {
+                Section(header: header) {
                     ForEach(Array(returnSortedTasks(key: taskViewModel.sortKey).enumerated()), id: \.element) { index, task in
                         NavigationLink(destination: TaskSettingView(rkManager: rkManager,
                                                                     taskViewModel: taskViewModel,
@@ -69,6 +63,19 @@ struct AllTaskListView: View {
 }
 
 extension AllTaskListView {
+    // リストのヘッダー
+    private var header: some View {
+        HStack {
+            Spacer()
+            if taskViewModel.tasks.count > 1 {
+                Text("\(taskViewModel.tasks.count)")
+                Text("items")
+            } else {
+                Text("\(taskViewModel.tasks.count)")
+                Text("item")
+            }
+        }
+    }
     
     private var addTaskButton: some View {
         Button {
