@@ -45,13 +45,6 @@ struct AllTaskCell: View {
             isAbleToggle
         }
         .frame(height: 55)
-        .onDisappear {
-            if taskViewModel.showAllTaskListViewFlag == false {
-                if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
-                    taskViewModel.tasks[index].isAble = task.isAble
-                }
-            }
-        }
     }
 }
 
@@ -131,8 +124,8 @@ extension AllTaskCell {
             }
             Toggle("", isOn: $task.isAble)
                 .frame(width: 50)
-                .onChange(of: task.isAble) { _ in
-                    taskViewModel.saveTasks(tasks: taskViewModel.tasks)
+                .onChange(of: task.isAble) { isAble in
+                    taskViewModel.isAbleChange(task: task, isAble: isAble)
                 }
         }
     }

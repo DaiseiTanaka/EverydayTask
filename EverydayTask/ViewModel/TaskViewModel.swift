@@ -176,6 +176,19 @@ class TaskViewModel: ObservableObject {
         addTasks(task: newTask)
     }
     
+    // タスクの表示・非表示を設定
+    func isAbleChange(task: Tasks, isAble: Bool) {
+        if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+            tasks[index].isAble = task.isAble
+        }
+        saveTasks(tasks: tasks)
+        // 選択中のタスクとカレンダー表示を更新
+        withAnimation {
+            selectedTasks = tasks
+            showCalendarFlag = true
+        }
+    }
+    
     // MARK: - 日付関連
     // Dateから曜日のインデックスを返す
     func returnWeekdayFromDate(date: Date) -> Int {
