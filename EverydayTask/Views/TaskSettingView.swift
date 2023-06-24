@@ -48,8 +48,6 @@ struct TaskSettingView: View {
                 }
                 
                 isAbleToggle
-            
-                //deleteButton
             }
             .navigationBarItems(leading: cancelButton, trailing: okButton)
         }
@@ -68,30 +66,7 @@ struct TaskSettingView: View {
             Text("This operation cannot be undone.")
         }
         .onAppear {
-            // タスクを新しく追加中の場合
-            if taskViewModel.tasks.firstIndex(where: { $0.id == self.task.id }) == nil {
-                let tasks: [Tasks] = taskViewModel.tasks
-                var accentColors: [String] = taskViewModel.accentColors
-                // アクセントカラーを未設定のものにランダムでセット
-                for task in tasks {
-                    let accentColor = task.accentColor
-                    if !accentColors.isEmpty {
-                        // すでに使用しているaccentColorをaccentColorsから削除する
-                        if let index = accentColors.firstIndex(where: { $0 == accentColor }) {
-                            accentColors.remove(at: index)
-                        }
-                    } else {
-                        // すでに全ての種類のアクセントカラーを使用中の場合break
-                        break
-                    }
-                }
-                // すでに全ての種類のアクセントカラーを使用していた場合、再度全ての種類のアクセントカラーの中からランダムで選別する
-                if accentColors.isEmpty {
-                    accentColors = taskViewModel.accentColors
-                }
-                // ランダムでアクセントカラーを指定する
-                self.task.accentColor = accentColors.randomElement() ?? "Blue"
-            }
+            selectAccentColor()
         }
     }
 }
@@ -317,8 +292,6 @@ extension TaskSettingView {
     
     private var cancelButton: some View {
         Button(action: {
-            let impactLight = UIImpactFeedbackGenerator(style: .rigid)
-            impactLight.impactOccurred()
             dismiss()
         }, label: {
             Text("Cancel")
@@ -338,6 +311,33 @@ extension TaskSettingView {
                 .bold()
                 .foregroundColor(.blue)
         })
+    }
+    
+    private func selectAccentColor() {
+        // タスクを新しく追加中の場合
+        if taskViewModel.tasks.firstIndex(where: { $0.id == self.task.id }) == nil {
+            let tasks: [Tasks] = taskViewModel.tasks
+            var accentColors: [String] = taskViewModel.accentColors
+            // アクセントカラーを未設定のものにランダムでセット
+            for task in tasks {
+                let accentColor = task.accentColor
+                if !accentColors.isEmpty {
+                    // すでに使用しているaccentColorをaccentColorsから削除する
+                    if let index = accentColors.firstIndex(where: { $0 == accentColor }) {
+                        accentColors.remove(at: index)
+                    }
+                } else {
+                    // すでに全ての種類のアクセントカラーを使用中の場合break
+                    break
+                }
+            }
+            // すでに全ての種類のアクセントカラーを使用していた場合、再度全ての種類のアクセントカラーの中からランダムで選別する
+            if accentColors.isEmpty {
+                accentColors = taskViewModel.accentColors
+            }
+            // ランダムでアクセントカラーを指定する
+            self.task.accentColor = accentColors.randomElement() ?? "Blue"
+        }
     }
 }
 

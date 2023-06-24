@@ -381,6 +381,7 @@ extension TaskCell {
     
     // タスクを完了した時に表示するタスクを更新する
     // このコードがないと、weekly, monthlyタスク用の画面を表示中に、everyDay, everyWeekdayのタスクを完了させると、画面がバグる
+    // weekly, monthlyのタスクを完了した瞬間は、カレンダー画面へ移動したくない
     private func updateSelectedTasks(index: Int) {
         if taskViewModel.showCalendarFlag || taskViewModel.tasks[index].spanType == .everyDay || taskViewModel.tasks[index].spanType == .everyWeekday {
             taskViewModel.selectedTasks = taskViewModel.tasks

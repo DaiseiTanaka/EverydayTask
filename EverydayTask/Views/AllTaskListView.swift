@@ -15,6 +15,7 @@ struct AllTaskListView: View {
     
     @State private var toggleFlag: Bool = true
     @State private var showSortAlart: Bool = false
+    @State private var showTaskSettingView: Bool = false
     
     var body: some View {
         NavigationView {
@@ -39,6 +40,9 @@ struct AllTaskListView: View {
                 }
             }
         }
+        .sheet(isPresented: self.$showTaskSettingView, content: {
+            TaskSettingView(rkManager: rkManager, taskViewModel: taskViewModel, task: taskViewModel.editTask, selectedWeekdays: taskViewModel.editTask.spanDate)
+        })
         .confirmationDialog("Sorted by", isPresented: $showSortAlart, titleVisibility: .visible) {
             Button(LocalizedStringKey(returnSortKeyString(sortKey: .spanType))) {
                 taskViewModel.sortKey = .spanType
@@ -49,9 +53,6 @@ struct AllTaskListView: View {
             Button(LocalizedStringKey(returnSortKeyString(sortKey: .title))) {
                 taskViewModel.sortKey = .title
             }
-        }
-        .onDisappear {
-            taskViewModel.saveTasks(tasks: taskViewModel.tasks)
         }
     }
 }
@@ -88,13 +89,13 @@ extension AllTaskListView {
                 ForEach(Array(returnSortedTasks(key: taskViewModel.sortKey).enumerated()), id: \.element) { index, task in
                     AllTaskCell(taskViewModel: taskViewModel, task: task)
                         .background(
-                            Color(UIColor.systemBackground)
+                            Color.black.opacity(0.000001)
                                 .onTapGesture {
                                     let impactLight = UIImpactFeedbackGenerator(style: .rigid)
                                     impactLight.impactOccurred()
                                     
                                     taskViewModel.editTask = task
-                                    taskViewModel.showTaskSettingView = true
+                                    showTaskSettingView = true
                                 }
                         )
                 }

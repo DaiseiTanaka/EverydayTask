@@ -156,6 +156,26 @@ class TaskViewModel: ObservableObject {
         }
     }
     
+    // タスクを非表示
+    func hideTask(task: Tasks) {
+        guard let index = tasks.firstIndex(where: { $0.id == task.id }) else {
+            return
+        }
+        tasks[index].isAble = false
+        saveTasks(tasks: tasks)
+        // 選択中のタスクとカレンダー表示を更新
+        withAnimation {
+            selectedTasks = tasks
+            showCalendarFlag = true
+        }
+    }
+    
+    //　タスクを複製
+    func duplicateTask(task: Tasks) {
+        let newTask = Tasks(title: task.title, detail: task.detail, addedDate: Date(), spanType: task.spanType, spanDate: task.spanDate, doneDate: [], notification: task.notification, notificationHour: task.notificationHour, notificationMin: task.notificationMin, accentColor: task.accentColor, isAble: task.isAble)
+        addTasks(task: newTask)
+    }
+    
     // MARK: - 日付関連
     // Dateから曜日のインデックスを返す
     func returnWeekdayFromDate(date: Date) -> Int {

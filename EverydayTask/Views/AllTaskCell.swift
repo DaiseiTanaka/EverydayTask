@@ -131,6 +131,9 @@ extension AllTaskCell {
             }
             Toggle("", isOn: $task.isAble)
                 .frame(width: 50)
+                .onChange(of: task.isAble) { _ in
+                    taskViewModel.saveTasks(tasks: taskViewModel.tasks)
+                }
         }
     }
     

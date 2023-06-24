@@ -70,10 +70,10 @@ struct TaskView: View {
                 taskViewModel.showTaskSettingView.toggle()
             }
             Button("Duplicate this task?") {
-                duplicateTask()
+                taskViewModel.duplicateTask(task: taskViewModel.editTask)
             }
             Button("Hide this task?") {
-                hideTask()
+                taskViewModel.hideTask(task: taskViewModel.editTask)
             }
             Button("Delete this task?", role: .destructive) {
                 taskViewModel.removeTasks(task: taskViewModel.editTask)
@@ -391,23 +391,6 @@ extension TaskView {
         generator.notificationOccurred(.success)
         taskViewModel.editTask = task
         taskViewModel.showTaskSettingView = true
-    }
-    
-    // タスクを複製する
-    private func duplicateTask() {
-        let selectedTask = taskViewModel.editTask
-        let addTask = Tasks(title: selectedTask.title, detail: selectedTask.detail, addedDate: Date(), spanType: selectedTask.spanType, spanDate: selectedTask.spanDate, doneDate: [], notification: selectedTask.notification, notificationHour: selectedTask.notificationHour, notificationMin: selectedTask.notificationMin, accentColor: selectedTask.accentColor, isAble: selectedTask.isAble)
-        taskViewModel.addTasks(task: addTask)
-    }
-    
-    // タスクを非表示
-    private func hideTask() {
-        let editTask = taskViewModel.editTask
-        guard let index = taskViewModel.tasks.firstIndex(where: { $0.id == editTask.id }) else {
-            return
-        }
-        taskViewModel.tasks[index].isAble = false
-        taskViewModel.saveTasks(tasks: taskViewModel.tasks)
     }
     
     // cellのスタイルを変更する
