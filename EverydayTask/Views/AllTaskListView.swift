@@ -16,6 +16,7 @@ struct AllTaskListView: View {
     @State private var toggleFlag: Bool = true
     @State private var showSortAlart: Bool = false
     @State private var showTaskSettingView: Bool = false
+    @State private var searchText: String = ""
     
     var body: some View {
         NavigationView {
@@ -40,6 +41,7 @@ struct AllTaskListView: View {
                 }
             }
         }
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
         .sheet(isPresented: self.$showTaskSettingView, content: {
             TaskSettingView(rkManager: rkManager, taskViewModel: taskViewModel, task: taskViewModel.editTask, selectedWeekdays: taskViewModel.editTask.spanDate)
         })
@@ -132,7 +134,12 @@ extension AllTaskListView {
     }
     
     private func returnSortedTasks(key: SortKey) -> [Tasks] {
-        let tasks = taskViewModel.tasks
+        var tasks = taskViewModel.tasks
+        // 何かが検索されている場合
+        if !searchText.isEmpty {
+            // タイトルと詳細でフィルタリング
+            tasks = tasks.filter { $0.title.lowercased().contains(searchText.lowercased()) || $0.detail.lowercased().contains(searchText.lowercased())}
+        }
         var sortedTasks: [Tasks] = []
         switch key {
         case .title:
