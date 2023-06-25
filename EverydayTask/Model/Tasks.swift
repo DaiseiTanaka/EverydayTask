@@ -91,6 +91,21 @@ enum TaskCellStyle: String {
     var space: CGFloat {
         switch self {
         case .oneColumns:
+            return 4
+        case .oneSmallColumns:
+            return 4
+        case .twoColumns:
+            return 10
+        case .twoSmallColumns:
+            return 10
+        case .threeColumns:
+            return 10
+        }
+    }
+    
+    var cornerRadius: CGFloat {
+        switch self {
+        case .oneColumns:
             return 5
         case .oneSmallColumns:
             return 5

@@ -80,8 +80,7 @@ extension ContentView {
     private var taskView: some View {
         TaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager)
             .frame(maxWidth: .infinity)
-            .presentationDetents([minViewHeight, maxViewHeight])
-
+            .presentationDetents([minViewHeight, maxViewHeight], selection: $presentationDetent)
             .presentationCornerRadius(30)
             .presentationDragIndicator(.visible)
             .presentationBackgroundInteraction(
@@ -89,7 +88,7 @@ extension ContentView {
             )
             .interactiveDismissDisabled()
             //.overlay(changeViewSizeButton, alignment: .topTrailing)
-            .presentationBackground(Color(UIColor.systemBackground))
+            .presentationBackground(Color(UIColor.systemGray6))
             //.presentationBackground(.ultraThickMaterial)
     }
     

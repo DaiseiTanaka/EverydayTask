@@ -51,13 +51,13 @@ struct TaskCell: View {
         }
         .padding(.vertical, 4)
         .padding(.trailing, 4)
-        .background(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? Color(UIColor.systemGray6) : Color("cellBackground"))
-        .frame(height: cellHeight)
+        .background(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? Color(UIColor.systemGray5) : Color("cellBackground"))
+        .frame(minHeight: cellHeight)
         .frame(maxWidth: .infinity)
-        .cornerRadius(10)
-        .shadow(color: !taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .black.opacity(0.2) : .clear, radius: cellStyle == .twoColumns ? 7 : 3, x: 0, y: 3)
+        .cornerRadius(cellStyle.cornerRadius)
+        .shadow(color: !taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .black.opacity(0.2) : .clear, radius: cellStyle == .twoColumns ? 7 : 2, x: 0, y: 3)
         .overlay {
-            RoundedRectangle(cornerRadius: 10)
+            RoundedRectangle(cornerRadius: cellStyle.cornerRadius)
                 .stroke(lineWidth: 3)
                 .fill(taskViewModel.selectedTasks == [task] ? Color.blue.opacity(0.4) : .clear)
         }
