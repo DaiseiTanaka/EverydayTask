@@ -128,12 +128,12 @@ class TaskViewModel: ObservableObject {
                 tasks.insert(task, at: 0)
             }
         }
-        saveTasks(tasks: tasks)
         // 選択中のタスクとカレンダー表示を更新
         withAnimation {
             selectedTasks = tasks
             showCalendarFlag = true
         }
+        saveTasks(tasks: tasks)
     }
     
     // タスクを削除
@@ -142,12 +142,12 @@ class TaskViewModel: ObservableObject {
             return
         }
         tasks.remove(at: index)
-        saveTasks(tasks: tasks)
         // 選択中のタスクとカレンダー表示を更新
         withAnimation {
             selectedTasks = tasks
             showCalendarFlag = true
         }
+        saveTasks(tasks: tasks)
     }
     
     // タスクを非表示
@@ -155,13 +155,14 @@ class TaskViewModel: ObservableObject {
         guard let index = tasks.firstIndex(where: { $0.id == task.id }) else {
             return
         }
-        tasks[index].isAble = false
-        saveTasks(tasks: tasks)
-        // 選択中のタスクとカレンダー表示を更新
         withAnimation {
+            // 全てのタスク画面から、タスクを表示したり非表示にしたり交互に可能にするためtoggle
+            tasks[index].isAble.toggle()
+            // 選択中のタスクとカレンダー表示を更新
             selectedTasks = tasks
             showCalendarFlag = true
         }
+        saveTasks(tasks: tasks)
     }
     
     //　タスクを複製
@@ -175,12 +176,12 @@ class TaskViewModel: ObservableObject {
         if let index = tasks.firstIndex(where: { $0.id == task.id }) {
             tasks[index].isAble = task.isAble
         }
-        saveTasks(tasks: tasks)
         // 選択中のタスクとカレンダー表示を更新
         withAnimation {
             selectedTasks = tasks
             showCalendarFlag = true
         }
+        saveTasks(tasks: tasks)
     }
     
     // MARK: - 日付関連

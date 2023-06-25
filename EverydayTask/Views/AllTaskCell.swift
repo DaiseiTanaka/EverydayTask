@@ -11,6 +11,9 @@ struct AllTaskCell: View {
     @ObservedObject var taskViewModel: TaskViewModel
     @State var task: Tasks
     
+    @Binding var showTaskSettingView: Bool
+    @State private var showTaskSettingAlart: Bool = false
+    
     let spanImageListNotExit: [Image] = [
         Image(systemName: "s.circle"),
         Image(systemName: "m.circle"),
@@ -42,20 +45,57 @@ struct AllTaskCell: View {
                         
             Spacer(minLength: 0)
             
-            isAbleToggle
+            actionButton
         }
         .frame(height: 55)
+        .background(
+            Color.black.opacity(0.000001)
+                .onTapGesture {
+                    taskViewModel.editTask = task
+                    showTaskSettingAlart.toggle()
+                }
+                .onLongPressGesture() {
+                    let generator = UINotificationFeedbackGenerator()
+                    generator.notificationOccurred(.success)
+                    
+                    taskViewModel.editTask = task
+                    showTaskSettingView.toggle()
+                }
+        )
+        .confirmationDialog(taskViewModel.editTask.title, isPresented: $showTaskSettingAlart, titleVisibility: .visible) {
+            Button("Edit this task?") {
+                showTaskSettingView.toggle()
+            }
+            Button("Duplicate this task?") {
+                taskViewModel.duplicateTask(task: taskViewModel.editTask)
+            }
+            Button(task.isAble ? "Hide this task?" : "Show this task?") {
+                taskViewModel.hideTask(task: taskViewModel.editTask)
+            }
+            Button("Delete this task?", role: .destructive) {
+                taskViewModel.removeTasks(task: taskViewModel.editTask)
+            }
+        } message: {
+            Text(taskViewModel.editTask.detail)
+        }
     }
 }
 
 extension AllTaskCell {
     private var detail: some View {
         VStack(alignment: .leading) {
-            Text(task.title)
-                .lineLimit(1)
-                .font(.body.bold())
-                .foregroundColor(task.isAble ? Color(UIColor.label) : .secondary)
-
+            HStack {
+                if !task.isAble {
+                    Image(systemName: "eye.slash")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
+                Text(task.title)
+                    .lineLimit(1)
+                    .font(.body.bold())
+                    .foregroundColor(task.isAble ? Color(UIColor.label) : .secondary)
+            }
+            
             Text(task.detail)
                 .font(.footnote)
                 .foregroundColor(.secondary)
@@ -115,6 +155,22 @@ extension AllTaskCell {
         }
     }
     
+    private var actionButton: some View {
+        Button {
+            taskViewModel.editTask = task
+            showTaskSettingAlart.toggle()
+            
+        } label: {
+            Image(systemName: "ellipsis")
+                .font(.title3)
+                .foregroundColor(.primary)
+                .background(
+                    Color.black.opacity(0.00001)
+                        .frame(width: 50, height: 50)
+                )
+        }
+    }
+    
     private var isAbleToggle: some View {
         VStack(alignment: .trailing, spacing: 2) {
             if !task.isAble {
@@ -165,7 +221,8 @@ extension AllTaskCell {
 }
 
 struct AllTaskCell_Previews: PreviewProvider {
+    @State static var showTaskSettingView: Bool = false
     static var previews: some View {
-        AllTaskCell(taskViewModel: TaskViewModel(), task: Tasks.defaulData[0])
+        AllTaskCell(taskViewModel: TaskViewModel(), task: Tasks.defaulData[0], showTaskSettingView: $showTaskSettingView)
     }
 }

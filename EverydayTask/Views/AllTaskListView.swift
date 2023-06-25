@@ -87,17 +87,7 @@ extension AllTaskListView {
         List {
             Section(header: header) {
                 ForEach(Array(returnSortedTasks(key: taskViewModel.sortKey).enumerated()), id: \.element) { index, task in
-                    AllTaskCell(taskViewModel: taskViewModel, task: task)
-                        .background(
-                            Color.black.opacity(0.000001)
-                                .onTapGesture {
-                                    let impactLight = UIImpactFeedbackGenerator(style: .rigid)
-                                    impactLight.impactOccurred()
-                                    
-                                    taskViewModel.editTask = task
-                                    showTaskSettingView = true
-                                }
-                        )
+                    AllTaskCell(taskViewModel: taskViewModel, task: task, showTaskSettingView: $showTaskSettingView)
                 }
                 .onDelete(perform: rowRemove)
             }

@@ -55,7 +55,7 @@ struct TaskCell: View {
         .frame(height: cellHeight)
         .frame(maxWidth: .infinity)
         .cornerRadius(10)
-        .shadow(color: !taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .black.opacity(0.2) : .clear, radius: 7, x: 0, y: 3)
+        .shadow(color: !taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .black.opacity(0.2) : .clear, radius: cellStyle == .twoColumns ? 7 : 3, x: 0, y: 3)
         .overlay {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(lineWidth: 3)
