@@ -21,9 +21,6 @@ class TaskViewModel: ObservableObject {
     @Published var trueFlag: Bool
     @Published var latestDate: Date
     
-    @Published var showTaskSettingView: Bool
-    @Published var showTaskSettingAlart: Bool
-    @Published var showAllTaskListViewFlag: Bool
     @Published var showCalendarFlag: Bool
     @Published var sortKey: SortKey
                 
@@ -36,9 +33,6 @@ class TaskViewModel: ObservableObject {
         self.rkManager = RKManager(calendar: Calendar.current, minimumDate: Date().addingTimeInterval(-60*60*24*7), maximumDate: Date(), mode: 0)
         self.trueFlag = true
         self.latestDate = Date()
-        self.showTaskSettingView = false
-        self.showTaskSettingAlart = false
-        self.showAllTaskListViewFlag = false
         self.showCalendarFlag = true
         self.sortKey = .spanType
         

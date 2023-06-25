@@ -18,6 +18,8 @@ struct TaskCell: View {
     var cellHeight: CGFloat
     var cellStyle: TaskCellStyle
     
+    @Binding var showTaskSettingAlart: Bool
+    
     let generator = UINotificationFeedbackGenerator()
     
     let spanImageListNotExit: [Image] = [
@@ -227,7 +229,7 @@ extension TaskCell {
     private var editButton: some View {
         Button {
             taskViewModel.editTask = task
-            taskViewModel.showTaskSettingAlart.toggle()
+            showTaskSettingAlart.toggle()
             
         } label: {
             Image(systemName: "ellipsis.circle")
@@ -396,9 +398,10 @@ extension TaskCell {
 struct TaskCell_Previews: PreviewProvider {
     static var taskViewModel = TaskViewModel()
     static let rkManager = RKManager(calendar: Calendar.current, minimumDate: Date().addingTimeInterval(-60*60*24*7), maximumDate: Date(), mode: 0)
+    @State static var showTaskSettingAlart: Bool = false
         
     static var previews: some View {
-        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: Tasks.previewData[0], cellHeight: 80, cellStyle: .twoColumns)
+        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: Tasks.previewData[0], cellHeight: 80, cellStyle: .twoColumns, showTaskSettingAlart: $showTaskSettingAlart)
             .frame(width: UIScreen.main.bounds.width / 2 - 20)
     }
 }

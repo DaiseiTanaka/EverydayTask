@@ -19,6 +19,10 @@ struct TaskView: View {
     
     let generator = UINotificationFeedbackGenerator()
     
+    @State var showTaskSettingView: Bool = false
+    @State var showTaskSettingAlart: Bool = false
+    @State var showAllTaskListViewFlag: Bool = false
+    
     @AppStorage("showRegularlyTaskList") private var showRegularlyTaskList: Bool = true
     @AppStorage("showOneTimeTaskList") private var showOneTimeTaskList: Bool = true
     @AppStorage("showDoneTasks") private var showDoneTasks: Bool = false
@@ -59,15 +63,15 @@ struct TaskView: View {
             }
         }
         .overlay(alignment: .bottomTrailing) { addTaskButton }
-        .sheet(isPresented: $taskViewModel.showTaskSettingView, content: {
+        .sheet(isPresented: $showTaskSettingView, content: {
             TaskSettingView(rkManager: rkManager, taskViewModel: taskViewModel, task: taskViewModel.editTask, selectedWeekdays: taskViewModel.editTask.spanDate)
         })
-        .sheet(isPresented: $taskViewModel.showAllTaskListViewFlag, content: {
+        .sheet(isPresented: $showAllTaskListViewFlag, content: {
             AllTaskListView(taskViewModel: taskViewModel, rkManager: rkManager)
         })
-        .confirmationDialog(taskViewModel.editTask.title, isPresented: $taskViewModel.showTaskSettingAlart, titleVisibility: .visible) {
+        .confirmationDialog(taskViewModel.editTask.title, isPresented: $showTaskSettingAlart, titleVisibility: .visible) {
             Button("Edit this task?") {
-                taskViewModel.showTaskSettingView.toggle()
+                showTaskSettingView.toggle()
             }
             Button("Duplicate this task?") {
                 taskViewModel.duplicateTask(task: taskViewModel.editTask)
@@ -91,7 +95,7 @@ extension TaskView {
     private var header: some View {
         HStack {
             Button {
-                taskViewModel.showAllTaskListViewFlag = true
+                showAllTaskListViewFlag = true
             } label: {
                 Image(systemName: "list.bullet")
                     .font(.body.bold())
@@ -152,7 +156,7 @@ extension TaskView {
         VStack(spacing: 10) {
             LazyVGrid(columns: columns, spacing: cellSpace) {
                 ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[0], id: \.id) { task in
-                    TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle)
+                    TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
                         .onTapGesture {
                             updateCalendar(task: task)
                         }
@@ -190,7 +194,7 @@ extension TaskView {
             if showRegularlyTaskList {
                 LazyVGrid(columns: columns, spacing: cellSpace) {
                     ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[1], id: \.id) { task in
-                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle)
+                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
                             .onTapGesture {
                                 updateCalendar(task: task)
                             }
@@ -199,7 +203,7 @@ extension TaskView {
                             }
                     }
                     ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[2], id: \.id) { task in
-                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle)
+                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
                             .onTapGesture {
                                 updateCalendar(task: task)
                             }
@@ -238,7 +242,7 @@ extension TaskView {
             if showOneTimeTaskList {
                 LazyVGrid(columns: columns, spacing: cellSpace) {
                     ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[3], id: \.id) { task in
-                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle)
+                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
                             .onTapGesture {
                                 updateCalendar(task: task)
                             }
@@ -280,7 +284,7 @@ extension TaskView {
                         ForEach(taskViewModel.returnSelectedDateFinishedTasks(date: rkManager.selectedDate), id: \.id) { task in
                             // 実行済みのタスク
                             if taskViewModel.isDone(task: task, date: rkManager.selectedDate) {
-                                TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle)
+                                TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
                                     .onTapGesture {
                                         updateCalendar(task: task)
                                     }
@@ -317,7 +321,7 @@ extension TaskView {
             impactLight.impactOccurred()
             
             taskViewModel.editTask = Tasks(title: "", detail: "", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)
-            taskViewModel.showTaskSettingView = true
+            showTaskSettingView = true
         } label: {
             Image(systemName: "plus")
                 .font(.title2.bold())
@@ -335,7 +339,7 @@ extension TaskView {
             let impactLight = UIImpactFeedbackGenerator(style: .rigid)
             impactLight.impactOccurred()
             
-            taskViewModel.showAllTaskListViewFlag = true
+            showAllTaskListViewFlag = true
         } label: {
             Image(systemName: "list.bullet")
                 .font(.title2.bold())
@@ -390,7 +394,7 @@ extension TaskView {
     private func longTapTaskAction(task: Tasks) {
         generator.notificationOccurred(.success)
         taskViewModel.editTask = task
-        taskViewModel.showTaskSettingView = true
+        showTaskSettingView = true
     }
     
     // cellのスタイルを変更する
