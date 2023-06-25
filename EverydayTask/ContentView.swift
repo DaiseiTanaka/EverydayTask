@@ -21,6 +21,7 @@ struct ContentView: View {
     @State private var buttonImage: Image = Image(systemName: "chevron.up.circle")
     
     @State private var badgeNum: Int = 0
+    //@State var showSidebar: Bool = false
     
     init() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (granted, err) in
@@ -31,6 +32,12 @@ struct ContentView: View {
     }
 
     var body: some View {
+        mainView
+    }
+}
+
+extension ContentView {
+    private var mainView: some View {
         ZStack {
             if taskViewModel.showCalendarFlag {
                 CalendarView(rkManager: rkManager, taskViewModel: taskViewModel)
@@ -73,9 +80,6 @@ struct ContentView: View {
             taskViewModel.loadRKManager()
         }
     }
-}
-
-extension ContentView {
     
     private var taskView: some View {
         TaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager)

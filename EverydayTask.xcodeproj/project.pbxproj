@@ -24,6 +24,7 @@
 		355B978C2A2DA77F00BD0772 /* RKColorSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B97852A2DA77F00BD0772 /* RKColorSettings.swift */; };
 		355B978D2A2DA77F00BD0772 /* RKDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B97862A2DA77F00BD0772 /* RKDate.swift */; };
 		355B978F2A2DE7F500BD0772 /* TaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B978E2A2DE7F500BD0772 /* TaskView.swift */; };
+		3577ECF12A48882F005A6915 /* SideBarStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3577ECF02A48882F005A6915 /* SideBarStack.swift */; };
 		3585CA302A370956002A090C /* WeeklyAndMonthlyDetailListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3585CA2F2A370956002A090C /* WeeklyAndMonthlyDetailListCell.swift */; };
 		3585CA322A370972002A090C /* WeeklyAndMonthlyDetailListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3585CA312A370972002A090C /* WeeklyAndMonthlyDetailListView.swift */; };
 		35ADE3C92A39D1F0004F3E67 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 35ADE3CB2A39D1F0004F3E67 /* InfoPlist.strings */; };
@@ -84,6 +85,7 @@
 		355B97852A2DA77F00BD0772 /* RKColorSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RKColorSettings.swift; sourceTree = "<group>"; };
 		355B97862A2DA77F00BD0772 /* RKDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RKDate.swift; sourceTree = "<group>"; };
 		355B978E2A2DE7F500BD0772 /* TaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskView.swift; sourceTree = "<group>"; };
+		3577ECF02A48882F005A6915 /* SideBarStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBarStack.swift; sourceTree = "<group>"; };
 		3585CA2F2A370956002A090C /* WeeklyAndMonthlyDetailListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyAndMonthlyDetailListCell.swift; sourceTree = "<group>"; };
 		3585CA312A370972002A090C /* WeeklyAndMonthlyDetailListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyAndMonthlyDetailListView.swift; sourceTree = "<group>"; };
 		35ADE3CA2A39D1F0004F3E67 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -182,6 +184,7 @@
 				3585CA312A370972002A090C /* WeeklyAndMonthlyDetailListView.swift */,
 				35CCF3472A2EFCA500C91B80 /* TaskSettingView.swift */,
 				35ADE3CD2A39E547004F3E67 /* PickerView.swift */,
+				3577ECF02A48882F005A6915 /* SideBarStack.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -344,6 +347,7 @@
 				355B97882A2DA77F00BD0772 /* RKManager.swift in Sources */,
 				355B976D2A2D9F0900BD0772 /* ContentView.swift in Sources */,
 				35ADE3CE2A39E547004F3E67 /* PickerView.swift in Sources */,
+				3577ECF12A48882F005A6915 /* SideBarStack.swift in Sources */,
 				355B97872A2DA77F00BD0772 /* RKViewController.swift in Sources */,
 				355B978F2A2DE7F500BD0772 /* TaskView.swift in Sources */,
 				355B978C2A2DA77F00BD0772 /* RKColorSettings.swift in Sources */,

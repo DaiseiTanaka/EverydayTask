@@ -15,7 +15,6 @@ struct TaskCell: View {
     @Environment(\.locale) var locale
 
     var task: Tasks
-    var cellHeight: CGFloat
     var cellStyle: TaskCellStyle
     
     @Binding var showTaskSettingAlart: Bool
@@ -43,30 +42,30 @@ struct TaskCell: View {
     
     var body: some View {
         HStack {
-            if cellStyle == .oneSmallColumns {
+            switch cellStyle {
+            case .list:
                 oneSmallColumnsCell
-            } else {
+            case .grid:
                 twoColumnsCell
             }
         }
         .padding(.vertical, 4)
         .padding(.trailing, 4)
         .background(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? Color("cellBackgroundDone") : Color("cellBackground"))
-        .frame(minHeight: cellHeight)
+        .frame(minHeight: cellStyle.height)
         .frame(maxWidth: .infinity)
         .cornerRadius(cellStyle.cornerRadius)
-        .shadow(color: !taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .black.opacity(0.2) : .clear, radius: cellStyle == .twoColumns ? 7 : 2, x: 0, y: 3)
+        .shadow(color: returnBackGroundColor(), radius: returnCellRadius(), x: 0, y: 3)
         .overlay {
             RoundedRectangle(cornerRadius: cellStyle.cornerRadius)
                 .stroke(lineWidth: 3)
                 .fill(taskViewModel.selectedTasks == [task] ? Color.blue.opacity(0.4) : .clear)
         }
-        .overlay(alignment: .topTrailing) {
+        .overlay(alignment: cellStyle == .list ? .trailing : .topTrailing) {
             editButton
         }
-        .overlay(alignment: cellStyle == .oneSmallColumns ? .leading : .topLeading) {
+        .overlay(alignment: cellStyle == .list ? .leading : .topLeading) {
             doneTaskButton
-                .padding(.leading, cellStyle == .oneSmallColumns ? 5 : 0)
         }
     }
 }
@@ -87,7 +86,7 @@ extension TaskCell {
                 detail
             }
             .padding(.leading, 15)
-            .padding(.trailing, 30)
+            .padding(.trailing, 50)
         }
     }
     
@@ -109,6 +108,23 @@ extension TaskCell {
         }
     }
     
+    private func returnBackGroundColor() -> Color {
+        if !taskViewModel.isDone(task: task, date: rkManager.selectedDate) {
+            return Color.black.opacity(0.2)
+        } else {
+            return Color.clear
+        }
+    }
+    
+    private func returnCellRadius() -> CGFloat {
+        switch cellStyle {
+        case .list:
+            return 2
+        case .grid:
+            return 7
+        }
+    }
+    
     private var accentColor: some View {
         // タスクのアクセントカラー
         Rectangle()
@@ -123,7 +139,7 @@ extension TaskCell {
             .font(.subheadline.bold())
             .foregroundColor(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .secondary : .primary)
             .lineLimit(1)
-            .padding(.trailing, 20)
+            .padding(.trailing, cellStyle == .list ? 10 : 30)
             .padding(.leading, 10)
     }
     
@@ -170,43 +186,12 @@ extension TaskCell {
             if task.spanType == .everyWeekday {
                 spanImage
             } else {
-                Text(returnSpanString(span: task.spanType))
+                Text(LocalizedStringKey(taskViewModel.returnSpanToString(span: task.spanType)))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .lineLimit(1)
             }
         }
-    }
-    
-    private func returnSpanString(span: TaskSpanType) -> String {
-//        if locale.identifier == "ja" {
-//            switch span {
-//            case .everyDay:
-//                return "毎日"
-//            case .everyWeek:
-//                return "週一"
-//            case .everyMonth:
-//                return "月一"
-//            case .everyWeekday:
-//                // everyWeekdayの時はspanImageを返す
-//                return ""
-//            }
-//        } else {
-            switch span {
-            case .oneTime:
-                return "One time"
-            case .everyDay:
-                return "Every day"
-            case .everyWeek:
-                return "Once a week"
-            case .everyMonth:
-                return "Once a month"
-            case .everyWeekday:
-                // everyWeekdayの時はspanImageを返す
-                return ""
-            }
-        //}
-
     }
     
     private var spanImage: some View {
@@ -232,11 +217,10 @@ extension TaskCell {
             showTaskSettingAlart.toggle()
             
         } label: {
-            Image(systemName: "ellipsis.circle")
+            Image(systemName: "ellipsis")
                 .font(.title3)
-                .foregroundColor(.blue)
-                .background(.clear)
-                .padding(5)
+                .foregroundColor(.primary)
+                .padding(10)
         }
     }
     // タスク実施ボタン
@@ -249,11 +233,13 @@ extension TaskCell {
                     .font(.title3)
                     .foregroundColor(.green)
                     .padding(5)
+                    .padding(.leading, cellStyle == .list ? 5 : 0)
             } else {
                 Image(systemName: "circle")
                     .font(.title3)
                     .foregroundColor(.secondary)
                     .padding(5)
+                    .padding(.leading, cellStyle == .list ? 5 : 0)
             }
         }
     }
@@ -401,7 +387,7 @@ struct TaskCell_Previews: PreviewProvider {
     @State static var showTaskSettingAlart: Bool = false
         
     static var previews: some View {
-        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: Tasks.previewData[0], cellHeight: 80, cellStyle: .twoColumns, showTaskSettingAlart: $showTaskSettingAlart)
+        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: Tasks.previewData[0], cellStyle: .list, showTaskSettingAlart: $showTaskSettingAlart)
             .frame(width: UIScreen.main.bounds.width / 2 - 20)
     }
 }

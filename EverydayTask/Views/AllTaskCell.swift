@@ -52,15 +52,15 @@ struct AllTaskCell: View {
             Color.black.opacity(0.000001)
                 .onTapGesture {
                     taskViewModel.editTask = task
-                    showTaskSettingAlart.toggle()
-                }
-                .onLongPressGesture() {
-                    let generator = UINotificationFeedbackGenerator()
-                    generator.notificationOccurred(.success)
-                    
-                    taskViewModel.editTask = task
                     showTaskSettingView.toggle()
                 }
+//                .onLongPressGesture() {
+//                    let generator = UINotificationFeedbackGenerator()
+//                    generator.notificationOccurred(.success)
+//
+//                    taskViewModel.editTask = task
+//                    showTaskSettingView.toggle()
+//                }
         )
         .confirmationDialog(taskViewModel.editTask.title, isPresented: $showTaskSettingAlart, titleVisibility: .visible) {
             Button("Edit this task?") {
@@ -112,10 +112,14 @@ extension AllTaskCell {
         // タスクのスパン
         HStack(spacing: 3) {
             // addedDate
-            Text("\(taskViewModel.returnDayString(date: task.addedDate)) ~ ")
-                .font(.footnote)
-                .foregroundColor(.secondary)
-            
+            HStack {
+                Text("\(taskViewModel.returnDayString(date: task.addedDate)) ~ ")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                Spacer()
+            }
+            .frame(width: 50)
+
             if task.spanType == .everyDay || task.spanType == .everyWeekday {
                 if task.notification {
                     Image(systemName: "bell.badge")
@@ -147,7 +151,7 @@ extension AllTaskCell {
             if task.spanType == .everyWeekday {
                 spanImage
             } else {
-                Text(returnSpanString(span: task.spanType))
+                Text(LocalizedStringKey(taskViewModel.returnSpanToString(span: task.spanType)))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .lineLimit(1)
@@ -166,7 +170,7 @@ extension AllTaskCell {
                 .foregroundColor(.primary)
                 .background(
                     Color.black.opacity(0.00001)
-                        .frame(width: 50, height: 50)
+                        .frame(width: 70, height: 70)
                 )
         }
     }
@@ -183,22 +187,6 @@ extension AllTaskCell {
                 .onChange(of: task.isAble) { isAble in
                     taskViewModel.isAbleChange(task: task, isAble: isAble)
                 }
-        }
-    }
-    
-    private func returnSpanString(span: TaskSpanType) -> String {
-        switch span {
-        case .oneTime:
-            return "One time"
-        case .everyDay:
-            return "Every day"
-        case .everyWeek:
-            return "Once a week"
-        case .everyMonth:
-            return "Once a month"
-        case .everyWeekday:
-            // everyWeekdayの時はspanImageを返す
-            return ""
         }
     }
     

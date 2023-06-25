@@ -45,75 +45,70 @@ enum TaskSpanType: Codable {
     case everyWeekday
 }
 
-enum SortKey {
+enum SortKey: String, CaseIterable, Identifiable {
+    case spanType
     case title
     case addedDate
-    case spanType
+    var id: Self { return self }
+    
+    var keyString: String {
+        switch self {
+        case .spanType:
+            return "Span type"
+        case .title:
+            return "Title"
+        case .addedDate:
+            return "Added date"
+        }
+    }
 }
 
-enum TaskCellStyle: String {
-    case oneColumns = "One columns"
-    case oneSmallColumns = "One small columns"
-    case twoColumns = "Two columns"
-    case twoSmallColumns = "Two small columns"
-    case threeColumns = "Three columns"
+enum TaskCellStyle: String, CaseIterable, Identifiable  {
+    case list
+    case grid
+    var id: Self { return self }
+    
+    var styleString: String {
+        switch self {
+        case .list:
+            return "List"
+        case .grid:
+            return "Grid"
+        }
+    }
     
     var columns: [GridItem] {
         switch self {
-        case .oneColumns:
+        case .list:
             return Array(repeating: .init(.flexible(minimum: 10, maximum: 500)), count: 1)
-        case .oneSmallColumns:
-            return Array(repeating: .init(.flexible(minimum: 10, maximum: 500)), count: 1)
-        case .twoColumns:
+        case .grid:
             return Array(repeating: .init(.flexible(minimum: 10, maximum: 500)), count: 2)
-        case .twoSmallColumns:
-            return Array(repeating: .init(.flexible(minimum: 10, maximum: 500)), count: 2)
-        case .threeColumns:
-            return Array(repeating: .init(.flexible(minimum: 10, maximum: 500)), count: 3)
         }
     }
     
     var height: CGFloat {
         switch self {
-        case .oneColumns:
-            return 80
-        case .oneSmallColumns:
+        case .list:
             return 40
-        case .twoColumns:
+        case .grid:
             return 80
-        case .twoSmallColumns:
-            return 60
-        case .threeColumns:
-            return 60
         }
     }
     
     var space: CGFloat {
         switch self {
-        case .oneColumns:
+        case .list:
             return 4
-        case .oneSmallColumns:
-            return 4
-        case .twoColumns:
-            return 10
-        case .twoSmallColumns:
-            return 10
-        case .threeColumns:
+        case .grid:
             return 10
         }
     }
     
     var cornerRadius: CGFloat {
         switch self {
-        case .oneColumns:
+        case .list:
             return 5
-        case .oneSmallColumns:
-            return 5
-        case .twoColumns:
-            return 10
-        case .twoSmallColumns:
-            return 10
-        case .threeColumns:
+        case .grid:
             return 10
         }
     }

@@ -17,17 +17,19 @@ struct AllTaskListView: View {
     @State private var showSortAlart: Bool = false
     @State private var showTaskSettingView: Bool = false
     @State private var searchText: String = ""
-    
+    @AppStorage("sortKey") private var sortKey = SortKey.spanType
+
     var body: some View {
         NavigationView {
             VStack {
-                if returnSortedTasks(key: taskViewModel.sortKey).isEmpty {
+                if returnSortedTasks(key: sortKey).isEmpty {
                     emptyView
                 } else {
                     allTaskList
                 }
             }
             .navigationTitle("All Tasks")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     sortButton
@@ -45,17 +47,6 @@ struct AllTaskListView: View {
         .sheet(isPresented: self.$showTaskSettingView, content: {
             TaskSettingView(rkManager: rkManager, taskViewModel: taskViewModel, task: taskViewModel.editTask, selectedWeekdays: taskViewModel.editTask.spanDate)
         })
-        .confirmationDialog("Sorted by", isPresented: $showSortAlart, titleVisibility: .visible) {
-            Button(LocalizedStringKey(returnSortKeyString(sortKey: .spanType))) {
-                taskViewModel.sortKey = .spanType
-            }
-            Button(LocalizedStringKey(returnSortKeyString(sortKey: .addedDate))) {
-                taskViewModel.sortKey = .addedDate
-            }
-            Button(LocalizedStringKey(returnSortKeyString(sortKey: .title))) {
-                taskViewModel.sortKey = .title
-            }
-        }
     }
 }
 
@@ -88,7 +79,7 @@ extension AllTaskListView {
     private var allTaskList: some View {
         List {
             Section(header: header) {
-                ForEach(Array(returnSortedTasks(key: taskViewModel.sortKey).enumerated()), id: \.element) { index, task in
+                ForEach(Array(returnSortedTasks(key: sortKey).enumerated()), id: \.element) { index, task in
                     AllTaskCell(taskViewModel: taskViewModel, task: task, showTaskSettingView: $showTaskSettingView)
                 }
                 .onDelete(perform: rowRemove)
@@ -114,9 +105,15 @@ extension AllTaskListView {
     }
     
     private var sortButton: some View {
-        Button(action: {
-            showSortAlart = true
-        }) {
+        Menu {
+            Section("Sort") {
+                Picker("Sort", selection: $sortKey) {
+                    ForEach(SortKey.allCases) {
+                        Text(LocalizedStringKey($0.keyString))
+                    }
+                }
+            }
+        } label: {
             Image(systemName: "arrow.up.arrow.down")
                 .foregroundColor(.secondary)
                 .font(.subheadline)
@@ -156,7 +153,7 @@ extension AllTaskListView {
     
     // 行削除処理
     private func rowRemove(offsets: IndexSet) {
-        var sortedTasks = returnSortedTasks(key: taskViewModel.sortKey)
+        var sortedTasks = returnSortedTasks(key: sortKey)
         sortedTasks.remove(atOffsets: offsets)
         taskViewModel.tasks = sortedTasks.sorted(by: {$0.addedDate < $1.addedDate})
         
@@ -169,30 +166,6 @@ extension AllTaskListView {
         else if index == 2 { return "Every month" }
         else if index == 3 { return "Custom" }
         else { return "One time" }
-    }
-    
-    // sortKeyをStringへ変換
-    private func returnSortKeyString(sortKey: SortKey) -> String {
-        switch sortKey {
-        case .title:
-            if taskViewModel.sortKey == .title {
-                return "〉Title"
-            } else {
-                return "Title"
-            }
-        case .addedDate:
-            if taskViewModel.sortKey == .addedDate {
-                return "〉Added date"
-            } else {
-                return"Added date"
-            }
-        case .spanType:
-            if taskViewModel.sortKey == .spanType {
-                return "〉Span type"
-            } else {
-                return"Span type"
-            }
-        }
     }
     
     // 全てのタスクをspanTypeごとに仕分けして返す

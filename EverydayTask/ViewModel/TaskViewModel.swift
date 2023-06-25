@@ -22,7 +22,6 @@ class TaskViewModel: ObservableObject {
     @Published var latestDate: Date
     
     @Published var showCalendarFlag: Bool
-    @Published var sortKey: SortKey
                 
     init() {
         self.tasks = Tasks.defaulData
@@ -34,7 +33,6 @@ class TaskViewModel: ObservableObject {
         self.trueFlag = true
         self.latestDate = Date()
         self.showCalendarFlag = true
-        self.sortKey = .spanType
         
         self.tasks = loadTasks() ?? Tasks.defaulData
         self.selectedTasks = tasks
@@ -241,6 +239,21 @@ class TaskViewModel: ObservableObject {
         return monthIndex1 == monthIndex2 && yearIndex1 == yearIndex2
     }
     
+    func returnSpanToString(span: TaskSpanType) -> String {
+        switch span {
+        case .oneTime:
+            return "1 time"
+        case .everyDay:
+            return "Every day"
+        case .everyWeek:
+            return "Once a week"
+        case .everyMonth:
+            return "Once a month"
+        case .everyWeekday:
+            // everyWeekdayの時はspanImageを返す
+            return ""
+        }
+    }
     
     // MARK: - データ解析関連
     // その日すべき全てのタスクの数を返す

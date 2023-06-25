@@ -12,16 +12,18 @@ struct TaskView: View {
     @ObservedObject var taskViewModel: TaskViewModel
     @ObservedObject var rkManager: RKManager
     
-    @AppStorage("cellStyle") private var cellStyle: TaskCellStyle = .twoColumns
+    @State private var cellStyle: TaskCellStyle = .grid
+    @AppStorage("cellStyleAS") private var cellStyleAS: TaskCellStyle = .grid
+    @AppStorage("selectedStyle") private var selectedStyle: TaskCellStyle = .grid
     @State private var columns: [GridItem] = Array(repeating: .init(.flexible(minimum: 10, maximum: 300)), count: 2)
     @State private var cellHeight: CGFloat = 80
-    @State private var cellSpace: CGFloat = 10
     
     let generator = UINotificationFeedbackGenerator()
     
     @State var showTaskSettingView: Bool = false
     @State var showTaskSettingAlart: Bool = false
     @State var showAllTaskListViewFlag: Bool = false
+    @State var showChangeCellStyleAlart: Bool = false
     
     @AppStorage("showRegularlyTaskList") private var showRegularlyTaskList: Bool = true
     @AppStorage("showOneTimeTaskList") private var showOneTimeTaskList: Bool = true
@@ -63,6 +65,9 @@ struct TaskView: View {
             }
         }
         .overlay(alignment: .bottomTrailing) { addTaskButton }
+        .onAppear {
+            cellStyle = cellStyleAS
+        }
         .sheet(isPresented: $showTaskSettingView, content: {
             TaskSettingView(rkManager: rkManager, taskViewModel: taskViewModel, task: taskViewModel.editTask, selectedWeekdays: taskViewModel.editTask.spanDate)
         })
@@ -84,9 +89,6 @@ struct TaskView: View {
             }
         } message: {
             Text(taskViewModel.editTask.detail)
-        }
-        .onAppear {
-            changeColumn(style: cellStyle)
         }
     }
 }
@@ -154,9 +156,9 @@ extension TaskView {
     
     private var todaysTaskList: some View {
         VStack(spacing: 10) {
-            LazyVGrid(columns: columns, spacing: cellSpace) {
+            LazyVGrid(columns: cellStyle.columns, spacing: cellStyle.space) {
                 ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[0], id: \.id) { task in
-                    TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
+                    TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
                         .onTapGesture {
                             updateCalendar(task: task)
                         }
@@ -192,9 +194,9 @@ extension TaskView {
             }
             
             if showRegularlyTaskList {
-                LazyVGrid(columns: columns, spacing: cellSpace) {
+                LazyVGrid(columns: cellStyle.columns, spacing: cellStyle.space) {
                     ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[1], id: \.id) { task in
-                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
+                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
                             .onTapGesture {
                                 updateCalendar(task: task)
                             }
@@ -203,7 +205,7 @@ extension TaskView {
                             }
                     }
                     ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[2], id: \.id) { task in
-                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
+                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
                             .onTapGesture {
                                 updateCalendar(task: task)
                             }
@@ -240,9 +242,9 @@ extension TaskView {
             }
             
             if showOneTimeTaskList {
-                LazyVGrid(columns: columns, spacing: cellSpace) {
+                LazyVGrid(columns: cellStyle.columns, spacing: cellStyle.space) {
                     ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[3], id: \.id) { task in
-                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
+                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
                             .onTapGesture {
                                 updateCalendar(task: task)
                             }
@@ -279,12 +281,12 @@ extension TaskView {
             }
             
             if showDoneTasks {
-                LazyVGrid(columns: columns, spacing: cellSpace) {
+                LazyVGrid(columns: cellStyle.columns, spacing: cellStyle.space) {
                     if !taskViewModel.returnSelectedDateFinishedTasks(date: rkManager.selectedDate).isEmpty {
                         ForEach(taskViewModel.returnSelectedDateFinishedTasks(date: rkManager.selectedDate), id: \.id) { task in
                             // 実行済みのタスク
                             if taskViewModel.isDone(task: task, date: rkManager.selectedDate) {
-                                TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellHeight: cellHeight, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
+                                TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
                                     .onTapGesture {
                                         updateCalendar(task: task)
                                     }
@@ -352,6 +354,62 @@ extension TaskView {
         }
     }
     
+    // cellのスタイルを変更する
+    private var changeCellStyleButton: some View {
+        ZStack {
+            switch cellStyle {
+            case .list:
+                Button {
+                    withAnimation {
+                        cellStyle = .grid
+                    }
+                } label: {
+                    Image(systemName: "square.fill.text.grid.1x2")
+                        .foregroundColor(.secondary)
+                        .font(.body.bold())
+                }
+            case .grid:
+                Button {
+                    withAnimation {
+                        cellStyle = .list
+                    }
+                } label: {
+                    Image(systemName: "square.grid.2x2")
+                        .foregroundColor(.secondary)
+                        .font(.body.bold())
+                }
+            }
+        }
+        .onChange(of: cellStyle) { newValue in
+            // userdefaultsに保存
+            cellStyleAS = newValue
+        }
+//        Menu {
+//            Picker("Sort", selection: $selectedStyle) {
+//                ForEach(TaskCellStyle.allCases) {
+//                    Text(LocalizedStringKey($0.styleString))
+//                }
+//            }
+//            .onSubmit {
+//                withAnimation {
+//                    cellStyle = selectedStyle
+//                }
+//            }
+//        } label: {
+//            switch cellStyle {
+//            case .list:
+//                Image(systemName: "square.fill.text.grid.1x2")
+//                    .foregroundColor(.secondary)
+//                    .font(.body.bold())
+//            case .grid:
+//                Image(systemName: "square.grid.2x2")
+//                    .foregroundColor(.secondary)
+//                    .font(.body.bold())
+//            }
+//        }
+//        .menuOrder(.fixed)
+    }
+    
     // 特定のタスクをタップした時の関数
     private func updateCalendar(task: Tasks) {
         let spanType = task.spanType
@@ -396,38 +454,12 @@ extension TaskView {
         taskViewModel.editTask = task
         showTaskSettingView = true
     }
-    
-    // cellのスタイルを変更する
-    private var changeCellStyleButton: some View {
-        Button {
-            withAnimation {
-                if cellStyle == .oneSmallColumns {
-                    cellStyle = .twoColumns
-                } else {
-                    cellStyle = .oneSmallColumns
-                }
-                changeColumn(style: cellStyle)
-            }
-        } label: {
-            Image(systemName: cellStyle == .oneSmallColumns ? "square.grid.2x2" : "square.fill.text.grid.1x2")
-                .scaledToFit()
-                .foregroundColor(.secondary)
-        }
-    }
-    
-    // columnを変更
-    private func changeColumn(style: TaskCellStyle) {
-        columns = style.columns
-        cellHeight = style.height
-        cellSpace = style.space
-    }
-    
 }
 
 struct TaskView_Previews: PreviewProvider {
     //@StateObject static var taskViewModel = TaskViewModel()
     static let rkManager = RKManager(calendar: Calendar.current, minimumDate: Date().addingTimeInterval(-60*60*24*7), maximumDate: Date(), mode: 0)
-    
+
     static var previews: some View {
         //ContentView()
         TaskView(taskViewModel: TaskViewModel(), rkManager: rkManager)

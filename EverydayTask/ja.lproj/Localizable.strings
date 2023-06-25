@@ -9,15 +9,20 @@
 // Task View
 "Today" = "今日";
 "Every day" = "毎日";
-"Once a week" = "週一";
-"Once a month" = "月一";
-"One time" = "1度のみのタスク";
+"Once a week" = "週1";
+"Once a month" = "月1";
+"One time" = "一度のみのタスク";
+"1 time" = "1回";
 "Regularly" = "定期的なタスク";
 "Completed tasks" = "完了済み";
 "All tasks for today have been completed!" = "本日のタスクを全て達成しました！";
 "Good job for today." = "お疲れ様でした。";
 "All tasks have been completed." = "全てのタスクが完了済みです。";
 "No tasks have been set." = "タスクは設定されていません。";
+"Cell style" = "セルのスタイル";
+"Sort" = "並び順序";
+"List" = "リスト";
+"Grid" = "グリッド";
 
 // All Task View
 "All Tasks" = "全てのタスク";
@@ -26,9 +31,6 @@
 "Span type" = "繰り返し期間";
 "Added date" = "追加日";
 "Title" = "タイトル";
-"〉Title" = "〉タイトル";
-"〉Added date" = "〉追加日";
-"〉Span type" = "〉繰り返し期間";
 "Delete selected items" = "選択された項目を削除";
 "items" = "件";
 "item" = "件";
