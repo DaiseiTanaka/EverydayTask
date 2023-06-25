@@ -23,6 +23,7 @@ struct RKMonth: View {
     var monthsArray: [[Date]] {
         monthArray()
     }
+    @Binding var id: String
     
     var body: some View {
         VStack(alignment: HorizontalAlignment.center, spacing: 5) {
@@ -44,6 +45,7 @@ struct RKMonth: View {
                                             taskCount: taskViewModel.returnTaskCount(date: column),
                                             doneTaskCount: taskViewModel.returnDoneTaskCount(date: column))
                                     )
+                                    .id(taskViewModel.returnDayStringLong(date: column))
                                     .frame(width: cellWidthPhone, height: cellWidthPhone*1.5)
                                     .onTapGesture {
                                         self.dateTapped(date: column)

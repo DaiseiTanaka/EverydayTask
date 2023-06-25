@@ -15,6 +15,8 @@ struct RKViewController: View {
 
     @Binding var isPresented: Bool
     @State var tappedBackground: Bool
+    
+    @State var id: String = ""
 
     var body: some View {
         ScrollViewReader { (proxy: ScrollViewProxy) in
@@ -22,22 +24,22 @@ struct RKViewController: View {
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack {
                         ForEach(0..<taskViewModel.numberOfMonth, id: \.self) { index in
-                            RKMonth(taskViewModel: taskViewModel, rkManager: self.rkManager, isPresented: self.$isPresented, monthOffset: index, tappedBackground: self.$tappedBackground)
-                                .id(index)
+                            RKMonth(taskViewModel: taskViewModel, rkManager: self.rkManager, isPresented: self.$isPresented, monthOffset: index, tappedBackground: self.$tappedBackground, id: $id)
                         }
                         .padding(.top, 20)
                     }
-                    .padding(.bottom, 360)
+                    .padding(.bottom, 500)
                 }
                 // 画面がロードされた時は下へスクロール
                 .onAppear {
+                    self.id = taskViewModel.returnDayStringLong(date: Date())
                     scrollToThisMonth(proxy: proxy)
                 }
                 // 選択している日が今日の時は下へスクロール
                 .onChange(of: rkManager.selectedDate) { newValue in
-                    if taskViewModel.isSameDay(date1: newValue, date2: Date()) {
+                    //if taskViewModel.isSameDay(date1: newValue, date2: Date()) {
                         scrollToThisMonth(proxy: proxy)
-                    }
+                    //}
                 }
                 // カレンダーの余白をタップした時は下へスクロール
                 .onChange(of: tappedBackground) { _ in
@@ -57,9 +59,10 @@ struct RKViewController: View {
     }
     
     func scrollToThisMonth(proxy: ScrollViewProxy) {
-        let target: CGFloat = 0.0
+        let target: CGFloat = 0.4
+        let id: String = taskViewModel.returnDayStringLong(date: rkManager.selectedDate)
         withAnimation {
-            proxy.scrollTo(taskViewModel.numberOfMonth-1, anchor: UnitPoint(x: 0.5, y: target))
+            proxy.scrollTo(id, anchor: UnitPoint(x: 0.5, y: target))
         }
     }
     

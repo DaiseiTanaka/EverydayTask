@@ -199,6 +199,16 @@ class TaskViewModel: ObservableObject {
         return weekdayIndex
     }
     
+    // Dateから日付: 2023-06-25 String を返す
+    func returnDayStringLong(date: Date) -> String {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "ja_JP")
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let id = dateFormatter.string(from: date)
+        return id
+    }
+    
     // Date -> 0/0
     func returnDayString(date: Date) -> String {
         var calendar = Calendar(identifier: .gregorian)
