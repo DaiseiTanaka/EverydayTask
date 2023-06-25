@@ -73,7 +73,7 @@ extension AllTaskListView {
     }
     // リストのヘッダー
     private var header: some View {
-        HStack {
+        HStack(spacing: 3) {
             Spacer()
             if taskViewModel.tasks.count > 1 {
                 Text("\(taskViewModel.tasks.count)")

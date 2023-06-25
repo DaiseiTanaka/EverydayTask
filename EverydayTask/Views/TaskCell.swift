@@ -51,7 +51,7 @@ struct TaskCell: View {
         }
         .padding(.vertical, 4)
         .padding(.trailing, 4)
-        .background(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? Color(UIColor.systemGray5) : Color("cellBackground"))
+        .background(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? Color("cellBackgroundDone") : Color("cellBackground"))
         .frame(minHeight: cellHeight)
         .frame(maxWidth: .infinity)
         .cornerRadius(cellStyle.cornerRadius)
