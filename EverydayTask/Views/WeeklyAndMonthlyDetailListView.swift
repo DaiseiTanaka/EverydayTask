@@ -25,6 +25,7 @@ struct WeeklyAndMonthlyDetailListView: View {
                 
                 taskList
             }
+            .padding(.bottom, 400)
         }
     }
 }
@@ -34,6 +35,7 @@ extension WeeklyAndMonthlyDetailListView {
         Text(task.title)
             .font(.title.bold())
             .padding(.bottom, 5)
+            .padding(.horizontal)
     }
     
     private var detail: some View {
@@ -42,6 +44,7 @@ extension WeeklyAndMonthlyDetailListView {
                 .font(.title3)
                 .foregroundColor(.secondary)
                 .padding(.bottom, 10)
+                .padding(.horizontal)
             // もしもタスクの実施履歴がなかった場合
             if task.doneDate.isEmpty {
                 Text("No data.")

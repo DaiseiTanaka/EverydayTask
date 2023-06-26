@@ -138,7 +138,7 @@ extension TaskCell {
         Text(task.title)
             .font(.subheadline.bold())
             .foregroundColor(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .secondary : .primary)
-            .lineLimit(1)
+            .lineLimit(cellStyle == .list ? nil : 1)
             .padding(.trailing, cellStyle == .list ? 10 : 30)
             .padding(.leading, 10)
     }
@@ -148,7 +148,7 @@ extension TaskCell {
         Text(task.detail)
             .font(.footnote)
             .foregroundColor(.secondary)
-            .lineLimit(2)
+            .lineLimit(cellStyle == .list ? nil : 2)
             .padding(.leading, 10)
     }
     
