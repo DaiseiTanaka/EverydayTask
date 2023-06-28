@@ -126,7 +126,12 @@ struct EverydayTaskWidgetEntryView : View {
             default: EverydayTaskLarge
             }
         } else {
-            EverydayTaskEmpty
+            switch family {
+            case .systemSmall: EverydayTaskEmptySmall
+            case .systemMedium: EverydayTaskEmpty
+            case .systemLarge: EverydayTaskEmpty
+            default: EverydayTaskEmpty
+            }
         }
     }
     
@@ -340,26 +345,57 @@ extension EverydayTaskWidgetEntryView {
         }
     }
     
-    // 今日のタスクを全て実施した時に表示する
-    var EverydayTaskEmpty: some View {
-        VStack {
+    // 今日のタスクを全て実施した時に表示する small
+    var EverydayTaskEmptySmall: some View {
+        VStack(alignment: .leading) {
             HStack {
                 Image("icon")
                     .resizable()
-                    .frame(width: 100, height: 100)
-                    .padding(.top, 5)
+                    .frame(width: 50, height: 50)
+                    .cornerRadius(5)
+                    .padding(.leading, 10)
                 Spacer(minLength: 0)
             }
             Spacer(minLength: 0)
-            HStack {
-                Spacer()
-                Text("Fin.")
-                    .font(.title.bold())
-                    .foregroundColor(.white)
-                    .padding()
-            }
+            Text("All tasks for today have been completed!")
+                .font(.subheadline.bold())
+                .foregroundColor(.secondary)
+                .padding(.horizontal)
+            Text("Good job for today.")
+                .font(.footnote)
+                .foregroundColor(.secondary)
+                .padding(.bottom, 5)
+                .padding(.horizontal)
         }
-        .background(.black)
+        .padding(.vertical, 5)
+    }
+    
+    // 今日のタスクを全て実施した時に表示する
+    var EverydayTaskEmpty: some View {
+        ZStack {
+            VStack {
+                HStack {
+                    Image("icon")
+                        .resizable()
+                        .frame(width: 50, height: 50)
+                        .cornerRadius(5)
+                        .padding(.leading, 10)
+                    Spacer()
+                }
+                Spacer()
+            }
+            VStack(alignment: .leading) {
+                Text("All tasks for today have been completed!")
+                    .font(.body.bold())
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal)
+                Text("Good job for today.")
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal)
+            }
+            .padding(.top)
+        }
+        .padding(.vertical, 5)
     }
 }
 
