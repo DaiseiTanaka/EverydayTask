@@ -119,7 +119,7 @@ extension TaskCell {
     private func returnCellRadius() -> CGFloat {
         switch cellStyle {
         case .list:
-            return 2
+            return 4
         case .grid:
             return 7
         }
@@ -255,14 +255,33 @@ extension TaskCell {
                     withAnimation {
                         // 実行済みにする
                         taskViewModel.tasks[index].doneDate.append(selectedDate)
+                        taskViewModel.tasks[index].isAble = false
                         updateSelectedTasks(index: index)
                     }
                 } else {
-                    withAnimation {
-                        // 実行履歴を全て削除する
-                        taskViewModel.tasks[index].doneDate.removeAll()
-                        updateSelectedTasks(index: index)
+                    let impactLight = UIImpactFeedbackGenerator(style: .rigid)
+                    impactLight.impactOccurred()
+                    
+                    if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
+                        // タスクを未達成の状態にする
+                        let selectedTaskDoneDates = taskViewModel.tasks[index].doneDate
+                        for doneDateIndex in 0..<selectedTaskDoneDates.count {
+                            let doneDate = selectedTaskDoneDates[doneDateIndex]
+                            if taskViewModel.isSameDay(date1: selectedDate, date2: doneDate) {
+                                // 上書き
+                                withAnimation {
+                                    taskViewModel.tasks[index].doneDate.remove(at: doneDateIndex)
+                                    taskViewModel.tasks[index].doneDate.sort()
+                                    updateSelectedTasks(index: index)
+                                }
+                            }
+                        }
                     }
+//                    withAnimation {
+//                        // 実行履歴を全て削除する
+//                        taskViewModel.tasks[index].doneDate.removeAll()
+//                        updateSelectedTasks(index: index)
+//                    }
                 }
             }
             

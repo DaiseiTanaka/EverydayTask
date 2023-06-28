@@ -93,21 +93,19 @@ class TaskViewModel: ObservableObject {
         // タスクをタップしていない場合、全てのタスクの実施状態を表示する
         if selectedTasks == tasks {
             let firstDay = returnLatestDate(tasks: tasks)
-            let firstDayMonth: Int = calendar.component(.month, from: firstDay)
             let today = Date()
-            let todayMonth: Int = calendar.component(.month, from: today)
-
-            self.numberOfMonth = todayMonth - firstDayMonth + 1
+            let maximumDate = today.addingTimeInterval(60*60*24*365)
+            
+            self.numberOfMonth = calendar.dateComponents([.month], from: firstDay, to: maximumDate).month ?? 12
             self.rkManager = RKManager(calendar: Calendar.current, minimumDate: firstDay, maximumDate: today, mode: 0)
         // タスクを選択した時
         } else {
             let task = selectedTasks[0]
             let firstDay = task.addedDate
-            let firstDayMonth: Int = calendar.component(.month, from: firstDay)
             let today = Date()
-            let todayMonth: Int = calendar.component(.month, from: today)
+            let monthDiff = calendar.dateComponents([.month], from: firstDay, to: today).month ?? 12
+            self.numberOfMonth = monthDiff + 1
 
-            self.numberOfMonth = todayMonth - firstDayMonth + 1
             self.rkManager = RKManager(calendar: Calendar.current, minimumDate: firstDay, maximumDate: today, mode: 0)
         }
         trueFlag = true
@@ -180,6 +178,14 @@ class TaskViewModel: ObservableObject {
             showCalendarFlag = true
         }
         saveTasks(tasks: tasks)
+    }
+    
+    // 選択された日が今日かBoolで返す
+    func isToday() -> Bool {
+        if isSameDay(date1: Date(), date2: rkManager.selectedDate) {
+            return true
+        }
+        return false
     }
     
     // MARK: - 日付関連
@@ -514,8 +520,13 @@ class TaskViewModel: ObservableObject {
         switch spanType {
         case .oneTime:
             // doneDatesに一つ以上日付が追加されていたなら実行されている
-            if doneDates.count > 0 {
-                return true
+//            if doneDates.count > 0 {
+//                return true
+//            }
+            for doneDate in doneDates {
+                if isSameDay(date1: date, date2: doneDate) {
+                    return true
+                }
             }
             return false
         case .everyDay:

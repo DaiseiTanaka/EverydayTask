@@ -39,6 +39,7 @@
 
 // Alart
 "Edit this task?" = "編集";
+"Show calendar?" = "カレンダー";
 "Duplicate this task?" = "複製";
 "Hide this task?" = "非表示";
 "Delete this task?" = "削除";

@@ -18,7 +18,8 @@ struct AllTaskListView: View {
     @State private var showTaskSettingView: Bool = false
     @State private var searchText: String = ""
     @AppStorage("sortKey") private var sortKey = SortKey.spanType
-
+    @State private var prevSelectedTasks: [Tasks] = []
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -47,6 +48,16 @@ struct AllTaskListView: View {
         .sheet(isPresented: self.$showTaskSettingView, content: {
             TaskSettingView(rkManager: rkManager, taskViewModel: taskViewModel, task: taskViewModel.editTask, selectedWeekdays: taskViewModel.editTask.spanDate)
         })
+        .onAppear {
+            self.prevSelectedTasks = taskViewModel.selectedTasks
+        }
+        .onDisappear {
+            if taskViewModel.selectedTasks != prevSelectedTasks {
+                // タップされる前のカレンダーの状態に戻す
+                taskViewModel.selectedTasks = self.prevSelectedTasks
+                taskViewModel.loadRKManager()
+            }
+        }
     }
 }
 
@@ -80,7 +91,7 @@ extension AllTaskListView {
         List {
             Section(header: header) {
                 ForEach(Array(returnSortedTasks(key: sortKey).enumerated()), id: \.element) { index, task in
-                    AllTaskCell(taskViewModel: taskViewModel, task: task, showTaskSettingView: $showTaskSettingView)
+                    AllTaskCell(taskViewModel: taskViewModel, task: task, showTaskSettingView: $showTaskSettingView, prevSelectedTasks: $prevSelectedTasks)
                 }
                 .onDelete(perform: rowRemove)
             }

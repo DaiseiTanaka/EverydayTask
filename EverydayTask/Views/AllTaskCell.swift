@@ -13,6 +13,8 @@ struct AllTaskCell: View {
     
     @Binding var showTaskSettingView: Bool
     @State private var showTaskSettingAlart: Bool = false
+    @State private var showCalendarView: Bool = false
+    @Binding var prevSelectedTasks: [Tasks]
     
     let spanImageListNotExit: [Image] = [
         Image(systemName: "s.circle"),
@@ -51,20 +53,30 @@ struct AllTaskCell: View {
         .background(
             Color.black.opacity(0.000001)
                 .onTapGesture {
-                    taskViewModel.editTask = task
-                    showTaskSettingView.toggle()
+                    let impactLight = UIImpactFeedbackGenerator(style: .rigid)
+                    impactLight.impactOccurred()
+                    showCalendarView.toggle()
+                    // タップされたタスクをカレンダーに表示する
+                    taskViewModel.selectedTasks = [task]
+                    taskViewModel.loadRKManager()
                 }
-//                .onLongPressGesture() {
-//                    let generator = UINotificationFeedbackGenerator()
-//                    generator.notificationOccurred(.success)
-//
-//                    taskViewModel.editTask = task
-//                    showTaskSettingView.toggle()
-//                }
+                .onLongPressGesture() {
+                    let generator = UINotificationFeedbackGenerator()
+                    generator.notificationOccurred(.success)
+                    // アラートを表示
+                    taskViewModel.editTask = task
+                    showTaskSettingAlart.toggle()
+                }
         )
+        .sheet(isPresented: self.$showCalendarView, content: {
+            selectedCalendarView
+        })
         .confirmationDialog(taskViewModel.editTask.title, isPresented: $showTaskSettingAlart, titleVisibility: .visible) {
             Button("Edit this task?") {
                 showTaskSettingView.toggle()
+            }
+            Button("Show calendar?") {
+                showCalendarView.toggle()
             }
             Button("Duplicate this task?") {
                 taskViewModel.duplicateTask(task: taskViewModel.editTask)
@@ -206,11 +218,46 @@ extension AllTaskCell {
             }
         }
     }
+    
+    // タスクがタップされたときに表示するカレンダー
+    private var selectedCalendarView: some View {
+        ZStack {
+            if task.spanType == .everyWeek || task.spanType == .everyMonth {
+                WeeklyAndMonthlyDetailListView(taskViewModel: taskViewModel, rkManager: RKManager(calendar: Calendar.current, minimumDate: Date(), maximumDate: Date(), mode: 0), task: task)
+                    
+            } else {
+                VStack {
+                    Text("\(task.title)")
+                        .font(.title2.bold())
+                    CalendarView(rkManager: RKManager(calendar: Calendar.current, minimumDate: Date(), maximumDate: Date(), mode: 0), taskViewModel: taskViewModel)
+                    
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .presentationDetents([.large])
+        .presentationCornerRadius(30)
+        .presentationDragIndicator(.visible)
+        .padding(.top)
+        .overlay(alignment: .topLeading) { dismissButton }
+    }
+    
+    private var dismissButton: some View {
+        Button(action: {
+            showCalendarView = false
+        }) {
+            Image(systemName: "xmark")
+                .foregroundColor(.secondary)
+                .font(.title3)
+                .padding()
+        }
+    }
 }
 
 struct AllTaskCell_Previews: PreviewProvider {
     @State static var showTaskSettingView: Bool = false
+    @State static var prevSelectedTasks: [Tasks] = []
     static var previews: some View {
-        AllTaskCell(taskViewModel: TaskViewModel(), task: Tasks.defaulData[0], showTaskSettingView: $showTaskSettingView)
+        AllTaskCell(taskViewModel: TaskViewModel(), task: Tasks.defaulData[0], showTaskSettingView: $showTaskSettingView, prevSelectedTasks: $prevSelectedTasks)
     }
 }

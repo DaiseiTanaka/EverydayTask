@@ -29,6 +29,10 @@ struct TaskView: View {
     @AppStorage("showOneTimeTaskList") private var showOneTimeTaskList: Bool = true
     @AppStorage("showDoneTasks") private var showDoneTasks: Bool = false
 
+    @State private var offset = CGFloat.zero
+    @State private var closeOffset = CGFloat.zero
+    @State private var openOffset = CGFloat.zero
+    
     var body: some View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: false) {
@@ -65,6 +69,18 @@ struct TaskView: View {
             }
         }
         .overlay(alignment: .bottomTrailing) { addTaskButton }
+        .gesture(
+            DragGesture(minimumDistance: 50)
+                .onEnded { value in
+                    withAnimation {
+                        if (value.translation.width < -50) {
+                            self.rkManager.selectedDate = self.rkManager.selectedDate.addingTimeInterval(60*60*24)
+                        } else if (value.translation.width > 50) {
+                            self.rkManager.selectedDate = self.rkManager.selectedDate.addingTimeInterval(-60*60*24)
+                        }
+                    }
+                }
+        )
         .onAppear {
             cellStyle = cellStyleAS
         }

@@ -28,14 +28,15 @@ struct RKViewController: View {
                         }
                         .padding(.top, 20)
                     }
-                    .padding(.bottom, 500)
+                    .padding(.bottom, 100)
                 }
                 // 画面がロードされた時は下へスクロール
                 .onAppear {
+                    // 画面がロードされてすぐ
                     self.id = taskViewModel.returnDayStringLong(date: Date())
                     scrollToThisMonth(proxy: proxy)
                 }
-                // 選択している日が今日の時は下へスクロール
+                // 選択している日付の位置までスクロール
                 .onChange(of: rkManager.selectedDate) { newValue in
                     //if taskViewModel.isSameDay(date1: newValue, date2: Date()) {
                         scrollToThisMonth(proxy: proxy)
@@ -62,7 +63,8 @@ struct RKViewController: View {
         let target: CGFloat = 0.4
         let id: String = taskViewModel.returnDayStringLong(date: rkManager.selectedDate)
         withAnimation {
-            proxy.scrollTo(id, anchor: UnitPoint(x: 0.5, y: target))
+            //proxy.scrollTo(id, anchor: UnitPoint(x: 0.5, y: target))
+            proxy.scrollTo(id, anchor: UnitPoint(x: 1.0, y: target))
         }
     }
     
