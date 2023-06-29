@@ -74,7 +74,7 @@ struct TaskSettingView: View {
 extension TaskSettingView {
     
     private var title: some View {
-        Section( header: Text("Title:")) {
+        Section( header: Text(LocalizedStringKey("Title:"))) {
             TextField("Input Title", text: $task.title, onEditingChanged: { begin in
                 self.focusTitleTextField = begin
             })
@@ -82,7 +82,7 @@ extension TaskSettingView {
     }
     
     private var detail: some View {
-        Section( header: Text("Detail:")) {
+        Section( header: Text(LocalizedStringKey("Detail:"))) {
             ZStack(alignment: .topLeading) {
                 TextEditor(text: $task.detail)
                     .focused($focusedField)
@@ -99,7 +99,7 @@ extension TaskSettingView {
     }
     
     private var span: some View {
-        Section( header: Text("Repeat:")) {
+        Section( header: Text(LocalizedStringKey("Repeat:"))) {
             Picker("Every Weekdays", selection: $task.spanType) {
                 Text("1 /Day")
                     .tag(TaskSpanType.everyDay)
@@ -120,7 +120,7 @@ extension TaskSettingView {
     }
     
     private var accentColor: some View {
-        Section( header: Text("Accent color:")) {
+        Section( header: Text(LocalizedStringKey("Accent color:"))) {
             Picker("Select accent color", selection: $task.accentColor) {
                 ForEach(taskViewModel.accentColors, id: \.self) { color in
                     HStack {
@@ -136,7 +136,7 @@ extension TaskSettingView {
     }
     
     private var notification: some View {
-        Section( header: Text("Notification:")) {
+        Section( header: Text(LocalizedStringKey("Notification:"))) {
             HStack {
                 if task.notification {
                     Image(systemName: "bell.badge")
@@ -153,7 +153,7 @@ extension TaskSettingView {
     }
     
     private var isAbleToggle: some View {
-        Section( header: Text("Hidden:"), footer: Text("Hidden tasks do not appear on your calendar. They can be checked from the all task list view.")) {
+        Section( header: Text(LocalizedStringKey("Hidden:")), footer: Text("Hidden tasks do not appear on your calendar. They can be checked from the all task list view.")) {
             Toggle(task.isAble ? "Show" : "Hidden", isOn: $task.isAble)
         }
     }

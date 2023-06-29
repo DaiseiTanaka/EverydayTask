@@ -45,11 +45,11 @@
 "Delete this task?" = "削除";
 
 // Task Setting View
-"Title" = "タイトル";
+"Title:" = "タイトル";
 "Input Title" = "タイトルを入力";
-"Detail" = "詳細";
+"Detail:" = "詳細";
 "Input Detail" = "詳細を入力";
-"Repeat" = "繰り返し";
+"Repeat:" = "繰り返し";
 "1 /Day" = "1 /日";
 "1 /Week" = "1 /週";
 "1 /Month" = "1 /月";
@@ -62,9 +62,9 @@
 "Thursday" = "木曜日";
 "Friday" = "金曜日";
 "Saturday" = "土曜日";
-"Accent color" = "タスクのアクセントカラー";
+"Accent color:" = "タスクのアクセントカラー";
 "Select accent color" = "アクセントカラー";
-"Notification" = "通知";
+"Notification:" = "通知";
 "Add notification" = "通知を追加";
 "Cancel" = "キャンセル";
 "OK" = "保存";
@@ -72,6 +72,7 @@
 "Delete" = "削除";
 "This operation cannot be undone." = "この操作は取り消せません。";
 "Show" = "表示";
+"Hidden:" = "非表示";
 "Hidden tasks do not appear on your calendar. They can be checked from the all task list view." = "非表示にしたタスクは、カレンダーに表示されなくなります。これらのタスクは、全てのタスク一覧画面から確認できます。";
 
 // Weekly and Monthly Detail List View
