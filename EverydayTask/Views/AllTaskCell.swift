@@ -55,10 +55,8 @@ struct AllTaskCell: View {
                 .onTapGesture {
                     let impactLight = UIImpactFeedbackGenerator(style: .rigid)
                     impactLight.impactOccurred()
-                    showCalendarView.toggle()
                     // タップされたタスクをカレンダーに表示する
-                    taskViewModel.selectedTasks = [task]
-                    taskViewModel.loadRKManager()
+                    showCalendar()
                 }
                 .onLongPressGesture() {
                     let generator = UINotificationFeedbackGenerator()
@@ -76,7 +74,8 @@ struct AllTaskCell: View {
                 showTaskSettingView.toggle()
             }
             Button("Show calendar?") {
-                showCalendarView.toggle()
+                // タップされたタスクをカレンダーに表示する
+                showCalendar()
             }
             Button("Duplicate this task?") {
                 taskViewModel.duplicateTask(task: taskViewModel.editTask)
@@ -154,14 +153,20 @@ extension AllTaskCell {
                 Image(systemName: "1.circle")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-            } else {
-                Image(systemName: "calendar")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
             }
             
             if task.spanType == .everyWeekday {
                 spanImage
+                
+            } else if task.spanType == .custom {
+                Text("\(task.doCount) /")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+                Text(LocalizedStringKey(task.span.spanString))
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
             } else {
                 Text(LocalizedStringKey(taskViewModel.returnSpanToString(span: task.spanType)))
                     .font(.subheadline)
@@ -223,13 +228,24 @@ extension AllTaskCell {
     private var selectedCalendarView: some View {
         ZStack {
             if task.spanType == .everyWeek || task.spanType == .everyMonth {
-                WeeklyAndMonthlyDetailListView(taskViewModel: taskViewModel, rkManager: RKManager(calendar: Calendar.current, minimumDate: Date(), maximumDate: Date(), mode: 0), task: task)
-                    
+                RegularlyTaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: task)
+                    .padding(.top, 20)
+            } else if task.spanType == .custom {
+                if task.span == .day {
+                    VStack {
+                        Text("\(task.title)")
+                            .font(.title2.bold())
+                        CalendarView(rkManager: taskViewModel.rkManager, taskViewModel: taskViewModel)
+                    }
+                } else {
+                    RegularlyTaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: task)
+                        .padding(.top, 20)
+                }
             } else {
                 VStack {
                     Text("\(task.title)")
                         .font(.title2.bold())
-                    CalendarView(rkManager: RKManager(calendar: Calendar.current, minimumDate: Date(), maximumDate: Date(), mode: 0), taskViewModel: taskViewModel)
+                    CalendarView(rkManager: taskViewModel.rkManager, taskViewModel: taskViewModel)
                     
                 }
             }
@@ -251,6 +267,13 @@ extension AllTaskCell {
                 .font(.title3)
                 .padding()
         }
+    }
+    
+    private func showCalendar() {
+        // タップされたタスクをカレンダーに表示する
+        taskViewModel.selectedTasks = [task]
+        taskViewModel.loadRKManager()
+        showCalendarView.toggle()
     }
 }
 

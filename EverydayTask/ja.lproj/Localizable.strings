@@ -23,6 +23,9 @@
 "Sort" = "並び順序";
 "List" = "リスト";
 "Grid" = "グリッド";
+"Edit history" = "実施履歴を編集";
+"Delete this history?" = "履歴を削除";
+"Show this task history?" = "履歴を表示";
 
 // All Task View
 "All Tasks" = "全てのタスク";
@@ -54,7 +57,13 @@
 "1 /Week" = "1 /週";
 "1 /Month" = "1 /月";
 "1 Time" = "1 回";
-"Custom" = "曜日";
+"Select" = "曜日";
+"Custom" = "カスタム";
+"Day" = "日";
+"Week" = "週";
+"Month" = "月";
+"Year" = "年";
+"Infinite" = "無期限";
 "Sunday" = "日曜日";
 "Monday" = "月曜日";
 "Tuesday" = "火曜日";
@@ -77,3 +86,7 @@
 
 // Weekly and Monthly Detail List View
 "No data." = "実施履歴がありません。";
+" (No title) " = " (タイトルなし) ";
+
+// CustomTaskPickerView
+"times / " = "回 / ";

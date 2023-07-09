@@ -22,6 +22,9 @@ class TaskViewModel: ObservableObject {
     @Published var latestDate: Date
     
     @Published var showCalendarFlag: Bool
+    @Published var showEditRegularlyTaskAlart: Bool = false
+    @Published var selectedRegularlyTaskDate: Date = Date()
+    //@Published var presentationDetent: PresentationDetent = .fraction(0.5)
                 
     init() {
         self.tasks = Tasks.defaulData
@@ -87,30 +90,44 @@ class TaskViewModel: ObservableObject {
     // カレンダーを更新
     func loadRKManager() {
         trueFlag = false
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = Locale(identifier: "ja_JP")
 
         // タスクをタップしていない場合、全てのタスクの実施状態を表示する
         if selectedTasks == tasks {
             let firstDay = returnLatestDate(tasks: tasks)
             let today = Date()
-            let maximumDate = today.addingTimeInterval(60*60*24*365)
             
-            self.numberOfMonth = calendar.dateComponents([.month], from: firstDay, to: maximumDate).month ?? 12
+            self.numberOfMonth = returnNumberOfMonth(minDate: firstDay, maxDate: today)
+            
             self.rkManager = RKManager(calendar: Calendar.current, minimumDate: firstDay, maximumDate: today, mode: 0)
+            //print("A num: \(numberOfMonth), rkm: min,\(rkManager.minimumDate) max,\(rkManager.maximumDate)")
+
         // タスクを選択した時
         } else {
             let task = selectedTasks[0]
             let firstDay = task.addedDate
             let today = Date()
-            let monthDiff = calendar.dateComponents([.month], from: firstDay, to: today).month ?? 12
-            self.numberOfMonth = monthDiff + 1
+
+            self.numberOfMonth = returnNumberOfMonth(minDate: firstDay, maxDate: today)
 
             self.rkManager = RKManager(calendar: Calendar.current, minimumDate: firstDay, maximumDate: today, mode: 0)
+            //print("B num: \(numberOfMonth), rkm: min,\(rkManager.minimumDate) max,\(rkManager.maximumDate)")
+
         }
         trueFlag = true
-        //print("num: \(numberOfMonth), rkm: \(rkManager.minimumDate)")
 
+    }
+    
+    func returnNumberOfMonth(minDate: Date, maxDate: Date) -> Int {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "ja_JP")
+        
+        let firstDC = calendar.dateComponents([.year, .month], from: minDate)
+        let todayDC = calendar.dateComponents([.year, .month], from: maxDate)
+        let yearDiff  = todayDC.year! - firstDC.year!
+        let monthDiff = todayDC.month! - firstDC.month!
+        let totalMonthDiff = yearDiff * 12 + monthDiff
+        
+        return totalMonthDiff + 1
     }
         
     // タスクを追加
@@ -163,7 +180,7 @@ class TaskViewModel: ObservableObject {
     
     //　タスクを複製
     func duplicateTask(task: Tasks) {
-        let newTask = Tasks(title: task.title, detail: task.detail, addedDate: Date(), spanType: task.spanType, spanDate: task.spanDate, doneDate: [], notification: task.notification, notificationHour: task.notificationHour, notificationMin: task.notificationMin, accentColor: task.accentColor, isAble: task.isAble)
+        let newTask = Tasks(title: task.title, detail: task.detail, addedDate: Date(), spanType: task.spanType, span: task.span, doCount: task.doCount, spanDate: task.spanDate, doneDate: [], notification: task.notification, notificationHour: task.notificationHour, notificationMin: task.notificationMin, accentColor: task.accentColor, isAble: task.isAble)
         addTasks(task: newTask)
     }
     
@@ -245,6 +262,15 @@ class TaskViewModel: ObservableObject {
         return monthIndex1 == monthIndex2 && yearIndex1 == yearIndex2
     }
     
+    func isSameYear(date1: Date, date2: Date) -> Bool {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "ja_JP")
+        let yearIndex1 = calendar.component(.year, from: date1)
+        let yearIndex2 = calendar.component(.year, from: date2)
+        
+        return yearIndex1 == yearIndex2
+    }
+    
     func returnSpanToString(span: TaskSpanType) -> String {
         switch span {
         case .oneTime:
@@ -258,6 +284,8 @@ class TaskViewModel: ObservableObject {
         case .everyWeekday:
             // everyWeekdayの時はspanImageを返す
             return ""
+        case .custom:
+            return "Custom"
         }
     }
     
@@ -269,6 +297,7 @@ class TaskViewModel: ObservableObject {
         for taskIndex in 0..<tasks.count {
             let task = tasks[taskIndex]
             let spanType = task.spanType
+            let span = task.span
             let spanDate = task.spanDate
             let addedDate = task.addedDate.addingTimeInterval(-60*60*24*1)
             let weekdayIndex = returnWeekdayFromDate(date: date)
@@ -283,6 +312,10 @@ class TaskViewModel: ObservableObject {
                         // 決まった曜日に行うタスクの場合
                     } else if spanType == .everyWeekday && spanDate.contains(weekdayIndex) {
                         taskCount += 1
+                    } else if spanType == .custom {
+                        if span == .day {
+                            taskCount += 1
+                        }
                     }
                 }
             }
@@ -297,23 +330,26 @@ class TaskViewModel: ObservableObject {
         var doneTaskCount = 0
         for taskIndex in 0..<tasks.count {
             let task = tasks[taskIndex]
-            let doneDates = task.doneDate
             let spanType = task.spanType
+            let span = task.span
             let spanDate = task.spanDate
             let weekdayIndex = returnWeekdayFromDate(date: date)
             let isAble = task.isAble
             
             if isAble {
-                for dateIndex in 0..<doneDates.count {
-                    let doneDate = doneDates[dateIndex]
-                    if isSameDay(date1: doneDate, date2: date) {
-                        if spanType == .everyDay {
-                            doneTaskCount += 1
-                            
-                        } else if spanType == .everyWeekday && spanDate.contains(weekdayIndex) {
-                            doneTaskCount += 1
-                            
-                        }
+                if spanType == .everyDay {
+                    if isDone(task: task, date: date) {
+                        doneTaskCount += 1
+                    }
+                    
+                } else if spanType == .everyWeekday && spanDate.contains(weekdayIndex) {
+                    if isDone(task: task, date: date) {
+                        doneTaskCount += 1
+                    }
+                    
+                } else if spanType == .custom && span == .day {
+                    if isDone(task: task, date: date) {
+                        doneTaskCount += 1
                     }
                 }
             }
@@ -333,6 +369,41 @@ class TaskViewModel: ObservableObject {
         }
 
         return latestDate
+    }
+    
+    // Customタスクの選択した日付におけるタスクを実行しなくてはいけない残りの数を返す
+    func returnRemainCustomTaskCount(task: Tasks, date: Date) -> Int {
+        let doneDates = task.doneDate
+        let span = task.span
+        let doCount = task.doCount
+        let selectedDate = date
+        var remainCount: Int = 0
+        var didCount: Int = 0
+        
+        for date in doneDates {
+            switch span {
+            case .day:
+                if isSameDay(date1: date, date2: selectedDate) {
+                    didCount += 1
+                }
+            case .week:
+                if isSameWeek(date1: date, date2: selectedDate) {
+                    didCount += 1
+                }
+            case .month:
+                if isSameMonth(date1: date, date2: selectedDate) {
+                    didCount += 1
+                }
+            case .year:
+                if isSameYear(date1: date, date2: selectedDate) {
+                    didCount += 1
+                }
+            case .infinite:
+                didCount += 1
+            }
+        }
+        remainCount = doCount - didCount
+        return remainCount
     }
     
     // 直近の連続タスク実施時間を返す
@@ -369,18 +440,19 @@ class TaskViewModel: ObservableObject {
         
         var dailyTasks: [Tasks] = []
         var weeklyTasks: [Tasks] = []
-        var monthlyTasks: [Tasks] = []
+        let monthlyTasks: [Tasks] = []
         var simpleTasks: [Tasks] = []
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "ja_JP")
         
         for task in tasks {
             let selectedDate = date
-            let addedDate = task.addedDate.addingTimeInterval(-60*60*24*1)
-            let spanType = task.spanType
-            let spanDate = task.spanDate
+            let addedDate    = task.addedDate.addingTimeInterval(-60*60*24*1)
+            let spanType     = task.spanType
+            let span         = task.span
+            let spanDate     = task.spanDate
             let weekdayIndex = returnWeekdayFromDate(date: selectedDate)
-            let isAble = task.isAble
+            let isAble       = task.isAble
             
             // 選択した日付よりも前にタスクを追加していた場合 & タスクが実施可能（isAble）の時
             if addedDate < selectedDate && isAble {
@@ -398,6 +470,13 @@ class TaskViewModel: ObservableObject {
                     weeklyTasks.append(task)
                 case .everyMonth:
                     weeklyTasks.append(task)
+                case .custom:
+                    // １日単位のタスクはその日に実行するタスク一覧へ追加
+                    if span == .day {
+                        dailyTasks.append(task)
+                    } else {
+                        weeklyTasks.append(task)
+                    }
                 }
             }
         }
@@ -424,11 +503,12 @@ class TaskViewModel: ObservableObject {
         
         for task in tasks {
             let selectedDate = date
-            let addedDate = task.addedDate.addingTimeInterval(-60*60*24*1)
-            let spanType = task.spanType
-            let spanDate = task.spanDate
+            let addedDate    = task.addedDate.addingTimeInterval(-60*60*24*1)
+            let spanType     = task.spanType
+            let span         = task.span
+            let spanDate     = task.spanDate
             let weekdayIndex = returnWeekdayFromDate(date: selectedDate)
-            let isAble = task.isAble
+            let isAble       = task.isAble
             
             // 選択した日付よりも前にタスクを追加していた場合 & タスクが実施可能（isAble）の時
             if addedDate < selectedDate && isAble {
@@ -449,6 +529,13 @@ class TaskViewModel: ObservableObject {
                         
                     case .everyMonth:
                         weeklyTasks.append(task) // TODO: - リストが更新されない理由を突き止める　6/23
+                    case .custom:
+                        // １日単位のタスクはその日に実行するタスク一覧へ追加
+                        if span == .day {
+                            dailyTasks.append(task)
+                        } else {
+                            weeklyTasks.append(task)
+                        }
                     }
                 }
             }
@@ -458,6 +545,7 @@ class TaskViewModel: ObservableObject {
         selectedDateTasks.append(weeklyTasks)
         selectedDateTasks.append(monthlyTasks)
         selectedDateTasks.append(simpleTasks)
+
         return selectedDateTasks
     }
     
@@ -469,7 +557,8 @@ class TaskViewModel: ObservableObject {
         
         var dailyTasks: [Tasks] = []
         var weeklyTasks: [Tasks] = []
-        //var monthlyTasks: [Tasks] = []
+        let monthlyTasks: [Tasks] = []
+        var customTasks: [Tasks] = []
         var simpleTasks: [Tasks] = []
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "ja_JP")
@@ -500,12 +589,14 @@ class TaskViewModel: ObservableObject {
                         weeklyTasks.append(task)
                     case .everyMonth:
                         weeklyTasks.append(task) // TODO: - リストが更新されない理由を突き止める　6/23
+                    case .custom:
+                        customTasks.append(task)
                     }
                 }
             }
         }
         // リストをspanTypeごとに並び替え
-        selectedDateTasks = dailyTasks + weeklyTasks + simpleTasks
+        selectedDateTasks = dailyTasks + weeklyTasks + simpleTasks + customTasks
         return selectedDateTasks
     }
     
@@ -561,6 +652,55 @@ class TaskViewModel: ObservableObject {
                 }
             }
             return false
+        case .custom:
+            let span = task.span
+            let doCount = task.doCount
+            var count: Int = 0
+            // 指定期間に指定回数以上doneDateが含まれている場合、実行されている
+            for doneDate in doneDates {
+                switch span {
+                case .day:
+                    // selectedDateでdoCount以上doneDateが含まれる場合true
+                    if isSameDay(date1: date, date2: doneDate) {
+                        count += 1
+                    }
+                    if count >= doCount {
+                        return true
+                    }
+                case .week:
+                    // selectedDateを含むspan内にdoCount以上のdoneDateが含まれる場合true
+                    if isSameWeek(date1: date, date2: doneDate) {
+                        count += 1
+                    }
+                    if count >= doCount {
+                        return true
+                    }
+                case .month:
+                    // selectedDateを含むspan内にdoCount以上のdoneDateが含まれる場合true
+                    if isSameMonth(date1: date, date2: doneDate) {
+                        count += 1
+                    }
+                    if count >= doCount {
+                        return true
+                    }
+                case .year:
+                    // selectedDateを含むspan内にdoCount以上のdoneDateが含まれる場合true
+                    if isSameYear(date1: date, date2: doneDate) {
+                        count += 1
+                    }
+                    if count >= doCount {
+                        return true
+                    }
+                case .infinite:
+                    // doCount以上のdoneDateが含まれる場合true
+                    count += 1
+                    if count >= doCount {
+                        return true
+                    }
+                }
+            }
+            
+            return false
         }
     }
     
@@ -584,9 +724,9 @@ class TaskViewModel: ObservableObject {
             return loadPrevTasks()
         }
         print("😄👍: tasksのロードに成功しました。")
-        for task in tasks {
-            print("😄\(task)")
-        }
+//        for task in tasks {
+//            print("😄\(task)")
+//        }
         return tasks
     }
     
@@ -599,7 +739,7 @@ class TaskViewModel: ObservableObject {
         }
         var newTasks: [Tasks] = []
         for taskIndex in 0..<tasks.count {
-            newTasks.append(Tasks(title: tasks[taskIndex].title, detail: tasks[taskIndex].detail, addedDate: tasks[taskIndex].addedDate, spanType: tasks[taskIndex].spanType, spanDate: tasks[taskIndex].spanDate, doneDate: tasks[taskIndex].doneDate, notification: tasks[taskIndex].notification, notificationHour: tasks[taskIndex].notificationHour, notificationMin: tasks[taskIndex].notificationMin, accentColor: tasks[taskIndex].accentColor, isAble: true))
+            newTasks.append(Tasks(title: tasks[taskIndex].title, detail: tasks[taskIndex].detail, addedDate: tasks[taskIndex].addedDate, spanType: tasks[taskIndex].spanType, span: .day, doCount: 1, spanDate: tasks[taskIndex].spanDate, doneDate: tasks[taskIndex].doneDate, notification: tasks[taskIndex].notification, notificationHour: tasks[taskIndex].notificationHour, notificationMin: tasks[taskIndex].notificationMin, accentColor: tasks[taskIndex].accentColor, isAble: true))
         }
         print("😄: prevTasksの構造体に合わせてデータを更新しました。")
         return newTasks
@@ -668,8 +808,8 @@ extension TaskViewModel {
     // 入力された時間に通知を追加
     func makeNotification(task: Tasks, hour: Int, min: Int) {
         let content = UNMutableNotificationContent()
-        content.title = "It's TIME for \(task.title)"
-        content.body = "Let's COMPLETE it！👍"
+        content.title = task.title
+        content.body = task.detail
         content.sound = UNNotificationSound.default
         
         let dateComponent = DateComponents(hour: hour, minute: min)

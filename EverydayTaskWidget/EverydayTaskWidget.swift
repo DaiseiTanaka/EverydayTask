@@ -62,42 +62,42 @@ struct SimpleEntry: TimelineEntry {
     let allUnfinishedTaskList: [[Tasks]]
 }
 
-struct Tasks: Codable, Identifiable, Equatable, Hashable {
-    var id = UUID()
-    var title: String
-    var detail: String
-    var addedDate: Date
-    var spanType: TaskSpanType
-    var spanDate: [Int]
-    var doneDate: [Date]
-    var notification: Bool
-    var notificationHour: Int
-    var notificationMin: Int
-    var accentColor: String
-    var isAble: Bool
-    
-    init(title: String, detail: String, addedDate: Date, spanType: TaskSpanType, spanDate: [Int], doneDate: [Date], notification: Bool, notificationHour: Int, notificationMin: Int, accentColor: String, isAble: Bool) {
-        self.title = title
-        self.detail = detail
-        self.addedDate = addedDate
-        self.spanType = spanType
-        self.spanDate = spanDate
-        self.doneDate = doneDate
-        self.notification = notification
-        self.notificationHour = notificationHour
-        self.notificationMin = notificationMin
-        self.accentColor = accentColor
-        self.isAble = isAble
-    }
-}
+//struct Tasks: Codable, Identifiable, Equatable, Hashable {
+//    var id = UUID()
+//    var title: String
+//    var detail: String
+//    var addedDate: Date
+//    var spanType: TaskSpanType
+//    var spanDate: [Int]
+//    var doneDate: [Date]
+//    var notification: Bool
+//    var notificationHour: Int
+//    var notificationMin: Int
+//    var accentColor: String
+//    var isAble: Bool
+//
+//    init(title: String, detail: String, addedDate: Date, spanType: TaskSpanType, spanDate: [Int], doneDate: [Date], notification: Bool, notificationHour: Int, notificationMin: Int, accentColor: String, isAble: Bool) {
+//        self.title = title
+//        self.detail = detail
+//        self.addedDate = addedDate
+//        self.spanType = spanType
+//        self.spanDate = spanDate
+//        self.doneDate = doneDate
+//        self.notification = notification
+//        self.notificationHour = notificationHour
+//        self.notificationMin = notificationMin
+//        self.accentColor = accentColor
+//        self.isAble = isAble
+//    }
+//}
 
-enum TaskSpanType: Codable {
-    case oneTime
-    case everyDay
-    case everyWeek
-    case everyMonth
-    case everyWeekday
-}
+//enum TaskSpanType: Codable {
+//    case oneTime
+//    case everyDay
+//    case everyWeek
+//    case everyMonth
+//    case everyWeekday
+//}
 
 struct EverydayTaskWidgetEntryView : View {
     @Environment(\.widgetFamily) var family: WidgetFamily
@@ -413,36 +413,7 @@ struct EverydayTaskWidget: Widget {
 
 struct EverydayTaskWidget_Previews: PreviewProvider {
     static let sampleList: [[Tasks]] = [
-        // Every day
-        [Tasks(title: "Task1", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true),
-         Tasks(title: "Task2", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
-         Tasks(title: "Task3", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
-          Tasks(title: "Task4", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
-         Tasks(title: "Task5", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
-         Tasks(title: "Task6", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
-          Tasks(title: "Task7", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
-         Tasks(title: "Task8", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
-         Tasks(title: "Task9", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
-          Tasks(title: "Task10", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
-         Tasks(title: "Task11", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
-         Tasks(title: "Task12", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
-          Tasks(title: "Task13", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
-         Tasks(title: "Task14", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
-        Tasks(title: "Task15", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
-        Tasks(title: "Task16", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
-         Tasks(title: "Task17", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
-        Tasks(title: "Task18", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
-        Tasks(title: "Task19", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
-         Tasks(title: "Task20", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true),
-        Tasks(title: "Task21", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true),
-        Tasks(title: "Task22", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Black", isAble: true),
-         Tasks(title: "Task23", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Cyan", isAble: true)],
-        // Every week
-        [Tasks(title: "Task", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)],
-        // Every month
-        [Tasks(title: "Task", detail: "Every day", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)],
-        // One time
-        [Tasks(title: "Task", detail: "", addedDate: Date(), spanType: .oneTime, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Red", isAble: true)]
+        
     ]
     static var previews: some View {
         Group {

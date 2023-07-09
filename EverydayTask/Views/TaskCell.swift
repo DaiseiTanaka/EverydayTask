@@ -19,6 +19,8 @@ struct TaskCell: View {
     
     @Binding var showTaskSettingAlart: Bool
     
+    @Binding var showRegularlyTaskAlart: Bool
+    
     let generator = UINotificationFeedbackGenerator()
     
     let spanImageListNotExit: [Image] = [
@@ -41,7 +43,7 @@ struct TaskCell: View {
     ]
     
     var body: some View {
-        HStack {
+        ZStack {
             switch cellStyle {
             case .list:
                 oneSmallColumnsCell
@@ -177,14 +179,20 @@ extension TaskCell {
                 Image(systemName: "1.circle")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-            } else {
-                Image(systemName: "calendar")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
             }
             
             if task.spanType == .everyWeekday {
                 spanImage
+                
+            } else if task.spanType == .custom {
+                Text("\(task.doCount) /")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+                Text(LocalizedStringKey(task.span.spanString))
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
             } else {
                 Text(LocalizedStringKey(taskViewModel.returnSpanToString(span: task.spanType)))
                     .font(.subheadline)
@@ -227,24 +235,45 @@ extension TaskCell {
     private var doneTaskButton: some View {
         Button {
             tapDoneTaskButtonAction(task: task)
+            
         } label: {
+            // タスク実行済みの時
             if taskViewModel.isDone(task: task, date: rkManager.selectedDate) {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.title3)
                     .foregroundColor(.green)
                     .padding(5)
                     .padding(.leading, cellStyle == .list ? 5 : 0)
+            // タスクがまだ実行されていない時
             } else {
-                Image(systemName: "circle")
-                    .font(.title3)
-                    .foregroundColor(.secondary)
-                    .padding(5)
-                    .padding(.leading, cellStyle == .list ? 5 : 0)
+                // sapnTypeがカスタムかつ、残りのタスク実施回数が２回以上の時、実施ボタンに数字を表示する
+                if task.spanType == .custom && taskViewModel.returnRemainCustomTaskCount(task: task, date: rkManager.selectedDate) >= 2 {
+                    Text("\(taskViewModel.returnRemainCustomTaskCount(task: task, date: rkManager.selectedDate))")
+                        .font(.footnote)
+                        .foregroundColor(.white)
+                        .frame(width: 20, height: 20)
+                        .background(Circle().fill(Color.red))
+                        .padding(5)
+                        .padding(.leading, cellStyle == .list ? 7 : 0)
+                        .animation(nil, value: 0)
+                        .transition(.scale)
+                    
+                } else {
+                    Image(systemName: "circle")
+                        .font(.title3)
+                        .foregroundColor(.secondary)
+                        .padding(5)
+                        .padding(.leading, cellStyle == .list ? 5 : 0)
+                }
             }
         }
     }
+    
     // タスク実施ボタンをタップした時のアクション
     private func tapDoneTaskButtonAction(task: Tasks) {
+        if taskViewModel.isSameDay(date1: rkManager.selectedDate, date2: Date()) {
+            rkManager.selectedDate = Date()
+        }
         let selectedDate = rkManager.selectedDate
         let spanType = task.spanType
         
@@ -277,11 +306,6 @@ extension TaskCell {
                             }
                         }
                     }
-//                    withAnimation {
-//                        // 実行履歴を全て削除する
-//                        taskViewModel.tasks[index].doneDate.removeAll()
-//                        updateSelectedTasks(index: index)
-//                    }
                 }
             }
             
@@ -380,10 +404,26 @@ extension TaskCell {
                     }
                 }
             }
+        } else if spanType == .custom {
+            if !taskViewModel.isDone(task: task, date: selectedDate) {
+                generator.notificationOccurred(.success)
+                if let index = taskViewModel.tasks.firstIndex(where: { $0.id == task.id }) {
+                    withAnimation {
+                        taskViewModel.tasks[index].doneDate.append(selectedDate)
+                        taskViewModel.tasks[index].doneDate.sort()
+                        updateSelectedTasks(index: index)
+                    }
+                }
+            } else {
+                let impactLight = UIImpactFeedbackGenerator(style: .rigid)
+                impactLight.impactOccurred()
+                // 編集画面へ移動するか選択するアラートを表示
+                showRegularlyTaskAlart = true
+            }
         }
         
         taskViewModel.saveTasks(tasks: taskViewModel.tasks)
-        print("doneTaskButtonTapped! selectedTasks:\n\(taskViewModel.selectedTasks)")
+        //print("doneTaskButtonTapped! selectedTasks:\n\(taskViewModel.selectedTasks)")
     }
     
     // タスクを完了した時に表示するタスクを更新する
@@ -397,16 +437,16 @@ extension TaskCell {
             taskViewModel.selectedTasks = [taskViewModel.tasks[index]]
         }
     }
-    
 }
 
 struct TaskCell_Previews: PreviewProvider {
     static var taskViewModel = TaskViewModel()
     static let rkManager = RKManager(calendar: Calendar.current, minimumDate: Date().addingTimeInterval(-60*60*24*7), maximumDate: Date(), mode: 0)
     @State static var showTaskSettingAlart: Bool = false
+    @State static var showRegularlyTaskAlart: Bool = false
         
     static var previews: some View {
-        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: Tasks.previewData[0], cellStyle: .list, showTaskSettingAlart: $showTaskSettingAlart)
+        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: Tasks.previewData[0], cellStyle: .list, showTaskSettingAlart: $showTaskSettingAlart, showRegularlyTaskAlart: $showRegularlyTaskAlart)
             .frame(width: UIScreen.main.bounds.width / 2 - 20)
     }
 }

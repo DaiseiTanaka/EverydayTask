@@ -24,7 +24,8 @@ struct TaskView: View {
     @State var showTaskSettingAlart: Bool = false
     @State var showAllTaskListViewFlag: Bool = false
     @State var showChangeCellStyleAlart: Bool = false
-    
+    @State var showRegularlyTaskAlart: Bool = false
+
     @AppStorage("showRegularlyTaskList") private var showRegularlyTaskList: Bool = true
     @AppStorage("showOneTimeTaskList") private var showOneTimeTaskList: Bool = true
     @AppStorage("showDoneTasks") private var showDoneTasks: Bool = false
@@ -94,6 +95,11 @@ struct TaskView: View {
             Button("Edit this task?") {
                 showTaskSettingView.toggle()
             }
+            if taskViewModel.editTask.spanType == .custom {
+                Button("Show this task history?") {
+                    taskViewModel.showCalendarFlag = false
+                }
+            }
             Button("Duplicate this task?") {
                 taskViewModel.duplicateTask(task: taskViewModel.editTask)
             }
@@ -105,6 +111,30 @@ struct TaskView: View {
             }
         } message: {
             Text(taskViewModel.editTask.detail)
+        }
+        .confirmationDialog(taskViewModel.editTask.title, isPresented: $showRegularlyTaskAlart, titleVisibility: .visible) {
+            Button("Edit history") {
+                taskViewModel.showCalendarFlag = false
+            }
+        } message: {
+            Text(taskViewModel.editTask.detail)
+        }
+        .confirmationDialog(taskViewModel.editTask.title, isPresented: $taskViewModel.showEditRegularlyTaskAlart, titleVisibility: .visible) {
+            Button("Delete this history?", role: .destructive) {
+                guard let taskIndex = taskViewModel.tasks.firstIndex(where: { $0.id == taskViewModel.editTask.id }) else {
+                    return
+                }
+                guard let dateIndex = taskViewModel.tasks[taskIndex].doneDate.firstIndex(where: { $0 == taskViewModel.selectedRegularlyTaskDate }) else {
+                    return
+                }
+                taskViewModel.tasks[taskIndex].doneDate.remove(at: dateIndex)
+                withAnimation {
+                    taskViewModel.selectedTasks = [taskViewModel.tasks[taskIndex]]
+                }
+                taskViewModel.saveTasks(tasks: taskViewModel.tasks)
+            }
+        } message: {
+            Text(returnDateTime(date: taskViewModel.selectedRegularlyTaskDate))
         }
     }
 }
@@ -174,7 +204,7 @@ extension TaskView {
         VStack(spacing: 10) {
             LazyVGrid(columns: cellStyle.columns, spacing: cellStyle.space) {
                 ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[0], id: \.id) { task in
-                    TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
+                    TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart, showRegularlyTaskAlart: $showRegularlyTaskAlart)
                         .onTapGesture {
                             updateCalendar(task: task)
                         }
@@ -212,7 +242,7 @@ extension TaskView {
             if showRegularlyTaskList {
                 LazyVGrid(columns: cellStyle.columns, spacing: cellStyle.space) {
                     ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[1], id: \.id) { task in
-                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
+                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart, showRegularlyTaskAlart: $showRegularlyTaskAlart)
                             .onTapGesture {
                                 updateCalendar(task: task)
                             }
@@ -221,7 +251,7 @@ extension TaskView {
                             }
                     }
                     ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[2], id: \.id) { task in
-                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
+                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart, showRegularlyTaskAlart: $showRegularlyTaskAlart)
                             .onTapGesture {
                                 updateCalendar(task: task)
                             }
@@ -260,7 +290,7 @@ extension TaskView {
             if showOneTimeTaskList {
                 LazyVGrid(columns: cellStyle.columns, spacing: cellStyle.space) {
                     ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[3], id: \.id) { task in
-                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
+                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart, showRegularlyTaskAlart: $showRegularlyTaskAlart)
                             .onTapGesture {
                                 updateCalendar(task: task)
                             }
@@ -302,7 +332,7 @@ extension TaskView {
                         ForEach(taskViewModel.returnSelectedDateFinishedTasks(date: rkManager.selectedDate), id: \.id) { task in
                             // 実行済みのタスク
                             if taskViewModel.isDone(task: task, date: rkManager.selectedDate) {
-                                TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart)
+                                TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart, showRegularlyTaskAlart: $showRegularlyTaskAlart)
                                     .onTapGesture {
                                         updateCalendar(task: task)
                                     }
@@ -338,7 +368,7 @@ extension TaskView {
             let impactLight = UIImpactFeedbackGenerator(style: .rigid)
             impactLight.impactOccurred()
             
-            taskViewModel.editTask = Tasks(title: "", detail: "", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)
+            taskViewModel.editTask = Tasks(title: "", detail: "", addedDate: Date(), spanType: .everyDay, span: .day, doCount: 1, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)
             showTaskSettingView = true
         } label: {
             Image(systemName: "plus")
@@ -429,6 +459,7 @@ extension TaskView {
     // 特定のタスクをタップした時の関数
     private func updateCalendar(task: Tasks) {
         let spanType = task.spanType
+        let span = task.span
         if spanType != .oneTime {
             let impactLight = UIImpactFeedbackGenerator(style: .rigid)
             impactLight.impactOccurred()
@@ -437,7 +468,7 @@ extension TaskView {
         // 特定のタスクを表示中 or タスクが一つしか設定されていない場合ー＞weeklyやmonthlyのタスクを一つだけ設定していた場合は、カレンダーを更新する必要があるため。
         if taskViewModel.selectedTasks != [task] || taskViewModel.tasks.count == 1 {
             // 特定のタスクを表示
-            if spanType == .everyWeek || spanType == .everyMonth {
+            if spanType == .everyWeek || spanType == .everyMonth || (spanType == .custom && span != .day) {
                 // 一つのみかつweekly or monthlyのタスクの場合、カレンダーを表示非表示を切り替える。これがないと、ずっとweeklyAndMonthlyTaskListViewが表示され続けてしまう。
                 if taskViewModel.tasks.count == 1 {
                     taskViewModel.showCalendarFlag.toggle()
@@ -461,7 +492,36 @@ extension TaskView {
         // カレンダーの始まりの日が更新される。
         // カレンダーの始まりの日はデフォルトで、保存されているタスクの最も古い追加日に設定されているた、必要ないと判断
         //taskViewModel.loadRKManager()
-        print("Task tapped! selectedTasks:\n\(taskViewModel.selectedTasks)")
+        //print("Task tapped! selectedTasks:\n\(taskViewModel.selectedTasks)")
+    }
+    
+    // dateのStringを返す
+    private func returnDateTime(date: Date) -> String {
+        let span = taskViewModel.editTask.span
+        let dateFormatter = DateFormatter()
+        var dateString: String = ""
+
+        if span == .day {
+            dateFormatter.calendar = Calendar(identifier: .gregorian)
+            dateFormatter.dateStyle = .none
+            dateFormatter.timeStyle = .medium
+             
+            dateString = dateFormatter.string(from: date)
+                        
+        } else {
+            dateFormatter.calendar = Calendar(identifier: .gregorian)
+    //        dateFormatter.locale = Locale(identifier: "ja_JP")
+    //        dateFormatter.timeZone = TimeZone(identifier:  "Asia/Tokyo")
+             
+            /// 自動フォーマットのスタイル指定
+            dateFormatter.dateStyle = .medium
+            dateFormatter.timeStyle = .medium
+             
+            /// データ変換（Date→テキスト）
+            dateString = dateFormatter.string(from: date)
+        }
+        
+        return dateString
     }
     
     // タスクを長押しした時のアクション
@@ -475,6 +535,7 @@ extension TaskView {
 struct TaskView_Previews: PreviewProvider {
     //@StateObject static var taskViewModel = TaskViewModel()
     static let rkManager = RKManager(calendar: Calendar.current, minimumDate: Date().addingTimeInterval(-60*60*24*7), maximumDate: Date(), mode: 0)
+    @State static var presentationDetent: PresentationDetent = .fraction(0.5)
 
     static var previews: some View {
         //ContentView()

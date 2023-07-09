@@ -10,11 +10,11 @@ import SwiftUI
 struct CalendarView: View {
     @ObservedObject var rkManager: RKManager
     @ObservedObject var taskViewModel: TaskViewModel
-
-    @State private var trueFlag = true
+    
+        //@State private var trueFlag = true
     
     var body: some View {
-        RKViewController(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, isPresented: $trueFlag, tappedBackground: true)
+        RKViewController(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, isPresented: $taskViewModel.trueFlag, tappedBackground: true)
         
 //            .overlay(alignment: .top) {
 //                if taskViewModel.selectedTasks.count == 1 {

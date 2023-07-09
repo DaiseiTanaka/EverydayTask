@@ -42,7 +42,7 @@ struct TaskSettingView: View {
                 // アクセントカラーを入力
                 accentColor
                 // 毎日のタスク or 各週のタスクの場合のみ通知を設定可能
-                if task.spanType == .everyDay || task.spanType == .everyWeekday {
+                if task.spanType == .everyDay || task.spanType == .everyWeekday || (task.spanType == .custom && task.span == .day) {
                     // 通知
                     notification
                 }
@@ -109,8 +109,10 @@ extension TaskSettingView {
                     .tag(TaskSpanType.everyMonth)
                 Text("1 Time")
                     .tag(TaskSpanType.oneTime)
-                Text("Custom")
+                Text("Select")
                     .tag(TaskSpanType.everyWeekday)
+                Text("Custom")
+                    .tag(TaskSpanType.custom)
             }
             .pickerStyle(.segmented)
             
@@ -225,6 +227,8 @@ extension TaskSettingView {
                                 task.spanDate = selectedWeekdays
                             }
                 }
+            case .custom:
+                CustomTaskPickerView(countSelected: $task.doCount, spanSelected: $task.span)
             }
         }
     }

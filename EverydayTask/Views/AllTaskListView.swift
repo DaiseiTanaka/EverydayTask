@@ -103,7 +103,7 @@ extension AllTaskListView {
             let impactLight = UIImpactFeedbackGenerator(style: .rigid)
             impactLight.impactOccurred()
             
-            taskViewModel.editTask = Tasks(title: "", detail: "", addedDate: Date(), spanType: .everyDay, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)
+            taskViewModel.editTask = Tasks(title: "", detail: "", addedDate: Date(), spanType: .everyDay, span: .day, doCount: 1, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)
             showTaskSettingView = true
         } label: {
             Image(systemName: "plus")
@@ -187,6 +187,7 @@ extension AllTaskListView {
         var everyMonthTasks: [Tasks] = []
         var everyWeekdayTasks: [Tasks] = []
         var oneTimeTasks: [Tasks] = []
+        var customTasks: [Tasks] = []
         
         for task in tasks {
             let spanType = task.spanType
@@ -201,9 +202,11 @@ extension AllTaskListView {
                 everyMonthTasks.append(task)
             case .everyWeekday:
                 everyWeekdayTasks.append(task)
+            case .custom:
+                customTasks.append(task)
             }
         }
-        sortedAllTasks = everyDayTasks + everyWeekTasks + everyMonthTasks + everyWeekdayTasks + oneTimeTasks
+        sortedAllTasks = everyDayTasks + everyWeekTasks + everyMonthTasks + everyWeekdayTasks + oneTimeTasks + customTasks
 
         return sortedAllTasks
     }

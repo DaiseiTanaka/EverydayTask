@@ -27,8 +27,10 @@ struct RKViewController: View {
                             RKMonth(taskViewModel: taskViewModel, rkManager: self.rkManager, isPresented: self.$isPresented, monthOffset: index, tappedBackground: self.$tappedBackground, id: $id)
                         }
                         .padding(.top, 20)
+                        
+                        ZStack {}
+                        .frame(height: 400)
                     }
-                    .padding(.bottom, 100)
                 }
                 // 画面がロードされた時は下へスクロール
                 .onAppear {

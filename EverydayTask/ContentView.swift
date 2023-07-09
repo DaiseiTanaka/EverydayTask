@@ -16,6 +16,7 @@ struct ContentView: View {
     
     // For half mordal settings
     @State private var presentationDetent: PresentationDetent = .fraction(0.5)
+    @State private var selectedPresentationDetent: PresentationDetent = .fraction(0.5)
     let minViewHeight: PresentationDetent = .fraction(0.12)
     let maxViewHeight: PresentationDetent = .fraction(0.5)
     @State private var buttonImage: Image = Image(systemName: "chevron.up.circle")
@@ -41,26 +42,8 @@ extension ContentView {
         ZStack {
             if taskViewModel.showCalendarFlag {
                 CalendarView(rkManager: rkManager, taskViewModel: taskViewModel)
-//                    .overlay(content: {
-//                        if !taskViewModel.isSameDay(date1: Date(), date2: taskViewModel.rkManager.selectedDate) {
-//                            Button {
-//                                withAnimation {
-//                                    taskViewModel.rkManager.selectedDate = Date()
-//                                }
-//                            } label: {
-//                                Image(systemName: "calendar.badge.clock")
-//                                    .font(.title2.bold())
-//                                    .foregroundColor(.secondary)
-//                                    .padding()
-//                                    .background(Color(UIColor.systemGray6).opacity(0.9))
-//                                    .clipShape(Circle())
-//                                    .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 3)
-//                            }
-//                            .position(x: 50, y: presentationDetent == maxViewHeight ? UIScreen.main.bounds.height*0.4 : UIScreen.main.bounds.height*0.75)
-//                        }
-//                    })
             } else {
-                WeeklyAndMonthlyDetailListView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: taskViewModel.selectedTasks[0])
+                RegularlyTaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: taskViewModel.selectedTasks[0])
             }
         }
         .sheet(isPresented: $isPresented) {
@@ -102,7 +85,7 @@ extension ContentView {
     private var taskView: some View {
         TaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager)
             .frame(maxWidth: .infinity)
-            .presentationDetents([minViewHeight, maxViewHeight], selection: $presentationDetent)
+            .presentationDetents([minViewHeight, maxViewHeight], selection: $selectedPresentationDetent)
             .presentationCornerRadius(30)
             .presentationDragIndicator(.visible)
             .presentationBackgroundInteraction(
@@ -110,20 +93,8 @@ extension ContentView {
             )
             .interactiveDismissDisabled()
             //.overlay(changeViewSizeButton, alignment: .topTrailing)
-            .presentationBackground(Color(UIColor.systemGray6))
+            //.presentationBackground(Color(UIColor.systemGray6))
             //.presentationBackground(.ultraThickMaterial)
-    }
-    
-    private var changeViewSizeButton: some View {
-        Button {
-            presentationDetent = presentationDetent == minViewHeight ? maxViewHeight : minViewHeight
-        } label: {
-            buttonImage
-                .font(.title)
-                .foregroundColor(.secondary)
-                .background(.clear)
-                .padding()
-        }
     }
     
     private func returnTodayDay() -> Int {
