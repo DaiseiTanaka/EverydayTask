@@ -131,7 +131,7 @@ extension AllTaskCell {
             }
             .frame(width: 50)
 
-            if task.spanType == .everyDay || task.spanType == .everyWeekday {
+            if (task.spanType == .custom && task.span == .day) || task.spanType == .selected {
                 if task.notification {
                     Image(systemName: "bell.badge")
                         .font(.subheadline)
@@ -141,21 +141,9 @@ extension AllTaskCell {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
-            } else if task.spanType == .everyWeek {
-                Image(systemName: "w.circle")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            } else if task.spanType == .everyMonth {
-                Image(systemName: "m.circle")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            } else if task.spanType == .oneTime {
-                Image(systemName: "1.circle")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
             }
             
-            if task.spanType == .everyWeekday {
+            if task.spanType == .selected {
                 spanImage
                 
             } else if task.spanType == .custom {
@@ -168,7 +156,7 @@ extension AllTaskCell {
                     .foregroundColor(.secondary)
                     .lineLimit(1)
             } else {
-                Text(LocalizedStringKey(taskViewModel.returnSpanToString(span: task.spanType)))
+                Text(LocalizedStringKey(task.spanType.spanString))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .lineLimit(1)
@@ -227,10 +215,7 @@ extension AllTaskCell {
     // タスクがタップされたときに表示するカレンダー
     private var selectedCalendarView: some View {
         ZStack {
-            if task.spanType == .everyWeek || task.spanType == .everyMonth {
-                RegularlyTaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: task)
-                    .padding(.top, 20)
-            } else if task.spanType == .custom {
+            if task.spanType == .custom {
                 if task.span == .day {
                     VStack {
                         Text("\(task.title)")

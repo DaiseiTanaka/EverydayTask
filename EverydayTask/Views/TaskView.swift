@@ -44,14 +44,9 @@ struct TaskView: View {
                         todaysTaskList
                     }
                     
-                    if !taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[1].isEmpty || !taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[2].isEmpty {
+                    if !taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[1].isEmpty {
                         regularlyTaskList
                     }
-                    
-                    if !taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[3].isEmpty {
-                        oneTimeTaskList
-                    }
-                    
                     if returnDoneTaskCount() > 0 {
                         doneTaskList
                     }
@@ -232,7 +227,7 @@ extension TaskView {
                     Text("Regularly")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    Text("(\(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[1].count + taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[2].count))")
+                    Text("(\(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[1].count))")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Spacer()
@@ -242,54 +237,6 @@ extension TaskView {
             if showRegularlyTaskList {
                 LazyVGrid(columns: cellStyle.columns, spacing: cellStyle.space) {
                     ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[1], id: \.id) { task in
-                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart, showRegularlyTaskAlart: $showRegularlyTaskAlart)
-                            .onTapGesture {
-                                updateCalendar(task: task)
-                            }
-                            .onLongPressGesture() {
-                                longTapTaskAction(task: task)
-                            }
-                    }
-                    ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[2], id: \.id) { task in
-                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart, showRegularlyTaskAlart: $showRegularlyTaskAlart)
-                            .onTapGesture {
-                                updateCalendar(task: task)
-                            }
-                            .onLongPressGesture() {
-                                longTapTaskAction(task: task)
-                            }
-                    }
-                }
-            }
-        }
-    }
-    
-    // 一度のみのタスク
-    private var oneTimeTaskList: some View {
-        VStack(spacing: 10) {
-            Button {
-                showOneTimeTaskList.toggle()
-            } label: {
-                HStack {
-                    Image(systemName: showOneTimeTaskList ? "chevron.down" : "chevron.right")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 10, height: 10)
-                        .foregroundColor(.secondary)
-                        .padding(.leading, 15)
-                    Text("One time")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Text("(\(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[3].count))")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                }
-            }
-            
-            if showOneTimeTaskList {
-                LazyVGrid(columns: cellStyle.columns, spacing: cellStyle.space) {
-                    ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[3], id: \.id) { task in
                         TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart, showRegularlyTaskAlart: $showRegularlyTaskAlart)
                             .onTapGesture {
                                 updateCalendar(task: task)
@@ -368,7 +315,7 @@ extension TaskView {
             let impactLight = UIImpactFeedbackGenerator(style: .rigid)
             impactLight.impactOccurred()
             
-            taskViewModel.editTask = Tasks(title: "", detail: "", addedDate: Date(), spanType: .everyDay, span: .day, doCount: 1, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)
+            taskViewModel.editTask = Tasks(title: "", detail: "", addedDate: Date(), spanType: .custom, span: .day, doCount: 1, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)
             showTaskSettingView = true
         } label: {
             Image(systemName: "plus")
@@ -460,15 +407,13 @@ extension TaskView {
     private func updateCalendar(task: Tasks) {
         let spanType = task.spanType
         let span = task.span
-        if spanType != .oneTime {
-            let impactLight = UIImpactFeedbackGenerator(style: .rigid)
-            impactLight.impactOccurred()
-        }
+        let impactLight = UIImpactFeedbackGenerator(style: .rigid)
+        impactLight.impactOccurred()
         
         // 特定のタスクを表示中 or タスクが一つしか設定されていない場合ー＞weeklyやmonthlyのタスクを一つだけ設定していた場合は、カレンダーを更新する必要があるため。
         if taskViewModel.selectedTasks != [task] || taskViewModel.tasks.count == 1 {
             // 特定のタスクを表示
-            if spanType == .everyWeek || spanType == .everyMonth || (spanType == .custom && span != .day) {
+            if spanType == .custom && span != .day {
                 // 一つのみかつweekly or monthlyのタスクの場合、カレンダーを表示非表示を切り替える。これがないと、ずっとweeklyAndMonthlyTaskListViewが表示され続けてしまう。
                 if taskViewModel.tasks.count == 1 {
                     taskViewModel.showCalendarFlag.toggle()
@@ -478,11 +423,8 @@ extension TaskView {
             } else {
                 taskViewModel.showCalendarFlag = true
             }
-            if spanType != .oneTime {
-                taskViewModel.selectedTasks = [task]
-            } else {
-                taskViewModel.selectedTasks = taskViewModel.tasks
-            }
+            taskViewModel.selectedTasks = [task]
+            
         } else {
             // 全てのタスクを表示
             taskViewModel.showCalendarFlag = true

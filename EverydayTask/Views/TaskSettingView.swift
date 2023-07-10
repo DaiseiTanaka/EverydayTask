@@ -42,7 +42,7 @@ struct TaskSettingView: View {
                 // アクセントカラーを入力
                 accentColor
                 // 毎日のタスク or 各週のタスクの場合のみ通知を設定可能
-                if task.spanType == .everyDay || task.spanType == .everyWeekday || (task.spanType == .custom && task.span == .day) {
+                if task.spanType == .selected || (task.spanType == .custom && task.span == .day) {
                     // 通知
                     notification
                 }
@@ -101,18 +101,10 @@ extension TaskSettingView {
     private var span: some View {
         Section( header: Text(LocalizedStringKey("Repeat:"))) {
             Picker("Every Weekdays", selection: $task.spanType) {
-                Text("1 /Day")
-                    .tag(TaskSpanType.everyDay)
-                Text("1 /Week")
-                    .tag(TaskSpanType.everyWeek)
-                Text("1 /Month")
-                    .tag(TaskSpanType.everyMonth)
-                Text("1 Time")
-                    .tag(TaskSpanType.oneTime)
-                Text("Select")
-                    .tag(TaskSpanType.everyWeekday)
                 Text("Custom")
                     .tag(TaskSpanType.custom)
+                Text("Select")
+                    .tag(TaskSpanType.selected)
             }
             .pickerStyle(.segmented)
             
@@ -179,38 +171,9 @@ extension TaskSettingView {
     private var selectedSpanTypeView: some View {
         List {
             switch task.spanType {
-            case .oneTime:
-                HStack {
-                    Text("One time")
-                        .font(.subheadline)
-                    Spacer()
-                    Image(systemName: "checkmark")
-                }
-            case .everyDay:
-                HStack {
-                    Text("Every day")
-                        .font(.subheadline)
-                    Spacer()
-                    Image(systemName: "checkmark")
-                }
-                
-            case .everyWeek:
-                HStack {
-                    Text("Once a week")
-                        .font(.subheadline)
-                    Spacer()
-                    Image(systemName: "checkmark")
-                }
-                
-            case .everyMonth:
-                HStack {
-                    Text("Once a month")
-                        .font(.subheadline)
-                    Spacer()
-                    Image(systemName: "checkmark")
-                }
-                
-            case .everyWeekday:
+            case .custom:
+                CustomTaskPickerView(countSelected: $task.doCount, spanSelected: $task.span)
+            case .selected:
                 ForEach(self.getWeekdayHeaders(calendar: rkManager.calendar), id: \.self) { item in
                     MultipleSelectionRow(
                         title: item,
@@ -227,8 +190,6 @@ extension TaskSettingView {
                                 task.spanDate = selectedWeekdays
                             }
                 }
-            case .custom:
-                CustomTaskPickerView(countSelected: $task.doCount, spanSelected: $task.span)
             }
         }
     }

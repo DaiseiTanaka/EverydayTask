@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		350BA4412A528A380071FF23 /* CustomTaskPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350BA4402A528A380071FF23 /* CustomTaskPickerView.swift */; };
 		3516BCAF2A59B5EF001E6472 /* Tasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355B977B2A2DA46E00BD0772 /* Tasks.swift */; };
+		353AD8042A5BAE12007CCEFA /* SortKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353AD8032A5BAE12007CCEFA /* SortKey.swift */; };
+		353AD8062A5BAE27007CCEFA /* TaskCellStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353AD8052A5BAE27007CCEFA /* TaskCellStyle.swift */; };
 		353C5EED2A3E025400FDFFE5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 353C5EEF2A3E025400FDFFE5 /* Localizable.strings */; };
 		353C5EF22A3EF41200FDFFE5 /* AllTaskListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353C5EF12A3EF41200FDFFE5 /* AllTaskListView.swift */; };
 		353C5EF42A3EF84100FDFFE5 /* AllTaskCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353C5EF32A3EF84100FDFFE5 /* AllTaskCell.swift */; };
@@ -70,6 +72,8 @@
 
 /* Begin PBXFileReference section */
 		350BA4402A528A380071FF23 /* CustomTaskPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTaskPickerView.swift; sourceTree = "<group>"; };
+		353AD8032A5BAE12007CCEFA /* SortKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortKey.swift; sourceTree = "<group>"; };
+		353AD8052A5BAE27007CCEFA /* TaskCellStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCellStyle.swift; sourceTree = "<group>"; };
 		353C5EEE2A3E025400FDFFE5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		353C5EF02A3E025900FDFFE5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		353C5EF12A3EF41200FDFFE5 /* AllTaskListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllTaskListView.swift; sourceTree = "<group>"; };
@@ -206,6 +210,8 @@
 			isa = PBXGroup;
 			children = (
 				355B977B2A2DA46E00BD0772 /* Tasks.swift */,
+				353AD8032A5BAE12007CCEFA /* SortKey.swift */,
+				353AD8052A5BAE27007CCEFA /* TaskCellStyle.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -357,8 +363,10 @@
 				3577ECF12A48882F005A6915 /* SideBarStack.swift in Sources */,
 				355B97872A2DA77F00BD0772 /* RKViewController.swift in Sources */,
 				355B978F2A2DE7F500BD0772 /* TaskView.swift in Sources */,
+				353AD8042A5BAE12007CCEFA /* SortKey.swift in Sources */,
 				355B978C2A2DA77F00BD0772 /* RKColorSettings.swift in Sources */,
 				35CCF3482A2EFCA500C91B80 /* TaskSettingView.swift in Sources */,
+				353AD8062A5BAE27007CCEFA /* TaskCellStyle.swift in Sources */,
 				355B978A2A2DA77F00BD0772 /* RKMonth.swift in Sources */,
 				35CCF3442A2E172600C91B80 /* TaskViewModel.swift in Sources */,
 				355B978B2A2DA77F00BD0772 /* RKCell.swift in Sources */,
@@ -539,8 +547,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = EverydayTask/EverydayTask.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.5;
+				CURRENT_PROJECT_VERSION = 1.6;
 				DEVELOPMENT_ASSET_PATHS = "\"EverydayTask/Preview Content\"";
 				DEVELOPMENT_TEAM = NZ6NQZK56A;
 				ENABLE_PREVIEWS = YES;
@@ -559,6 +568,7 @@
 				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = myproject.EverydayTaskdaiseitanaka;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
@@ -575,8 +585,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = EverydayTask/EverydayTask.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.5;
+				CURRENT_PROJECT_VERSION = 1.6;
 				DEVELOPMENT_ASSET_PATHS = "\"EverydayTask/Preview Content\"";
 				DEVELOPMENT_TEAM = NZ6NQZK56A;
 				ENABLE_PREVIEWS = YES;
@@ -595,6 +606,7 @@
 				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = myproject.EverydayTaskdaiseitanaka;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;

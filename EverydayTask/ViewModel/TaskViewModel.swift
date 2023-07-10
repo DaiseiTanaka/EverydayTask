@@ -24,7 +24,6 @@ class TaskViewModel: ObservableObject {
     @Published var showCalendarFlag: Bool
     @Published var showEditRegularlyTaskAlart: Bool = false
     @Published var selectedRegularlyTaskDate: Date = Date()
-    //@Published var presentationDetent: PresentationDetent = .fraction(0.5)
                 
     init() {
         self.tasks = Tasks.defaulData
@@ -271,24 +270,6 @@ class TaskViewModel: ObservableObject {
         return yearIndex1 == yearIndex2
     }
     
-    func returnSpanToString(span: TaskSpanType) -> String {
-        switch span {
-        case .oneTime:
-            return "1 time"
-        case .everyDay:
-            return "Every day"
-        case .everyWeek:
-            return "Once a week"
-        case .everyMonth:
-            return "Once a month"
-        case .everyWeekday:
-            // everyWeekdayの時はspanImageを返す
-            return ""
-        case .custom:
-            return "Custom"
-        }
-    }
-    
     // MARK: - データ解析関連
     // その日すべき全てのタスクの数を返す
     func returnTaskCount(date: Date) -> Int {
@@ -307,10 +288,7 @@ class TaskViewModel: ObservableObject {
                 // タスクを追加した日以降
                 if addedDate <= date {
                     // 毎日行うタスクの場合
-                    if spanType == .everyDay {
-                        taskCount += 1
-                        // 決まった曜日に行うタスクの場合
-                    } else if spanType == .everyWeekday && spanDate.contains(weekdayIndex) {
+                    if spanType == .selected && spanDate.contains(weekdayIndex) {
                         taskCount += 1
                     } else if spanType == .custom {
                         if span == .day {
@@ -337,12 +315,7 @@ class TaskViewModel: ObservableObject {
             let isAble = task.isAble
             
             if isAble {
-                if spanType == .everyDay {
-                    if isDone(task: task, date: date) {
-                        doneTaskCount += 1
-                    }
-                    
-                } else if spanType == .everyWeekday && spanDate.contains(weekdayIndex) {
+                if spanType == .selected && spanDate.contains(weekdayIndex) {
                     if isDone(task: task, date: date) {
                         doneTaskCount += 1
                     }
@@ -439,9 +412,7 @@ class TaskViewModel: ObservableObject {
         var selectedDateTasks: [[Tasks]] = []
         
         var dailyTasks: [Tasks] = []
-        var weeklyTasks: [Tasks] = []
-        let monthlyTasks: [Tasks] = []
-        var simpleTasks: [Tasks] = []
+        var regularlyTasks: [Tasks] = []
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "ja_JP")
         
@@ -457,34 +428,21 @@ class TaskViewModel: ObservableObject {
             // 選択した日付よりも前にタスクを追加していた場合 & タスクが実施可能（isAble）の時
             if addedDate < selectedDate && isAble {
                 switch spanType {
-                case .oneTime:
-                    simpleTasks.append(task)
-                case .everyDay:
-                    dailyTasks.append(task)
-                case .everyWeekday:
-                    // rkManager.selectedDateがspanDate内にある場合 -> 選択した日付が、タスク実施日である
-                    if spanDate.contains(weekdayIndex) {
-                        dailyTasks.append(task)
-                    }
-                case .everyWeek:
-                    weeklyTasks.append(task)
-                case .everyMonth:
-                    weeklyTasks.append(task)
                 case .custom:
                     // １日単位のタスクはその日に実行するタスク一覧へ追加
                     if span == .day {
                         dailyTasks.append(task)
                     } else {
-                        weeklyTasks.append(task)
+                        regularlyTasks.append(task)
                     }
+                case .selected:
+                    dailyTasks.append(task)
                 }
             }
         }
         // リストをspanTypeごとに並び替え
         selectedDateTasks.append(dailyTasks)
-        selectedDateTasks.append(weeklyTasks)
-        selectedDateTasks.append(monthlyTasks)
-        selectedDateTasks.append(simpleTasks)
+        selectedDateTasks.append(regularlyTasks)
         return selectedDateTasks
     }
     
@@ -495,9 +453,7 @@ class TaskViewModel: ObservableObject {
         var selectedDateTasks: [[Tasks]] = []
         
         var dailyTasks: [Tasks] = []
-        var weeklyTasks: [Tasks] = []
-        var monthlyTasks: [Tasks] = []
-        var simpleTasks: [Tasks] = []
+        var regularlyTasks: [Tasks] = []
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "ja_JP")
         
@@ -515,36 +471,22 @@ class TaskViewModel: ObservableObject {
                 // タスクが未達成の時
                 if !isDone(task: task, date: selectedDate) {
                     switch spanType {
-                    case .oneTime:
-                        simpleTasks.append(task)
-                    case .everyDay:
-                        dailyTasks.append(task)
-                    case .everyWeekday:
-                        // rkManager.selectedDateがspanDate内にある場合 -> 選択した日付が、タスク実施日である
-                        if spanDate.contains(weekdayIndex) {
-                            dailyTasks.append(task)
-                        }
-                    case .everyWeek:
-                        weeklyTasks.append(task)
-                        
-                    case .everyMonth:
-                        weeklyTasks.append(task) // TODO: - リストが更新されない理由を突き止める　6/23
                     case .custom:
                         // １日単位のタスクはその日に実行するタスク一覧へ追加
                         if span == .day {
                             dailyTasks.append(task)
                         } else {
-                            weeklyTasks.append(task)
+                            regularlyTasks.append(task)
                         }
+                    case .selected:
+                        regularlyTasks.append(task)
                     }
                 }
             }
         }
         // リストをspanTypeごとに並び替え
         selectedDateTasks.append(dailyTasks)
-        selectedDateTasks.append(weeklyTasks)
-        selectedDateTasks.append(monthlyTasks)
-        selectedDateTasks.append(simpleTasks)
+        selectedDateTasks.append(regularlyTasks)
 
         return selectedDateTasks
     }
@@ -556,10 +498,7 @@ class TaskViewModel: ObservableObject {
         var selectedDateTasks: [Tasks] = []
         
         var dailyTasks: [Tasks] = []
-        var weeklyTasks: [Tasks] = []
-        let monthlyTasks: [Tasks] = []
-        var customTasks: [Tasks] = []
-        var simpleTasks: [Tasks] = []
+        var regularlyTasks: [Tasks] = []
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "ja_JP")
         
@@ -567,6 +506,7 @@ class TaskViewModel: ObservableObject {
             let selectedDate = date
             let addedDate = task.addedDate.addingTimeInterval(-60*60*24*1)
             let spanType = task.spanType
+            let span = task.span
             let spanDate = task.spanDate
             let weekdayIndex = returnWeekdayFromDate(date: selectedDate)
             let isAble = task.isAble
@@ -576,27 +516,20 @@ class TaskViewModel: ObservableObject {
                 // タスクが未達成の時
                 if isDone(task: task, date: selectedDate) {
                     switch spanType {
-                    case .oneTime:
-                        simpleTasks.append(task)
-                    case .everyDay:
-                        dailyTasks.append(task)
-                    case .everyWeekday:
-                        // rkManager.selectedDateがspanDate内にある場合 -> 選択した日付が、タスク実施日である
-                        if spanDate.contains(weekdayIndex) {
-                            dailyTasks.append(task)
-                        }
-                    case .everyWeek:
-                        weeklyTasks.append(task)
-                    case .everyMonth:
-                        weeklyTasks.append(task) // TODO: - リストが更新されない理由を突き止める　6/23
                     case .custom:
-                        customTasks.append(task)
+                        if span == .day {
+                            dailyTasks.append(task)
+                        } else {
+                            regularlyTasks.append(task)
+                        }
+                    case .selected:
+                        dailyTasks.append(task)
                     }
                 }
             }
         }
         // リストをspanTypeごとに並び替え
-        selectedDateTasks = dailyTasks + weeklyTasks + simpleTasks + customTasks
+        selectedDateTasks = dailyTasks + regularlyTasks
         return selectedDateTasks
     }
     
@@ -609,49 +542,6 @@ class TaskViewModel: ObservableObject {
         calendar.locale = Locale(identifier: "ja_JP")
         
         switch spanType {
-        case .oneTime:
-            // doneDatesに一つ以上日付が追加されていたなら実行されている
-//            if doneDates.count > 0 {
-//                return true
-//            }
-            for doneDate in doneDates {
-                if isSameDay(date1: date, date2: doneDate) {
-                    return true
-                }
-            }
-            return false
-        case .everyDay:
-            // doneDatesの中に選択した日付が含まれる場合、実行されている
-            for doneDate in doneDates {
-                if isSameDay(date1: date, date2: doneDate) {
-                    return true
-                }
-            }
-            return false
-        case .everyWeek:
-            for doneDate in doneDates {
-                // 同じ週の日付があった場合、タスクは実行されている
-                if isSameWeek(date1: date, date2: doneDate) {
-                    return true
-                }
-            }
-            return false
-        case .everyMonth:
-            for doneDate in doneDates {
-                // 選択した年かつ同じ月の日付がdoneDatesに含まれていた場合、タスクは実行されている
-                if isSameMonth(date1: date, date2: doneDate) {
-                    return true
-                }
-            }
-            return false
-        case .everyWeekday:
-            // doneDatesの中に選択した日付が含まれる場合、実行されている
-            for doneDate in doneDates {
-                if isSameDay(date1: date, date2: doneDate) {
-                    return true
-                }
-            }
-            return false
         case .custom:
             let span = task.span
             let doCount = task.doCount
@@ -701,6 +591,16 @@ class TaskViewModel: ObservableObject {
             }
             
             return false
+            
+        case .selected:
+            // doneDatesの中に選択した日付が含まれる場合、実行されている
+            for doneDate in doneDates {
+                if isSameDay(date1: date, date2: doneDate) {
+                    return true
+                }
+            }
+            return false
+        
         }
     }
     
@@ -724,13 +624,69 @@ class TaskViewModel: ObservableObject {
             return loadPrevTasks()
         }
         print("😄👍: tasksのロードに成功しました。")
-//        for task in tasks {
-//            print("😄\(task)")
-//        }
         return tasks
     }
     
     func loadPrevTasks() -> [Tasks]? {
+        let jsonDecoder = JSONDecoder()
+        // Tasksを変更した場合、構造体に合わせてtasksを更新する
+        guard let data = UserDefaults.standard.data(forKey: "tasks"), let tasks = try? jsonDecoder.decode([myprevTasks].self, from: data) else {
+            return loadPrevPrevTasks()
+        }
+        var newTasks: [Tasks] = []
+        var newSpanType: TaskSpanType = .custom
+        var span: Spans = .day
+        var doCount: Int = 1
+        for task in tasks {
+            switch task.spanType {
+            case .oneTime:
+                newSpanType = .custom
+                span = .infinite
+                doCount = 1
+            case .everyDay:
+                newSpanType = .custom
+                span = .day
+                doCount = 1
+            case .everyWeek:
+                newSpanType = .custom
+                span = .week
+                doCount = 1
+            case .everyMonth:
+                newSpanType = .custom
+                span = .month
+                doCount = 1
+            case .everyWeekday:
+                newSpanType = .selected
+                span = .day
+                doCount = 1
+            case .custom:
+                newSpanType = .custom
+                span = task.span
+                doCount = task.doCount
+            }
+            
+            newTasks.append(
+                Tasks(title: task.title,
+                      detail: task.detail,
+                      addedDate: task.addedDate,
+                      spanType: newSpanType,
+                      span: span,
+                      doCount: doCount,
+                      spanDate: task.spanDate,
+                      doneDate: task.doneDate,
+                      notification: task.notification,
+                      notificationHour: task.notificationHour,
+                      notificationMin: task.notificationMin,
+                      accentColor: task.accentColor,
+                      isAble: task.isAble)
+            )
+        }
+        
+        print("😄: myprevTasksの構造体に合わせてデータを更新しました。")
+        return newTasks
+    }
+    
+    func loadPrevPrevTasks() -> [Tasks]? {
         let jsonDecoder = JSONDecoder()
         // Tasksを変更した場合、構造体に合わせてtasksを更新する
         guard let data = UserDefaults.standard.data(forKey: "tasks"), let tasks = try? jsonDecoder.decode([prevTasks].self, from: data) else {
@@ -738,9 +694,44 @@ class TaskViewModel: ObservableObject {
             return Tasks.defaulData
         }
         var newTasks: [Tasks] = []
-        for taskIndex in 0..<tasks.count {
-            newTasks.append(Tasks(title: tasks[taskIndex].title, detail: tasks[taskIndex].detail, addedDate: tasks[taskIndex].addedDate, spanType: tasks[taskIndex].spanType, span: .day, doCount: 1, spanDate: tasks[taskIndex].spanDate, doneDate: tasks[taskIndex].doneDate, notification: tasks[taskIndex].notification, notificationHour: tasks[taskIndex].notificationHour, notificationMin: tasks[taskIndex].notificationMin, accentColor: tasks[taskIndex].accentColor, isAble: true))
+        var newSpanType: TaskSpanType = .custom
+        var span: Spans = .day
+        for task in tasks {
+            switch task.spanType {
+            case .oneTime:
+                newSpanType = .custom
+                span = .infinite
+            case .everyDay:
+                newSpanType = .custom
+                span = .day
+            case .everyWeek:
+                newSpanType = .custom
+                span = .week
+            case .everyMonth:
+                newSpanType = .custom
+                span = .month
+            case .everyWeekday:
+                newSpanType = .selected
+                span = .day
+            }
+            
+            newTasks.append(
+                Tasks(title: task.title,
+                      detail: task.detail,
+                      addedDate: task.addedDate,
+                      spanType: newSpanType,
+                      span: span,
+                      doCount: 1,
+                      spanDate: task.spanDate,
+                      doneDate: task.doneDate,
+                      notification: task.notification,
+                      notificationHour: task.notificationHour,
+                      notificationMin: task.notificationMin,
+                      accentColor: task.accentColor,
+                      isAble: task.isAble)
+            )
         }
+        
         print("😄: prevTasksの構造体に合わせてデータを更新しました。")
         return newTasks
     }
@@ -785,12 +776,12 @@ extension TaskViewModel {
         for task in tasks {
             // 通知オンだった場合
             if task.notification {
-                if task.spanType == .everyDay {
+                if task.spanType == .custom && task.span == .day {
                     // まだタスクが完了していない場合
                     if !isDone(task: task, date: Date()) {
                         makeNotification(task: task, hour: task.notificationHour, min: task.notificationMin)
                     }
-                } else if task.spanType == .everyWeekday {
+                } else if task.spanType == .selected {
                     let spanDate = task.spanDate
                     let weekIndex = returnWeekdayFromDate(date: Date())
                     // 今日が設定した曜日だった場合

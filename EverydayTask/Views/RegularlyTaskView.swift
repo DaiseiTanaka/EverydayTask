@@ -84,7 +84,7 @@ extension RegularlyTaskView {
     private var span: some View {
         HStack(spacing: 3) {
             Spacer()
-            if task.spanType == .everyWeekday {
+            if task.spanType == .selected {
                 spanImage
                 
             } else if task.spanType == .custom {
@@ -97,7 +97,7 @@ extension RegularlyTaskView {
                     .foregroundColor(.secondary)
                     .lineLimit(1)
             } else {
-                Text(LocalizedStringKey(taskViewModel.returnSpanToString(span: task.spanType)))
+                Text(LocalizedStringKey(task.spanType.spanString))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .lineLimit(1)
@@ -181,43 +181,32 @@ extension RegularlyTaskView {
     
     // 日付をセルの上に表示する日付を返す
     private func returnHeaderDateString(date: Date) -> String {
-        let spanType = task.spanType
         let span = task.span
         var calendar = Calendar(identifier: .gregorian)
         let dayDC = calendar.dateComponents([.year, .month, .day], from: date)
         
         let dateFormatter = DateFormatter()
         
-        if spanType == .everyWeek {
+        switch span {
+        case .day:
+            return "\(dayDC.month!)/\(dayDC.day!)"
+            
+        case .week:
             return returnWeekString(date: date)
             
-        } else if spanType == .everyMonth {
+        case .month:
             dateFormatter.dateFormat = "MMMM"
             return dateFormatter.string(from: date)
             
-        } else if spanType == .custom {
-            switch span {
-            case .day:
-                return "\(dayDC.month!)/\(dayDC.day!)"
-                
-            case .week:
-                return returnWeekString(date: date)
-                
-            case .month:
-                dateFormatter.dateFormat = "MMMM"
-                return dateFormatter.string(from: date)
-                
-            case .year:
-                return "\(dayDC.year!)"
-                
-            case .infinite:
-                dateFormatter.dateStyle = .long
-                dateFormatter.timeStyle = .none
-                return dateFormatter.string(from: date) + " ~"
-            }
+        case .year:
+            return "\(dayDC.year!)"
+            
+        case .infinite:
+            dateFormatter.dateStyle = .long
+            dateFormatter.timeStyle = .none
+            return dateFormatter.string(from: date) + " ~"
         }
         
-        return ""
     }
     
     // 週の最初の日から最後の日までのStringを返す　0/0 ~ 0/0
@@ -245,38 +234,27 @@ extension RegularlyTaskView {
     
     // 日付をセルの上に表示するかどうかのBoolを返す　true: 表示する
     private func showHeader(prevDate: Date, date: Date) -> Bool {
-        let spanType = task.spanType
         let span = task.span
         
-        if spanType == .everyWeek {
+        switch span {
+        case .day:
+            if !taskViewModel.isSameDay(date1: prevDate, date2: date) {
+                return true
+            }
+        case .week:
             if !taskViewModel.isSameWeek(date1: prevDate, date2: date) {
                 return true
             }
-        } else if spanType == .everyMonth {
+        case .month:
             if !taskViewModel.isSameMonth(date1: prevDate, date2: date) {
                 return true
             }
-        } else if spanType == .custom {
-            switch span {
-            case .day:
-                if !taskViewModel.isSameDay(date1: prevDate, date2: date) {
-                    return true
-                }
-            case .week:
-                if !taskViewModel.isSameWeek(date1: prevDate, date2: date) {
-                    return true
-                }
-            case .month:
-                if !taskViewModel.isSameMonth(date1: prevDate, date2: date) {
-                    return true
-                }
-            case .year:
-                if !taskViewModel.isSameYear(date1: prevDate, date2: date) {
-                    return true
-                }
-            case .infinite:
-                return false
+        case .year:
+            if !taskViewModel.isSameYear(date1: prevDate, date2: date) {
+                return true
             }
+        case .infinite:
+            return false
         }
         
         return false
@@ -302,50 +280,27 @@ extension RegularlyTaskView {
         let sameWeek = nextDateDC.weekOfYear! == dateDC.weekOfYear!
         let sameDay = nextDateDC.day! == dateDC.day!
         
-        switch task.spanType {
-        case .everyWeek:
-            let weekDC = calendar.component(.weekOfYear, from: date)
-            let nextWeekDC = calendar.component(.weekOfYear, from: nextDate)
-            let weekDiff = nextWeekDC - weekDC
-            if weekDiff == 1 {
+        switch span {
+        case .day:
+            if sameYear && sameMonth && sameWeek && sameDay {
                 return true
             }
-            
-        case .everyMonth:
-            let dayDC = Calendar.current.dateComponents([.year, .month], from: date)
-            let nextDayDC = Calendar.current.dateComponents([.year, .month], from: nextDate)
-            let sameYear: Bool = dayDC.year == nextDayDC.year
-            let dayDiff = nextDayDC.month! - dayDC.month!
-            // 1ヶ月差かつ同じ年
-            if dayDiff == 1 && sameYear {
+        case .week:
+            if sameYear && sameMonth && sameWeek {
                 return true
             }
-        case .custom:
-            switch span {
-            case .day:
-                if sameYear && sameMonth && sameWeek && sameDay {
-                    return true
-                }
-            case .week:
-                if sameYear && sameMonth && sameWeek {
-                    return true
-                }
-            case .month:
-                if sameYear && sameMonth {
-                    return true
-                }
-            case .year:
-                if sameYear {
-                    return true
-                }
-            case .infinite:
+        case .month:
+            if sameYear && sameMonth {
                 return true
             }
-            
-        default:
-            return false
+        case .year:
+            if sameYear {
+                return true
+            }
+        case .infinite:
+            return true
         }
-        
+            
         return false
     }
 }

@@ -103,7 +103,7 @@ extension AllTaskListView {
             let impactLight = UIImpactFeedbackGenerator(style: .rigid)
             impactLight.impactOccurred()
             
-            taskViewModel.editTask = Tasks(title: "", detail: "", addedDate: Date(), spanType: .everyDay, span: .day, doCount: 1, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)
+            taskViewModel.editTask = Tasks(title: "", detail: "", addedDate: Date(), spanType: .custom, span: .day, doCount: 1, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)
             showTaskSettingView = true
         } label: {
             Image(systemName: "plus")
@@ -182,31 +182,37 @@ extension AllTaskListView {
     // 全てのタスクをspanTypeごとに仕分けして返す
     private func returnSortedTasksBySpanType(tasks: [Tasks]) -> [Tasks] {
         var sortedAllTasks: [Tasks] = []
-        var everyDayTasks: [Tasks] = []
-        var everyWeekTasks: [Tasks] = []
-        var everyMonthTasks: [Tasks] = []
-        var everyWeekdayTasks: [Tasks] = []
-        var oneTimeTasks: [Tasks] = []
-        var customTasks: [Tasks] = []
+        
+        var dayTasks: [Tasks] = []
+        var selectedTasks: [Tasks] = []
+        var weekTasks: [Tasks] = []
+        var monthTasks: [Tasks] = []
+        var yearTasks: [Tasks] = []
+        var infiniteTasks: [Tasks] = []
         
         for task in tasks {
             let spanType = task.spanType
             switch spanType {
-            case .oneTime:
-                oneTimeTasks.append(task)
-            case .everyDay:
-                everyDayTasks.append(task)
-            case .everyWeek:
-                everyWeekTasks.append(task)
-            case .everyMonth:
-                everyMonthTasks.append(task)
-            case .everyWeekday:
-                everyWeekdayTasks.append(task)
             case .custom:
-                customTasks.append(task)
+                switch task.span {
+                case .day:
+                    dayTasks.append(task)
+                case .week:
+                    weekTasks.append(task)
+                case .month:
+                    monthTasks.append(task)
+                case .year:
+                    yearTasks.append(task)
+                case .infinite:
+                    infiniteTasks.append(task)
+                }
+
+            case .selected:
+                selectedTasks.append(task)
             }
         }
-        sortedAllTasks = everyDayTasks + everyWeekTasks + everyMonthTasks + everyWeekdayTasks + oneTimeTasks + customTasks
+        
+        sortedAllTasks = dayTasks + selectedTasks + weekTasks + monthTasks + yearTasks + infiniteTasks
 
         return sortedAllTasks
     }

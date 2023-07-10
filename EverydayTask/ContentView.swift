@@ -114,12 +114,12 @@ extension ContentView {
         for task in taskViewModel.tasks {
             // 通知オンだった場合
             if task.notification {
-                if task.spanType == .everyDay {
+                if task.spanType == .custom && task.span == .day {
                     // まだタスクが完了していない場合
                     if !taskViewModel.isDone(task: task, date: Date()) {
                         badgeNum += 1
                     }
-                } else if task.spanType == .everyWeekday {
+                } else if task.spanType == .selected {
                     let spanDate = task.spanDate
                     let weekIndex = taskViewModel.returnWeekdayFromDate(date: Date())
                     // 今日が設定した曜日だった場合
