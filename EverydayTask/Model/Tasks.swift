@@ -93,14 +93,13 @@ extension Tasks {
     ]
 }
 
-struct myprevTasks: Codable, Identifiable, Equatable, Hashable {
+// Modelを更新した時用　userdefaultsからデータを持ってくるときにmodelを修正する
+struct prevTasks: Codable, Identifiable, Equatable, Hashable {
     var id = UUID()
     var title: String
     var detail: String
     var addedDate: Date
     var spanType: prevTaskSpanType
-    var span: Spans
-    var doCount: Int
     var spanDate: [Int]
     var doneDate: [Date]
     var notification: Bool
@@ -109,13 +108,11 @@ struct myprevTasks: Codable, Identifiable, Equatable, Hashable {
     var accentColor: String
     var isAble: Bool
     
-    init(title: String, detail: String, addedDate: Date, spanType: prevTaskSpanType, span: Spans, doCount: Int, spanDate: [Int], doneDate: [Date], notification: Bool, notificationHour: Int, notificationMin: Int, accentColor: String, isAble: Bool) {
+    init(title: String, detail: String, addedDate: Date, spanType: prevTaskSpanType, spanDate: [Int], doneDate: [Date], notification: Bool, notificationHour: Int, notificationMin: Int, accentColor: String, isAble: Bool) {
         self.title = title
         self.detail = detail
         self.addedDate = addedDate
         self.spanType = spanType
-        self.span = span
-        self.doCount = doCount
         self.spanDate = spanDate
         self.doneDate = doneDate
         self.notification = notification
@@ -127,45 +124,6 @@ struct myprevTasks: Codable, Identifiable, Equatable, Hashable {
 }
 
 enum prevTaskSpanType: Codable {
-    case oneTime
-    case everyDay
-    case everyWeek
-    case everyMonth
-    case everyWeekday
-    case custom
-}
-
-
-struct prevTasks: Codable, Identifiable, Equatable, Hashable {
-    var id = UUID()
-    var title: String
-    var detail: String
-    var addedDate: Date
-    var spanType: prevprevTaskSpanType
-    var spanDate: [Int]
-    var doneDate: [Date]
-    var notification: Bool
-    var notificationHour: Int
-    var notificationMin: Int
-    var accentColor: String
-    var isAble: Bool
-    
-    init(title: String, detail: String, addedDate: Date, spanType: prevprevTaskSpanType, spanDate: [Int], doneDate: [Date], notification: Bool, notificationHour: Int, notificationMin: Int, accentColor: String, isAble: Bool) {
-        self.title = title
-        self.detail = detail
-        self.addedDate = addedDate
-        self.spanType = spanType
-        self.spanDate = spanDate
-        self.doneDate = doneDate
-        self.notification = notification
-        self.notificationHour = notificationHour
-        self.notificationMin = notificationMin
-        self.accentColor = accentColor
-        self.isAble = isAble
-    }
-}
-
-enum prevprevTaskSpanType: Codable {
     case oneTime
     case everyDay
     case everyWeek

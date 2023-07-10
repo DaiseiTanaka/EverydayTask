@@ -630,65 +630,6 @@ class TaskViewModel: ObservableObject {
     func loadPrevTasks() -> [Tasks]? {
         let jsonDecoder = JSONDecoder()
         // Tasksを変更した場合、構造体に合わせてtasksを更新する
-        guard let data = UserDefaults.standard.data(forKey: "tasks"), let tasks = try? jsonDecoder.decode([myprevTasks].self, from: data) else {
-            return loadPrevPrevTasks()
-        }
-        var newTasks: [Tasks] = []
-        var newSpanType: TaskSpanType = .custom
-        var span: Spans = .day
-        var doCount: Int = 1
-        for task in tasks {
-            switch task.spanType {
-            case .oneTime:
-                newSpanType = .custom
-                span = .infinite
-                doCount = 1
-            case .everyDay:
-                newSpanType = .custom
-                span = .day
-                doCount = 1
-            case .everyWeek:
-                newSpanType = .custom
-                span = .week
-                doCount = 1
-            case .everyMonth:
-                newSpanType = .custom
-                span = .month
-                doCount = 1
-            case .everyWeekday:
-                newSpanType = .selected
-                span = .day
-                doCount = 1
-            case .custom:
-                newSpanType = .custom
-                span = task.span
-                doCount = task.doCount
-            }
-            
-            newTasks.append(
-                Tasks(title: task.title,
-                      detail: task.detail,
-                      addedDate: task.addedDate,
-                      spanType: newSpanType,
-                      span: span,
-                      doCount: doCount,
-                      spanDate: task.spanDate,
-                      doneDate: task.doneDate,
-                      notification: task.notification,
-                      notificationHour: task.notificationHour,
-                      notificationMin: task.notificationMin,
-                      accentColor: task.accentColor,
-                      isAble: task.isAble)
-            )
-        }
-        
-        print("😄: myprevTasksの構造体に合わせてデータを更新しました。")
-        return newTasks
-    }
-    
-    func loadPrevPrevTasks() -> [Tasks]? {
-        let jsonDecoder = JSONDecoder()
-        // Tasksを変更した場合、構造体に合わせてtasksを更新する
         guard let data = UserDefaults.standard.data(forKey: "tasks"), let tasks = try? jsonDecoder.decode([prevTasks].self, from: data) else {
             print("😭: tasksのロードに失敗しました。")
             return Tasks.defaulData
