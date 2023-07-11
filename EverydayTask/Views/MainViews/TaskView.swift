@@ -25,6 +25,7 @@ struct TaskView: View {
     @State var showAllTaskListViewFlag: Bool = false
     @State var showChangeCellStyleAlart: Bool = false
     @State var showRegularlyTaskAlart: Bool = false
+    @State var showEditRegularlyTaskHistoryView: Bool = false
 
     @AppStorage("showRegularlyTaskList") private var showRegularlyTaskList: Bool = true
     @AppStorage("showOneTimeTaskList") private var showOneTimeTaskList: Bool = true
@@ -80,18 +81,16 @@ struct TaskView: View {
         .onAppear {
             cellStyle = cellStyleAS
         }
-        .sheet(isPresented: $showTaskSettingView, content: {
-            TaskSettingView(rkManager: rkManager, taskViewModel: taskViewModel, task: taskViewModel.editTask, selectedWeekdays: taskViewModel.editTask.spanDate)
-        })
-        .sheet(isPresented: $showAllTaskListViewFlag, content: {
-            AllTaskListView(taskViewModel: taskViewModel, rkManager: rkManager)
-        })
+        .sheet(isPresented: $showTaskSettingView, content: { taskSettingView })
+        .sheet(isPresented: $showAllTaskListViewFlag, content: { allTaskListView })
+        .sheet(isPresented: $showEditRegularlyTaskHistoryView, content: { editRegularlyTaskHistoryView })
         .confirmationDialog(taskViewModel.editTask.title, isPresented: $showTaskSettingAlart, titleVisibility: .visible) {
             Button("Edit this task?") {
                 showTaskSettingView.toggle()
             }
             if taskViewModel.editTask.spanType == .custom {
                 Button("Show this task history?") {
+                    taskViewModel.selectedTasks = [taskViewModel.editTask]
                     taskViewModel.showCalendarFlag = false
                 }
             }
@@ -115,18 +114,11 @@ struct TaskView: View {
             Text(taskViewModel.editTask.detail)
         }
         .confirmationDialog(taskViewModel.editTask.title, isPresented: $taskViewModel.showEditRegularlyTaskAlart, titleVisibility: .visible) {
+            Button("Edit done time?") {
+                showEditRegularlyTaskHistoryView = true
+            }
             Button("Delete this history?", role: .destructive) {
-                guard let taskIndex = taskViewModel.tasks.firstIndex(where: { $0.id == taskViewModel.editTask.id }) else {
-                    return
-                }
-                guard let dateIndex = taskViewModel.tasks[taskIndex].doneDate.firstIndex(where: { $0 == taskViewModel.selectedRegularlyTaskDate }) else {
-                    return
-                }
-                taskViewModel.tasks[taskIndex].doneDate.remove(at: dateIndex)
-                withAnimation {
-                    taskViewModel.selectedTasks = [taskViewModel.tasks[taskIndex]]
-                }
-                taskViewModel.saveTasks(tasks: taskViewModel.tasks)
+                deleteRegularlyTaskHistory()
             }
         } message: {
             Text(returnDateTime(date: taskViewModel.selectedRegularlyTaskDate))
@@ -294,6 +286,21 @@ extension TaskView {
         }
     }
     
+    private var taskSettingView: some View {
+        TaskSettingView(rkManager: rkManager, taskViewModel: taskViewModel, task: taskViewModel.editTask, selectedWeekdays: taskViewModel.editTask.spanDate)
+    }
+    
+    private var allTaskListView: some View {
+        AllTaskListView(taskViewModel: taskViewModel, rkManager: rkManager)
+    }
+    
+    private var editRegularlyTaskHistoryView: some View {
+        EditRegularlyTaskHistoryView(taskViewModel: taskViewModel, task: taskViewModel.editTask, date: taskViewModel.selectedRegularlyTaskDate)
+            .presentationDetents([.fraction(0.5)])
+            .presentationCornerRadius(30)
+            .presentationDragIndicator(.visible)
+    }
+    
     // 選択された日付のすでに実行されているタスクの数を返す
     // これはweekly, monthlyのタスクも含まれる
     private func returnDoneTaskCount() -> Int {
@@ -437,31 +444,20 @@ extension TaskView {
         //print("Task tapped! selectedTasks:\n\(taskViewModel.selectedTasks)")
     }
     
-    // dateのStringを返す
+    // dateのStringを返す ex: 0/0 00:00
     private func returnDateTime(date: Date) -> String {
-        let span = taskViewModel.editTask.span
+        // calendar
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "ja_JP")
+        let dateDC = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
+        // dateFormatter
         let dateFormatter = DateFormatter()
-        var dateString: String = ""
-
-        if span == .day {
-            dateFormatter.calendar = Calendar(identifier: .gregorian)
-            dateFormatter.dateStyle = .none
-            dateFormatter.timeStyle = .medium
-             
-            dateString = dateFormatter.string(from: date)
-                        
-        } else {
-            dateFormatter.calendar = Calendar(identifier: .gregorian)
-    //        dateFormatter.locale = Locale(identifier: "ja_JP")
-    //        dateFormatter.timeZone = TimeZone(identifier:  "Asia/Tokyo")
-             
-            /// 自動フォーマットのスタイル指定
-            dateFormatter.dateStyle = .medium
-            dateFormatter.timeStyle = .medium
-             
-            /// データ変換（Date→テキスト）
-            dateString = dateFormatter.string(from: date)
-        }
+        dateFormatter.locale = Locale(identifier: "ja_JP")
+        dateFormatter.dateStyle = .medium
+        dateFormatter.dateFormat = "HH:mm"
+        
+        // 0/0 00:00
+        let dateString = "\(dateDC.month!)/\(dateDC.day!) " + dateFormatter.string(from: date)
         
         return dateString
     }
@@ -471,6 +467,20 @@ extension TaskView {
         generator.notificationOccurred(.success)
         taskViewModel.editTask = task
         showTaskSettingView = true
+    }
+    
+    private func deleteRegularlyTaskHistory() {
+        guard let taskIndex = taskViewModel.tasks.firstIndex(where: { $0.id == taskViewModel.editTask.id }) else {
+            return
+        }
+        guard let dateIndex = taskViewModel.tasks[taskIndex].doneDate.firstIndex(where: { $0 == taskViewModel.selectedRegularlyTaskDate }) else {
+            return
+        }
+        taskViewModel.tasks[taskIndex].doneDate.remove(at: dateIndex)
+        withAnimation {
+            taskViewModel.selectedTasks = [taskViewModel.tasks[taskIndex]]
+        }
+        taskViewModel.saveTasks(tasks: taskViewModel.tasks)
     }
 }
 

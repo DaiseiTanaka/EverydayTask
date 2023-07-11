@@ -32,8 +32,9 @@
 		3577ECF82A4C6290005A6915 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 353C5EEF2A3E025400FDFFE5 /* Localizable.strings */; };
 		3585CA302A370956002A090C /* RegularlyTaskCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3585CA2F2A370956002A090C /* RegularlyTaskCell.swift */; };
 		3585CA322A370972002A090C /* RegularlyTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3585CA312A370972002A090C /* RegularlyTaskView.swift */; };
+		3592BB292A5C13FC00939B61 /* EditRegularlyTaskHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3592BB282A5C13FC00939B61 /* EditRegularlyTaskHistoryView.swift */; };
 		35ADE3C92A39D1F0004F3E67 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 35ADE3CB2A39D1F0004F3E67 /* InfoPlist.strings */; };
-		35ADE3CE2A39E547004F3E67 /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35ADE3CD2A39E547004F3E67 /* PickerView.swift */; };
+		35ADE3CE2A39E547004F3E67 /* NotificationPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35ADE3CD2A39E547004F3E67 /* NotificationPickerView.swift */; };
 		35ADE3D62A3B4821004F3E67 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35ADE3D52A3B4821004F3E67 /* WidgetKit.framework */; };
 		35ADE3D82A3B4821004F3E67 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35ADE3D72A3B4821004F3E67 /* SwiftUI.framework */; };
 		35ADE3DB2A3B4821004F3E67 /* EverydayTaskWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35ADE3DA2A3B4821004F3E67 /* EverydayTaskWidgetBundle.swift */; };
@@ -96,9 +97,10 @@
 		3577ECF02A48882F005A6915 /* SideBarStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBarStack.swift; sourceTree = "<group>"; };
 		3585CA2F2A370956002A090C /* RegularlyTaskCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegularlyTaskCell.swift; sourceTree = "<group>"; };
 		3585CA312A370972002A090C /* RegularlyTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegularlyTaskView.swift; sourceTree = "<group>"; };
+		3592BB282A5C13FC00939B61 /* EditRegularlyTaskHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRegularlyTaskHistoryView.swift; sourceTree = "<group>"; };
 		35ADE3CA2A39D1F0004F3E67 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		35ADE3CC2A39D1F7004F3E67 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		35ADE3CD2A39E547004F3E67 /* PickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerView.swift; sourceTree = "<group>"; };
+		35ADE3CD2A39E547004F3E67 /* NotificationPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationPickerView.swift; sourceTree = "<group>"; };
 		35ADE3D32A3B4821004F3E67 /* EverydayTaskWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EverydayTaskWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		35ADE3D52A3B4821004F3E67 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		35ADE3D72A3B4821004F3E67 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -182,17 +184,9 @@
 		355B97782A2DA44900BD0772 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				355B977D2A2DA4F400BD0772 /* CalendarView.swift */,
-				355B978E2A2DE7F500BD0772 /* TaskView.swift */,
-				35CCF3452A2EEB0A00C91B80 /* TaskCell.swift */,
-				353C5EF12A3EF41200FDFFE5 /* AllTaskListView.swift */,
-				353C5EF32A3EF84100FDFFE5 /* AllTaskCell.swift */,
-				3585CA2F2A370956002A090C /* RegularlyTaskCell.swift */,
-				3585CA312A370972002A090C /* RegularlyTaskView.swift */,
-				35CCF3472A2EFCA500C91B80 /* TaskSettingView.swift */,
-				35ADE3CD2A39E547004F3E67 /* PickerView.swift */,
-				350BA4402A528A380071FF23 /* CustomTaskPickerView.swift */,
-				3577ECF02A48882F005A6915 /* SideBarStack.swift */,
+				3592BB2D2A5D6B1200939B61 /* MainViews */,
+				3592BB2E2A5D6B3B00939B61 /* SubViews */,
+				3592BB2C2A5D6AFC00939B61 /* Pickers */,
 				355B977F2A2DA77F00BD0772 /* CalendarView */,
 			);
 			path = Views;
@@ -228,6 +222,39 @@
 				355B97862A2DA77F00BD0772 /* RKDate.swift */,
 			);
 			path = CalendarView;
+			sourceTree = "<group>";
+		};
+		3592BB2C2A5D6AFC00939B61 /* Pickers */ = {
+			isa = PBXGroup;
+			children = (
+				35ADE3CD2A39E547004F3E67 /* NotificationPickerView.swift */,
+				350BA4402A528A380071FF23 /* CustomTaskPickerView.swift */,
+			);
+			path = Pickers;
+			sourceTree = "<group>";
+		};
+		3592BB2D2A5D6B1200939B61 /* MainViews */ = {
+			isa = PBXGroup;
+			children = (
+				355B977D2A2DA4F400BD0772 /* CalendarView.swift */,
+				355B978E2A2DE7F500BD0772 /* TaskView.swift */,
+				35CCF3452A2EEB0A00C91B80 /* TaskCell.swift */,
+				353C5EF12A3EF41200FDFFE5 /* AllTaskListView.swift */,
+				353C5EF32A3EF84100FDFFE5 /* AllTaskCell.swift */,
+				3585CA2F2A370956002A090C /* RegularlyTaskCell.swift */,
+				3585CA312A370972002A090C /* RegularlyTaskView.swift */,
+			);
+			path = MainViews;
+			sourceTree = "<group>";
+		};
+		3592BB2E2A5D6B3B00939B61 /* SubViews */ = {
+			isa = PBXGroup;
+			children = (
+				35CCF3472A2EFCA500C91B80 /* TaskSettingView.swift */,
+				3577ECF02A48882F005A6915 /* SideBarStack.swift */,
+				3592BB282A5C13FC00939B61 /* EditRegularlyTaskHistoryView.swift */,
+			);
+			path = SubViews;
 			sourceTree = "<group>";
 		};
 		35ADE3D42A3B4821004F3E67 /* Frameworks */ = {
@@ -359,10 +386,11 @@
 				355B97882A2DA77F00BD0772 /* RKManager.swift in Sources */,
 				355B976D2A2D9F0900BD0772 /* ContentView.swift in Sources */,
 				350BA4412A528A380071FF23 /* CustomTaskPickerView.swift in Sources */,
-				35ADE3CE2A39E547004F3E67 /* PickerView.swift in Sources */,
+				35ADE3CE2A39E547004F3E67 /* NotificationPickerView.swift in Sources */,
 				3577ECF12A48882F005A6915 /* SideBarStack.swift in Sources */,
 				355B97872A2DA77F00BD0772 /* RKViewController.swift in Sources */,
 				355B978F2A2DE7F500BD0772 /* TaskView.swift in Sources */,
+				3592BB292A5C13FC00939B61 /* EditRegularlyTaskHistoryView.swift in Sources */,
 				353AD8042A5BAE12007CCEFA /* SortKey.swift in Sources */,
 				355B978C2A2DA77F00BD0772 /* RKColorSettings.swift in Sources */,
 				35CCF3482A2EFCA500C91B80 /* TaskSettingView.swift in Sources */,

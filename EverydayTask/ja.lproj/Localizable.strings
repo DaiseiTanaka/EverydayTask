@@ -26,6 +26,7 @@
 "Edit history" = "実施履歴を編集";
 "Delete this history?" = "履歴を削除";
 "Show this task history?" = "履歴を表示";
+"Edit done time?" = "実行時刻を編集";
 
 // All Task View
 "All Tasks" = "全てのタスク";
@@ -90,3 +91,7 @@
 
 // CustomTaskPickerView
 "times / " = "回 / ";
+
+// EditRegularlyTaskHistoryView
+"What time did you complete this task?" = "何時にこのタスクを実施しましたか？";
+"Previous date:" = "元の日時";

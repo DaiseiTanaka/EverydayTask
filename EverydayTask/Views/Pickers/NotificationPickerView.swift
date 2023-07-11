@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct PickerView: View {
+struct NotificationPickerView: View {
     //設定可能な時間単位の数値
     let hours = [Int](0..<24)
     //設定可能な分単位の数値
-    let minutes = [0, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+    let minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
     
     @Binding var hourSelected: Int
     @Binding var minSelected: Int

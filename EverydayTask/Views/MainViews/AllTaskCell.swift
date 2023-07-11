@@ -103,7 +103,7 @@ extension AllTaskCell {
                 }
                 Text(task.title)
                     .lineLimit(1)
-                    .font(.body.bold())
+                    .font(task.isAble ? .body.bold() : .body)
                     .foregroundColor(task.isAble ? Color(UIColor.label) : .secondary)
             }
             
@@ -126,7 +126,7 @@ extension AllTaskCell {
             HStack {
                 Text("\(taskViewModel.returnDayString(date: task.addedDate)) ~ ")
                     .font(.footnote)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(task.isAble ? .primary : .secondary)
                 Spacer()
             }
             .frame(width: 50)
@@ -134,12 +134,12 @@ extension AllTaskCell {
             if (task.spanType == .custom && task.span == .day) || task.spanType == .selected {
                 if task.notification {
                     Image(systemName: "bell.badge")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .font(.footnote)
+                        .foregroundColor(task.isAble ? .primary : .secondary)
                 } else {
                     Image(systemName: "bell.slash")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .font(.footnote)
+                        .foregroundColor(task.isAble ? .primary : .secondary)
                 }
             }
             
@@ -148,17 +148,17 @@ extension AllTaskCell {
                 
             } else if task.spanType == .custom {
                 Text("\(task.doCount) /")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .font(.footnote)
+                    .foregroundColor(task.isAble ? .primary : .secondary)
                     .lineLimit(1)
                 Text(LocalizedStringKey(task.span.spanString))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .font(.footnote)
+                    .foregroundColor(task.isAble ? .primary : .secondary)
                     .lineLimit(1)
             } else {
                 Text(LocalizedStringKey(task.spanType.spanString))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .font(.footnote)
+                    .foregroundColor(task.isAble ? .primary : .secondary)
                     .lineLimit(1)
             }
         }

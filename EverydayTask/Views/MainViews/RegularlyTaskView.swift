@@ -125,50 +125,54 @@ extension RegularlyTaskView {
     
     private var taskList: some View {
         ForEach(Array(task.doneDate.enumerated()), id: \.offset) { index, date in
-            if task.spanType == .custom {
-                HStack(alignment: .bottom) {
-                    // リストの先頭には必ず日付を表示
-                    if index == 0 {
-                        Text(returnHeaderDateString(date: date))
-                            .font(.title3.bold())
-                            .padding(.leading, 5)
-                            .padding(.bottom, 5)
-                        Spacer()
-                        Text("\(task.doCount - taskViewModel.returnRemainCustomTaskCount(task: task, date: date))")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                            .padding(.bottom, 5)
-                        Text((task.doCount - taskViewModel.returnRemainCustomTaskCount(task: task, date: date)) == 1 ? "item" : "items")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                            .padding(.trailing, 5)
-                            .padding(.bottom, 5)
-                        // doneDate[index]とdoneDate[index-1]がそれぞれ違うスパンに属する時日付を表示
-                    } else if showHeader(prevDate: date, date: task.doneDate[index - 1]) {
-                        Text(returnHeaderDateString(date: date))
-                            .font(.title3.bold())
-                            .padding(.leading, 5)
-                            .padding(.bottom, 5)
-                        Spacer()
-                        Text("\(task.doCount - taskViewModel.returnRemainCustomTaskCount(task: task, date: date))")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                            .padding(.bottom, 5)
-                        Text((task.doCount - taskViewModel.returnRemainCustomTaskCount(task: task, date: date)) == 1 ? "item" : "items")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                            .padding(.trailing, 5)
-                            .padding(.bottom, 5)
-                    }
-                }
+            if index == 0 || showHeader(prevDate: date, date: task.doneDate[index - 1]) {
+                header(date: date, index: index)
             }
             
             RegularlyTaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, date: date)
             
             Rectangle()
                 .foregroundColor(returnContinuousCondition(index: index, task: task) ? returnCellBackgroundColor(opacity: cellOpacity) : .clear)
-                .frame(width: 5, height: returnContinuousCondition(index: index, task: task) ? 13 : 20)
+                .frame(width: 5, height: returnContinuousCondition(index: index, task: task) ? 13 : 0)
         }
+    }
+    
+    private func header(date: Date, index: Int) -> some View {
+        ZStack(alignment: .bottom) {
+            HStack {
+                // リストの先頭には必ず日付を表示
+                Text(returnHeaderDateString(date: date))
+                    .font(.title3.bold())
+                    .foregroundColor(returnHeaderDateColor(date: date))
+                    .padding(.leading, 5)
+                    .padding(.bottom, 5)
+                Spacer()
+                Text("\(task.doCount - taskViewModel.returnRemainCustomTaskCount(task: task, date: date))")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                    .padding(.bottom, 5)
+                Text((task.doCount - taskViewModel.returnRemainCustomTaskCount(task: task, date: date)) == 1 ? "item" : "items")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                    .padding(.trailing, 5)
+                    .padding(.bottom, 5)
+            }
+            
+            if index != 0 {
+                Rectangle()
+                    .foregroundColor(returnContinuousSpanCondition(index: index, task: task) ? returnCellBackgroundColor(opacity: cellOpacity) : .clear)
+                    .frame(width: 5, height: 40)
+            }
+        }
+    }
+    
+    // ヘッダーの日付のテキストの色を返す。selectedDateを赤くする。
+    private func returnHeaderDateColor(date: Date) -> Color {
+        if taskViewModel.isSameDay(date1: date, date2: rkManager.selectedDate) {
+            return Color.red
+        }
+        
+        return Color.primary
     }
     
     // Cellの背景色を返す
@@ -182,7 +186,7 @@ extension RegularlyTaskView {
     // 日付をセルの上に表示する日付を返す
     private func returnHeaderDateString(date: Date) -> String {
         let span = task.span
-        var calendar = Calendar(identifier: .gregorian)
+        let calendar = Calendar(identifier: .gregorian)
         let dayDC = calendar.dateComponents([.year, .month, .day], from: date)
         
         let dateFormatter = DateFormatter()
@@ -262,8 +266,7 @@ extension RegularlyTaskView {
 
     // Cellの間のラインが繋がるかどうかのBoolを返す　→ true: 表示する
     private func returnContinuousCondition(index: Int, task: Tasks) -> Bool {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = Locale(identifier: "ja_JP")
+        let calendar = Calendar(identifier: .gregorian)
         let doneDate = task.doneDate.sorted()
         let span = task.span
         // 最後の一個はつけない
@@ -275,7 +278,7 @@ extension RegularlyTaskView {
         let dateDC = calendar.dateComponents([.year, .month, .weekOfYear, .day], from: date)
         let nextDateDC = calendar.dateComponents([.year, .month, .weekOfYear, .day], from: nextDate)
         // 同期間か判定
-        let sameYear = dateDC.year == nextDateDC.year
+        let sameYear = dateDC.year! == nextDateDC.year!
         let sameMonth = nextDateDC.month! == dateDC.month!
         let sameWeek = nextDateDC.weekOfYear! == dateDC.weekOfYear!
         let sameDay = nextDateDC.day! == dateDC.day!
@@ -303,15 +306,63 @@ extension RegularlyTaskView {
             
         return false
     }
-}
+    
+    // 連続する期間で実施している場合。Cellの間のラインが繋がるかどうかのBoolを返す　→ true: 表示する
+    // ヘッダーの隣に表示するラインを表示するかどうかのフラグを返す。
+    private func returnContinuousSpanCondition(index: Int, task: Tasks) -> Bool {
+        let calendar = Calendar(identifier: .gregorian)
+        let doneDate = task.doneDate.sorted()
+        let span = task.span
+        
+        let date = doneDate[index-1]
+        let nextDate = doneDate[index]
+        let dateDC = calendar.dateComponents([.year, .month, .weekOfYear, .day], from: date)
+        let nextDateDC = calendar.dateComponents([.year, .month, .weekOfYear, .day], from: nextDate)
+        // 同期間か判定
+        let sameYear = dateDC.year! == nextDateDC.year!
+        let sameMonth = nextDateDC.month! == dateDC.month!
+        // 連続しているか判定
+        let contDay = calendar.isDate(date, inSameDayAs: nextDate.addingTimeInterval(-60 * 60 * 24))
+        let contWeek = calendar.isDate(date, equalTo: nextDate.addingTimeInterval(-60 * 60 * 24 * 7), toGranularity: .weekOfYear) // 7日間戻した日付と同じ週なら連続している
+        let contMonth = nextDateDC.month! - dateDC.month! == 1
+        let contYear = dateDC.year! - nextDateDC.year! == 1
+        
+        // タスクが完了している場合
+        if taskViewModel.isDone(task: task, date: date) {
+            // ヘッダーを表示したタイミングで、タスクのスパンが連続していた場合true
+            switch span {
+            case .day:
+                return contDay
+                
+            case .week:
+                return contWeek
 
-struct WeeklyAndMonthlyDetailListView_Previews: PreviewProvider {
-    static let rkManager = RKManager(calendar: Calendar.current, minimumDate: Date().addingTimeInterval(-60*60*24*7), maximumDate: Date(), mode: 0)
-
-    static var previews: some View {
-        Group {
-            RegularlyTaskView(taskViewModel: TaskViewModel(), rkManager: rkManager, task: Tasks.previewData[2])
-            RegularlyTaskView(taskViewModel: TaskViewModel(), rkManager: rkManager, task: Tasks.previewData[3])
+            case .month:
+                if sameYear {
+                    return contMonth
+                } else {
+                    // 連続した年であり、前の日付と次の日付の月がそれぞれ１２月と１月の時、連続している
+                    return contYear && dateDC.month! == 12 && nextDateDC.month! == 1
+                }
+            case .year:
+                return contYear
+                
+            case .infinite:
+                return true
+            }
         }
+            
+        return false
     }
 }
+
+//struct WeeklyAndMonthlyDetailListView_Previews: PreviewProvider {
+//    static let rkManager = RKManager(calendar: Calendar.current, minimumDate: Date().addingTimeInterval(-60*60*24*7), maximumDate: Date(), mode: 0)
+//
+//    static var previews: some View {
+//        Group {
+//            RegularlyTaskView(taskViewModel: TaskViewModel(), rkManager: rkManager, task: Tasks.previewData[2])
+//            RegularlyTaskView(taskViewModel: TaskViewModel(), rkManager: rkManager, task: Tasks.previewData[3])
+//        }
+//    }
+//}

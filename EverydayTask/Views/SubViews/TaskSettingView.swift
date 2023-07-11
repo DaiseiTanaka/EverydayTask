@@ -28,7 +28,6 @@ struct TaskSettingView: View {
     
     @State private var focusTitleTextField: Bool = false
     @FocusState private var focusedField: Bool
-    @State private var showDeleteAlart: Bool = false
 
     var body: some View {
         NavigationView {
@@ -57,14 +56,6 @@ struct TaskSettingView: View {
         .simultaneousGesture(focusTitleTextField || focusedField ? TapGesture().onEnded {
             UIApplication.shared.closeKeyboard()
         } : nil)
-        .confirmationDialog(task.title, isPresented: $showDeleteAlart, titleVisibility: .visible) {
-            Button("Delete", role: .destructive) {
-                taskViewModel.removeTasks(task: task)
-                dismiss()
-            }
-        } message: {
-            Text("This operation cannot be undone.")
-        }
         .onAppear {
             selectAccentColor()
         }
@@ -141,7 +132,7 @@ extension TaskSettingView {
             }
             // 通知オンだった場合
             if task.notification {
-                PickerView(hourSelected: $task.notificationHour, minSelected: $task.notificationMin)
+                NotificationPickerView(hourSelected: $task.notificationHour, minSelected: $task.notificationMin)
             }
         }
     }
@@ -149,22 +140,6 @@ extension TaskSettingView {
     private var isAbleToggle: some View {
         Section( header: Text(LocalizedStringKey("Hidden:")), footer: Text("Hidden tasks do not appear on your calendar. They can be checked from the all task list view.")) {
             Toggle(task.isAble ? "Show" : "Hidden", isOn: $task.isAble)
-        }
-    }
-    
-    private var deleteButton: some View {
-        Section {
-            Button {
-                // 削除するか確認するアラートを表示
-                showDeleteAlart = true
-            } label: {
-                HStack {
-                    Spacer()
-                    Text("Delete this task")
-                        .foregroundColor(.red)
-                    Spacer()
-                }
-            }
         }
     }
     

@@ -34,6 +34,7 @@ struct RegularlyTaskCell: View {
             tappedCellAction()
         }
         .onLongPressGesture() {
+            generator.notificationOccurred(.success)
             showEditAlart()
         }
     }
@@ -47,6 +48,7 @@ extension RegularlyTaskCell {
                 Image(systemName: "checkmark.circle")
                     .font(.title)
                     .foregroundColor(Color(UIColor.systemBackground))
+                    .opacity(taskViewModel.isDone(task: task, date: date) ? 1.0 : 0.2)
                 
                 Spacer(minLength: 5)
                 
@@ -77,12 +79,11 @@ extension RegularlyTaskCell {
         return color
     }
     
-    // dateのStringを返す
+    // dateのStringを返す 0/0 00:00
     private func returnDateTime(date: Date) -> String {
         let span = task.span
         // calendar
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = Locale(identifier: "ja_JP")
+        let calendar = Calendar(identifier: .gregorian)
         let dateDC = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
         // dateFormatter
         let dateFormatter = DateFormatter()
@@ -121,18 +122,17 @@ extension RegularlyTaskCell {
     }
     
     private func showEditAlart() {
-        generator.notificationOccurred(.success)
-
+        // 選択中の履歴の詳細を取得し、保存する
         taskViewModel.editTask = task
         taskViewModel.selectedRegularlyTaskDate = date
         taskViewModel.showEditRegularlyTaskAlart = true
     }
 }
 
-struct WeeklyAndMonthlyDetailListCell_Previews: PreviewProvider {
-    static let rkManager = RKManager(calendar: Calendar.current, minimumDate: Date().addingTimeInterval(-60*60*24*7), maximumDate: Date(), mode: 0)
-
-    static var previews: some View {
-        RegularlyTaskCell(taskViewModel: TaskViewModel(), rkManager: rkManager, task: Tasks.previewData[0], date: Date())
-    }
-}
+//struct WeeklyAndMonthlyDetailListCell_Previews: PreviewProvider {
+//    static let rkManager = RKManager(calendar: Calendar.current, minimumDate: Date().addingTimeInterval(-60*60*24*7), maximumDate: Date(), mode: 0)
+//
+//    static var previews: some View {
+//        RegularlyTaskCell(taskViewModel: TaskViewModel(), rkManager: rkManager, task: Tasks.previewData[0], date: Date(), index: 1)
+//    }
+//}

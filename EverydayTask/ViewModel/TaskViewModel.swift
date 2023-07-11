@@ -436,7 +436,9 @@ class TaskViewModel: ObservableObject {
                         regularlyTasks.append(task)
                     }
                 case .selected:
-                    dailyTasks.append(task)
+                    if spanDate.contains(weekdayIndex) {
+                        dailyTasks.append(task)
+                    }
                 }
             }
         }
@@ -479,7 +481,9 @@ class TaskViewModel: ObservableObject {
                             regularlyTasks.append(task)
                         }
                     case .selected:
-                        regularlyTasks.append(task)
+                        if spanDate.contains(weekdayIndex) {
+                            dailyTasks.append(task)
+                        }
                     }
                 }
             }
@@ -523,7 +527,9 @@ class TaskViewModel: ObservableObject {
                             regularlyTasks.append(task)
                         }
                     case .selected:
-                        dailyTasks.append(task)
+                        if spanDate.contains(weekdayIndex) {
+                            dailyTasks.append(task)
+                        }
                     }
                 }
             }
