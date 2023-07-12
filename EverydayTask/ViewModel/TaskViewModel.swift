@@ -89,29 +89,14 @@ class TaskViewModel: ObservableObject {
     // カレンダーを更新
     func loadRKManager() {
         trueFlag = false
-
-        // タスクをタップしていない場合、全てのタスクの実施状態を表示する
-        if selectedTasks == tasks {
-            let firstDay = returnLatestDate(tasks: tasks)
-            let today = Date()
-            
-            self.numberOfMonth = returnNumberOfMonth(minDate: firstDay, maxDate: today)
-            
-            self.rkManager = RKManager(calendar: Calendar.current, minimumDate: firstDay, maximumDate: today, mode: 0)
-            //print("A num: \(numberOfMonth), rkm: min,\(rkManager.minimumDate) max,\(rkManager.maximumDate)")
-
-        // タスクを選択した時
-        } else {
-            let task = selectedTasks[0]
-            let firstDay = task.addedDate
-            let today = Date()
-
-            self.numberOfMonth = returnNumberOfMonth(minDate: firstDay, maxDate: today)
-
-            self.rkManager = RKManager(calendar: Calendar.current, minimumDate: firstDay, maximumDate: today, mode: 0)
-            //print("B num: \(numberOfMonth), rkm: min,\(rkManager.minimumDate) max,\(rkManager.maximumDate)")
-
-        }
+        
+        let firstDay = returnLatestDate(tasks: tasks)
+        let today = Date()
+        
+        self.numberOfMonth = returnNumberOfMonth(minDate: firstDay, maxDate: today)
+        
+        self.rkManager = RKManager(calendar: Calendar.current, minimumDate: firstDay, maximumDate: today, mode: 0)
+        
         trueFlag = true
 
     }
@@ -245,9 +230,11 @@ class TaskViewModel: ObservableObject {
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "ja_JP")
         let dateWeekIndex1 = calendar.component(.weekOfYear, from: date1)
+        let yearIndex1 = calendar.component(.year, from: date1)
         let dateWeekIndex2 = calendar.component(.weekOfYear, from: date2)
+        let yearIndex2 = calendar.component(.year, from: date2)
         
-        return dateWeekIndex1 == dateWeekIndex2
+        return dateWeekIndex1 == dateWeekIndex2 && yearIndex1 == yearIndex2
     }
     
     func isSameMonth(date1: Date, date2: Date) -> Bool {

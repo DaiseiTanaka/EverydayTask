@@ -18,12 +18,13 @@ struct AllTaskListView: View {
     @State private var showTaskSettingView: Bool = false
     @State private var searchText: String = ""
     @AppStorage("sortKey") private var sortKey = SortKey.spanType
+    @AppStorage("divide") private var divide = DivideDisplayedTasks.divide
     @State private var prevSelectedTasks: [Tasks] = []
     
     var body: some View {
         NavigationView {
             VStack {
-                if returnSortedTasks(key: sortKey).isEmpty {
+                if returnSortedTasks(key: sortKey, divide: divide).isEmpty {
                     emptyView
                 } else {
                     allTaskList
@@ -90,7 +91,7 @@ extension AllTaskListView {
     private var allTaskList: some View {
         List {
             Section(header: header) {
-                ForEach(Array(returnSortedTasks(key: sortKey).enumerated()), id: \.element) { index, task in
+                ForEach(Array(returnSortedTasks(key: sortKey, divide: divide).enumerated()), id: \.element) { index, task in
                     AllTaskCell(taskViewModel: taskViewModel, task: task, showTaskSettingView: $showTaskSettingView, prevSelectedTasks: $prevSelectedTasks)
                 }
                 .onDelete(perform: rowRemove)
@@ -118,6 +119,11 @@ extension AllTaskListView {
     private var sortButton: some View {
         Menu {
             Section("Sort") {
+                Picker("Divide displayed tasks", selection: $divide) {
+                    ForEach(DivideDisplayedTasks.allCases) {
+                        Text(LocalizedStringKey($0.keyString))
+                    }
+                }
                 Picker("Sort", selection: $sortKey) {
                     ForEach(SortKey.allCases) {
                         Text(LocalizedStringKey($0.keyString))
@@ -141,7 +147,7 @@ extension AllTaskListView {
         }
     }
     
-    private func returnSortedTasks(key: SortKey) -> [Tasks] {
+    private func returnSortedTasks(key: SortKey, divide: DivideDisplayedTasks) -> [Tasks] {
         var tasks = taskViewModel.tasks
         // 何かが検索されている場合
         if !searchText.isEmpty {
@@ -152,19 +158,31 @@ extension AllTaskListView {
         switch key {
         case .title:
             sortedTasks = tasks.sorted(by: {$0.title < $1.title})
+            if divide == .divide {
+                let ableTasks = sortedTasks.filter { $0.isAble == true }
+                let disableTasks = sortedTasks.filter { $0.isAble == false }
+                sortedTasks = ableTasks + disableTasks
+            }
+
             return sortedTasks
         case .addedDate:
             sortedTasks = tasks.sorted(by: {$0.addedDate < $1.addedDate})
+            if divide == .divide {
+                let ableTasks = sortedTasks.filter { $0.isAble == true }
+                let disableTasks = sortedTasks.filter { $0.isAble == false }
+                sortedTasks = ableTasks + disableTasks
+            }
+
             return sortedTasks
         case .spanType:
-            sortedTasks = returnSortedTasksBySpanType(tasks: tasks)
+            sortedTasks = returnSortedTasksBySpanType(tasks: tasks, divide: divide)
             return sortedTasks
         }
     }
     
     // 行削除処理
     private func rowRemove(offsets: IndexSet) {
-        var sortedTasks = returnSortedTasks(key: sortKey)
+        var sortedTasks = returnSortedTasks(key: sortKey, divide: divide)
         sortedTasks.remove(atOffsets: offsets)
         taskViewModel.tasks = sortedTasks.sorted(by: {$0.addedDate < $1.addedDate})
         
@@ -180,7 +198,7 @@ extension AllTaskListView {
     }
     
     // 全てのタスクをspanTypeごとに仕分けして返す
-    private func returnSortedTasksBySpanType(tasks: [Tasks]) -> [Tasks] {
+    private func returnSortedTasksBySpanType(tasks: [Tasks], divide: DivideDisplayedTasks) -> [Tasks] {
         var sortedAllTasks: [Tasks] = []
         
         var dayTasks: [Tasks] = []
@@ -213,6 +231,12 @@ extension AllTaskListView {
         }
         
         sortedAllTasks = dayTasks + selectedTasks + weekTasks + monthTasks + yearTasks + infiniteTasks
+        
+        if divide == .divide {
+            let ableSortedAllTasks = sortedAllTasks.filter { $0.isAble == true }
+            let disableSortedAllTasks = sortedAllTasks.filter { $0.isAble == false }
+            sortedAllTasks = ableSortedAllTasks + disableSortedAllTasks
+        }
 
         return sortedAllTasks
     }

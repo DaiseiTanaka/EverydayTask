@@ -168,9 +168,29 @@ extension RegularlyTaskView {
     
     // ヘッダーの日付のテキストの色を返す。selectedDateを赤くする。
     private func returnHeaderDateColor(date: Date) -> Color {
-        if taskViewModel.isSameDay(date1: date, date2: rkManager.selectedDate) {
-            return Color.red
+        let selectedDate = rkManager.selectedDate
+        
+        switch task.span {
+        case .day:
+            if taskViewModel.isSameDay(date1: date, date2: selectedDate) {
+                return Color.red
+            }
+        case .week:
+            if taskViewModel.isSameWeek(date1: date, date2: selectedDate) {
+                return Color.red
+            }
+        case .month:
+            if taskViewModel.isSameMonth(date1: date, date2: selectedDate) {
+                return Color.red
+            }
+        case .year:
+            if taskViewModel.isSameYear(date1: date, date2: selectedDate) {
+                return Color.red
+            }
+        case .infinite:
+            return Color.primary
         }
+       
         
         return Color.primary
     }

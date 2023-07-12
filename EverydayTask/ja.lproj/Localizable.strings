@@ -32,14 +32,17 @@
 "All Tasks" = "全てのタスク";
 "Hidden" = "非表示";
 "Sorted by" = "並べ替え";
-"Span type" = "繰り返し期間";
-"Added date" = "追加日";
-"Title" = "タイトル";
+"Span type" = "繰り返し期間順";
+"Added date" = "追加日順";
+"Title" = "タイトル順";
 "Delete selected items" = "選択された項目を削除";
 "items" = "件";
 "item" = "件";
 "Please add task from the plus button." = "画面下部のボタンからタスクを追加しましょう。";
 "Show this task?" = "表示";
+"Displayed tasks" = "表示中のタスク";
+"Divide hidden tasks" = "非表示中のタスクを分類する";
+"Not divide hidden tasks" = "非表示中のタスクを分類しない";
 
 // Alart
 "Edit this task?" = "編集";

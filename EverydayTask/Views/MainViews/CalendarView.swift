@@ -11,10 +11,12 @@ struct CalendarView: View {
     @ObservedObject var rkManager: RKManager
     @ObservedObject var taskViewModel: TaskViewModel
     
+    @State var addBottomSpace: Bool
+    
         //@State private var trueFlag = true
     
     var body: some View {
-        RKViewController(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, isPresented: $taskViewModel.trueFlag, tappedBackground: true)
+        RKViewController(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, isPresented: $taskViewModel.trueFlag, tappedBackground: true, addBottomSpace: addBottomSpace)
         
 //            .overlay(alignment: .top) {
 //                if taskViewModel.selectedTasks.count == 1 {
@@ -25,8 +27,8 @@ struct CalendarView: View {
 }
 
 
-struct CalendarView_Previews: PreviewProvider {
-    static var previews: some View {
-        CalendarView(rkManager: RKManager(calendar: Calendar.current, minimumDate: Date(), maximumDate: Date(), mode: 0), taskViewModel: TaskViewModel())
-    }
-}
+//struct CalendarView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        CalendarView(rkManager: RKManager(calendar: Calendar.current, minimumDate: Date(), maximumDate: Date(), mode: 0), taskViewModel: TaskViewModel())
+//    }
+//}

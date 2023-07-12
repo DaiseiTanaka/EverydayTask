@@ -220,7 +220,7 @@ extension AllTaskCell {
                     VStack {
                         Text("\(task.title)")
                             .font(.title2.bold())
-                        CalendarView(rkManager: taskViewModel.rkManager, taskViewModel: taskViewModel)
+                        CalendarView(rkManager: taskViewModel.rkManager, taskViewModel: taskViewModel, addBottomSpace: false)
                     }
                 } else {
                     RegularlyTaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: task)
@@ -230,15 +230,11 @@ extension AllTaskCell {
                 VStack {
                     Text("\(task.title)")
                         .font(.title2.bold())
-                    CalendarView(rkManager: taskViewModel.rkManager, taskViewModel: taskViewModel)
+                    CalendarView(rkManager: taskViewModel.rkManager, taskViewModel: taskViewModel, addBottomSpace: false)
                     
                 }
             }
         }
-        .frame(maxWidth: .infinity)
-        .presentationDetents([.large])
-        .presentationCornerRadius(30)
-        .presentationDragIndicator(.visible)
         .padding(.top)
         .overlay(alignment: .topLeading) { dismissButton }
     }

@@ -41,7 +41,7 @@ extension ContentView {
     private var mainView: some View {
         ZStack {
             if taskViewModel.showCalendarFlag {
-                CalendarView(rkManager: rkManager, taskViewModel: taskViewModel)
+                CalendarView(rkManager: rkManager, taskViewModel: taskViewModel, addBottomSpace: true)
             } else {
                 RegularlyTaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: taskViewModel.selectedTasks[0])
             }

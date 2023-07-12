@@ -24,3 +24,18 @@ enum SortKey: String, CaseIterable, Identifiable {
         }
     }
 }
+
+enum DivideDisplayedTasks: String, CaseIterable, Identifiable {
+    case divide
+    case notDivide
+    var id: Self { return self }
+    
+    var keyString: String {
+        switch self {
+        case .divide:
+            return "Divide hidden tasks"
+        case .notDivide:
+            return "Not divide hidden tasks"
+        }
+    }
+}

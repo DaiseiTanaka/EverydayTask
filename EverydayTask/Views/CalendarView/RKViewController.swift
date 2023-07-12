@@ -15,6 +15,7 @@ struct RKViewController: View {
 
     @Binding var isPresented: Bool
     @State var tappedBackground: Bool
+    @State var addBottomSpace: Bool
     
     @State var id: String = ""
 
@@ -28,8 +29,13 @@ struct RKViewController: View {
                         }
                         .padding(.top, 20)
                         
-                        ZStack {}
-                        .frame(height: 400)
+                        if addBottomSpace {
+                            ZStack {}
+                                .frame(height: 400)
+                                .onAppear {
+                                    print("Appear")
+                                }
+                        }
                     }
                 }
                 // 画面がロードされた時は下へスクロール
