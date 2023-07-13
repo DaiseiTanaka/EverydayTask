@@ -313,6 +313,7 @@ extension TaskCell {
                 let impactLight = UIImpactFeedbackGenerator(style: .rigid)
                 impactLight.impactOccurred()
                 // 編集画面へ移動するか選択するアラートを表示
+                taskViewModel.editTask = task
                 showRegularlyTaskAlart = true
             }
         }

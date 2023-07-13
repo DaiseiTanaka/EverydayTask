@@ -108,6 +108,7 @@ struct TaskView: View {
         }
         .confirmationDialog(taskViewModel.editTask.title, isPresented: $showRegularlyTaskAlart, titleVisibility: .visible) {
             Button("Edit history") {
+                taskViewModel.selectedTasks = [taskViewModel.editTask]
                 taskViewModel.showCalendarFlag = false
             }
         } message: {

@@ -32,9 +32,6 @@ struct RKViewController: View {
                         if addBottomSpace {
                             ZStack {}
                                 .frame(height: 400)
-                                .onAppear {
-                                    print("Appear")
-                                }
                         }
                     }
                 }

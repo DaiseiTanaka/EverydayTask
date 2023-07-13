@@ -67,18 +67,11 @@ extension RKCell {
             Spacer()
             HStack {
                 Spacer()
-                if rkDate.returnPercentage() != 0 {
+                if taskViewModel.isDone(task: taskViewModel.selectedTasks[0], date: rkDate.date) {
                     Image(systemName: "checkmark.circle")
                         .font(.title)
                         .foregroundColor(returnTaskAccentColor())
                 }
-//                if taskViewModel.selectedTasks.count == 1 && taskViewModel.selectedTasks[0].spanType == .oneTime {
-//                    if taskViewModel.isDone(task: taskViewModel.selectedTasks[0], date: rkDate.date) {
-//                        Image(systemName: "checkmark.circle")
-//                            .font(.title)
-//                            .foregroundColor(returnTaskAccentColor())
-//                    }
-//                }
                 Spacer()
             }
             Spacer()
