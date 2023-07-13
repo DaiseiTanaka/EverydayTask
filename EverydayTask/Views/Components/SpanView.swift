@@ -11,6 +11,7 @@ struct SpanView: View {
     @ObservedObject var taskViewModel: TaskViewModel
     
     var task: Tasks
+    var showAddedDate: Bool
     
     let spanImageListNotExit: [Image] = [
         Image(systemName: "s.circle"),
@@ -32,19 +33,15 @@ struct SpanView: View {
     ]
     
     var body: some View {
-        HStack(spacing: 3) {
-            addedDateText
-
-            if (task.spanType == .custom && task.span == .day) || task.spanType == .selected {
-                notificationBadge
+        HStack(spacing: 0) {
+            if showAddedDate {
+                addedDateText
             }
             
-            if task.spanType == .selected {
-                spanImage
-                
-            } else if task.spanType == .custom {
-                spanText
-                
+            spanDetail
+            
+            if (task.spanType == .custom && task.span == .day) || task.spanType == .selected {
+                notificationBadge
             }
         }
     }
@@ -52,56 +49,71 @@ struct SpanView: View {
 
 extension SpanView {
     private var addedDateText: some View {
-        HStack {
+        HStack(spacing: 3) {
+            Image(systemName: "calendar.badge.plus")
+            
             Text("\(taskViewModel.returnDayString(date: task.addedDate)) ~ ")
-                .font(.footnote)
-                .foregroundColor(task.isAble ? .primary : .secondary)
-            Spacer()
+                .bold()
+
+            Spacer(minLength: 0)
         }
-        .frame(width: 50)
+        .foregroundColor(.secondary)
+        .font(.footnote)
+        .frame(width: 80)
+    }
+    
+    private var spanDetail: some View {
+        HStack(spacing: 0) {
+            if task.spanType == .selected {
+                spanImage
+            } else if task.spanType == .custom {
+                spanText
+            }
+        }
     }
     
     private var notificationBadge: some View {
-        ZStack {
+        HStack(spacing: 0) {
+            Text("・")
             if task.notification {
                 Image(systemName: "bell.badge")
-                    .font(.footnote)
-                    .foregroundColor(task.isAble ? .primary : .secondary)
             } else {
                 Image(systemName: "bell.slash")
-                    .font(.footnote)
-                    .foregroundColor(task.isAble ? .primary : .secondary)
             }
         }
+        .font(.footnote)
+        .foregroundColor(.secondary)
     }
     
     private var spanText: some View {
         HStack(spacing: 3) {
+            Image(systemName: "arrow.2.squarepath")
+
             Text("\(task.doCount) /")
-                .font(.footnote)
-                .foregroundColor(task.isAble ? .primary : .secondary)
                 .lineLimit(1)
+                .bold()
+
             Text(LocalizedStringKey(task.span.spanString))
-                .font(.footnote)
-                .foregroundColor(task.isAble ? .primary : .secondary)
                 .lineLimit(1)
+                .bold()
         }
+        .font(.footnote)
+        .foregroundColor(.secondary)
     }
     
     private var spanImage: some View {
-        HStack(spacing: 2) {
+        HStack(spacing: 1) {
             ForEach(1..<8) { index in
                 if task.spanDate.contains(index) {
                     spanImageListExit[index-1]
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
+                        
                 } else {
                     spanImageListNotExit[index-1]
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
                         .opacity(0.5)
                 }
             }
         }
+        .font(.footnote)
+        .foregroundColor(.secondary)
     }
 }

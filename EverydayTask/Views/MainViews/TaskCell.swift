@@ -51,17 +51,20 @@ extension TaskCell {
             accentColor
             
             VStack(alignment: .leading) {
-                HStack {
+                HStack(alignment: .top) {
                     title
+                    
                     Spacer(minLength: 0)
-                    SpanView(taskViewModel: taskViewModel, task: task)
+                    
+                    SpanView(taskViewModel: taskViewModel, task: task, showAddedDate: false)
                 }
+                
                 Spacer(minLength: 0)
 
                 detail
             }
             .padding(.leading, 15)
-            .padding(.trailing, 50)
+            .padding(.trailing, 40)
         }
     }
     
@@ -71,14 +74,15 @@ extension TaskCell {
                 .padding(.top, 25)
             VStack(alignment: .leading) {
                 title
-                
+                    .padding(.leading, 8)
+
                 detail
-                
+                    .padding(.leading, 8)
+
                 Spacer(minLength: 0)
                 
-                SpanView(taskViewModel: taskViewModel, task: task)
+                SpanView(taskViewModel: taskViewModel, task: task, showAddedDate: false)
             }
-            .padding(.leading, 8)
             Spacer(minLength: 0)
         }
     }
@@ -100,12 +104,14 @@ extension TaskCell {
     
     // タスクのタイトル
     private var title: some View {
-        Text(task.title)
-            .font(.subheadline.bold())
-            .foregroundColor(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .secondary : .primary)
-            .lineLimit(cellStyle == .list ? nil : 1)
-            .padding(.trailing, cellStyle == .list ? 10 : 30)
-            .padding(.leading, 10)
+        ZStack {
+            Text(LocalizedStringKey(taskViewModel.titleString(task: task)))
+                .lineLimit(cellStyle == .list ? nil : 1)
+        }
+        .font(.subheadline.bold())
+        .foregroundColor(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .secondary : .primary)
+        .padding(.trailing, cellStyle == .list ? 10 : 30)
+        .padding(.leading, 10)
     }
     
     // タスクの詳細

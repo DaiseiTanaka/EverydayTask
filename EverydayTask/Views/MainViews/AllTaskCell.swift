@@ -23,6 +23,7 @@ struct AllTaskCell: View {
                 .frame(width: 7)
                 .cornerRadius(5)
                 .foregroundColor(taskViewModel.returnColor(color: task.accentColor))
+                .opacity(task.isAble ? 1.0 : 0.1)
             
             detail
                         
@@ -42,9 +43,9 @@ struct AllTaskCell: View {
                 .onLongPressGesture() {
                     let generator = UINotificationFeedbackGenerator()
                     generator.notificationOccurred(.success)
-                    // アラートを表示
+                    // タスクの編集画面を表示
                     taskViewModel.editTask = task
-                    showTaskSettingAlart.toggle()
+                    showTaskSettingView.toggle()
                 }
         )
         .sheet(isPresented: self.$showCalendarView, content: {
@@ -82,7 +83,8 @@ extension AllTaskCell {
                         .font(.footnote)
                         .foregroundColor(.secondary)
                 }
-                Text(task.title)
+                
+                Text(LocalizedStringKey(taskViewModel.titleString(task: task)))
                     .lineLimit(1)
                     .font(task.isAble ? .body.bold() : .body)
                     .foregroundColor(task.isAble ? Color(UIColor.label) : .secondary)
@@ -96,7 +98,7 @@ extension AllTaskCell {
             Spacer(minLength: 0)
             
             // タスクのスパン
-            SpanView(taskViewModel: taskViewModel, task: task)
+            SpanView(taskViewModel: taskViewModel, task: task, showAddedDate: true)
         }
     }
     
@@ -133,28 +135,22 @@ extension AllTaskCell {
     
     // タスクがタップされたときに表示するカレンダー
     private var selectedCalendarView: some View {
-        ZStack {
-            if task.spanType == .custom {
-                if task.span == .day {
-                    VStack {
-                        Text("\(task.title)")
-                            .font(.title2.bold())
-                        CalendarView(rkManager: taskViewModel.rkManager, taskViewModel: taskViewModel, addBottomSpace: false)
-                    }
-                } else {
-                    RegularlyTaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: task)
-                        .padding(.top, 20)
-                }
+        VStack {
+            if (task.spanType == .custom && task.span == .day) || task.spanType == .selected {
+                Text("\(task.title)")
+                    .font(.title2.bold())
+                    .padding(.horizontal, 50)
+                
+                CalendarView(rkManager: taskViewModel.rkManager, taskViewModel: taskViewModel, addBottomSpace: false)
             } else {
-                VStack {
-                    Text("\(task.title)")
-                        .font(.title2.bold())
-                    CalendarView(rkManager: taskViewModel.rkManager, taskViewModel: taskViewModel, addBottomSpace: false)
-                    
-                }
+                RegularlyTaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: task)
+                    .padding(.top, 20)
             }
         }
         .padding(.top)
+        .presentationDetents([.large])
+        .presentationCornerRadius(30)
+        .presentationDragIndicator(.visible)
         .overlay(alignment: .topLeading) { dismissButton }
     }
     

@@ -65,7 +65,7 @@ struct TaskView: View {
                 }
             }
         }
-        .overlay(alignment: .bottomTrailing) { addTaskButton }
+        .overlay(alignment: .bottomTrailing) { AddTaskButton(taskViewModel: taskViewModel, showViewFlag: $showTaskSettingView) }
         .gesture(
             DragGesture(minimumDistance: 50)
                 .onEnded { value in
@@ -88,7 +88,7 @@ struct TaskView: View {
             Button("Edit this task?") {
                 showTaskSettingView.toggle()
             }
-            if taskViewModel.editTask.spanType == .custom {
+            if taskViewModel.editTask.spanType == .custom && taskViewModel.showCalendarFlag {
                 Button("Show this task history?") {
                     taskViewModel.selectedTasks = [taskViewModel.editTask]
                     taskViewModel.showCalendarFlag = false
@@ -293,6 +293,9 @@ extension TaskView {
     
     private var allTaskListView: some View {
         AllTaskListView(taskViewModel: taskViewModel, rkManager: rkManager)
+            .presentationDetents([.large])
+            .presentationCornerRadius(30)
+            .presentationDragIndicator(.visible)
     }
     
     private var editRegularlyTaskHistoryView: some View {
@@ -316,25 +319,6 @@ extension TaskView {
             }
         }
         return count
-    }
-    
-    private var addTaskButton: some View {
-        Button {
-            let impactLight = UIImpactFeedbackGenerator(style: .rigid)
-            impactLight.impactOccurred()
-            
-            taskViewModel.editTask = Tasks(title: "", detail: "", addedDate: Date(), spanType: .custom, span: .day, doCount: 1, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)
-            showTaskSettingView = true
-        } label: {
-            Image(systemName: "plus")
-                .font(.title2.bold())
-                .foregroundColor(Color(UIColor.systemBackground))
-                .padding()
-                .background(.tint.opacity(0.9))
-                .clipShape(Circle())
-                .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 3)
-                .padding(.trailing)
-        }
     }
     
     private var showAllTaskButton: some View {

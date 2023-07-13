@@ -590,6 +590,17 @@ class TaskViewModel: ObservableObject {
         }
     }
     
+    // タスクのタイトルを返す
+    // 未設定の時は（タイトルなし）と表示する
+    func titleString(task: Tasks) -> String {
+        let title = task.title
+        if title.isEmpty {
+            return " (No title) "
+        } else {
+            return title
+        }
+    }
+    
     // MARK: - UserDefaultsにデータを保存
     func saveTasks(tasks: [Tasks]) {
         let jsonEncoder = JSONEncoder()

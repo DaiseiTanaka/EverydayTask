@@ -31,7 +31,6 @@ struct AllTaskListView: View {
                 }
             }
             .navigationTitle("All Tasks")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     sortButton
@@ -39,13 +38,10 @@ struct AllTaskListView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     dismissButton
                 }
-                ToolbarItemGroup(placement: .bottomBar) {
-                    Spacer()
-                    addTaskButton
-                }
             }
         }
-        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
+        .overlay(alignment: .bottomTrailing) { AddTaskButton(taskViewModel: taskViewModel, showViewFlag: $showTaskSettingView) }
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic))
         .sheet(isPresented: self.$showTaskSettingView, content: {
             TaskSettingView(rkManager: rkManager, taskViewModel: taskViewModel, task: taskViewModel.editTask, selectedWeekdays: taskViewModel.editTask.spanDate)
         })
@@ -92,29 +88,12 @@ extension AllTaskListView {
     
     private var allTaskList: some View {
         List {
-            Section(header: header) {
+            Section(header: header, footer: Text("")) {
                 ForEach(Array(returnSortedTasks(key: sortKey, divide: divide).enumerated()), id: \.element) { index, task in
                     AllTaskCell(taskViewModel: taskViewModel, task: task, showTaskSettingView: $showTaskSettingView, prevSelectedTasks: $prevSelectedTasks)
                 }
                 .onDelete(perform: rowRemove)
             }
-        }
-    }
-    
-    private var addTaskButton: some View {
-        Button {
-            let impactLight = UIImpactFeedbackGenerator(style: .rigid)
-            impactLight.impactOccurred()
-            
-            taskViewModel.editTask = Tasks(title: "", detail: "", addedDate: Date(), spanType: .custom, span: .day, doCount: 1, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)
-            showTaskSettingView = true
-        } label: {
-            Image(systemName: "plus")
-                .font(.title3.bold())
-                .foregroundColor(Color(UIColor.systemBackground))
-                .padding(8)
-                .background(.tint)
-                .clipShape(Circle())
         }
     }
     

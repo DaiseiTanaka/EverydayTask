@@ -45,7 +45,7 @@ struct RegularlyTaskView: View {
 
 extension RegularlyTaskView {
     private var title: some View {
-        Text(task.title != "" ? task.title : " (No title) ")
+        Text(LocalizedStringKey(taskViewModel.titleString(task: task)))
             .font(.title.bold())
     }
     
