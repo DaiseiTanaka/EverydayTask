@@ -137,14 +137,14 @@ extension AllTaskCell {
     private var selectedCalendarView: some View {
         VStack {
             if (task.spanType == .custom && task.span == .day) || task.spanType == .selected {
-                Text("\(task.title)")
+                Text(LocalizedStringKey(taskViewModel.titleString(task: task)))
                     .font(.title2.bold())
                     .padding(.horizontal, 50)
                 
                 CalendarView(rkManager: taskViewModel.rkManager, taskViewModel: taskViewModel, addBottomSpace: false)
             } else {
                 RegularlyTaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: task)
-                    .padding(.top, 20)
+                    .padding(.top, 30)
             }
         }
         .padding(.top)
