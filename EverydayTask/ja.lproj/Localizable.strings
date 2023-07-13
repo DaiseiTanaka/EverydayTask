@@ -88,6 +88,19 @@
 "Hidden:" = "非表示";
 "Hidden tasks do not appear on your calendar. They can be checked from the all task list view." = "非表示にしたタスクは、カレンダーに表示されなくなります。これらのタスクは、全てのタスク一覧画面から確認できます。";
 
+// Accent Colors
+"Label" = "ラベル";
+"Black" = "ブラック";
+"Gray" = "グレイ";
+"Red" = "レッド";
+"Pink" = "ピンク";
+"Orange" = "オレンジ";
+"Cyan" = "シアン";
+"Blue" = "ブルー";
+"Indigo" = "インディゴ";
+"Yellow" = "イエロー";
+"Green" = "グリーン";
+
 // Weekly and Monthly Detail List View
 "No data." = "実施履歴がありません。";
 " (No title) " = " (タイトルなし) ";

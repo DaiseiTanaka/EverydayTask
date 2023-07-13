@@ -112,7 +112,7 @@ extension TaskSettingView {
                         Circle()
                             .frame(width: 30)
                             .foregroundColor(taskViewModel.returnColor(color: color))
-                        Text(color)
+                        Text(LocalizedStringKey(color))
                     }
                 }
             }
