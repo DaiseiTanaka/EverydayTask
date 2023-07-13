@@ -15,24 +15,6 @@ struct RegularlyTaskView: View {
     var task: Tasks
     
     private let cellOpacity: CGFloat = 0.5
-    let spanImageListNotExit: [Image] = [
-        Image(systemName: "s.circle"),
-        Image(systemName: "m.circle"),
-        Image(systemName: "t.circle"),
-        Image(systemName: "w.circle"),
-        Image(systemName: "t.circle"),
-        Image(systemName: "f.circle"),
-        Image(systemName: "s.circle")
-    ]
-    let spanImageListExit: [Image] = [
-        Image(systemName: "s.circle.fill"),
-        Image(systemName: "m.circle.fill"),
-        Image(systemName: "t.circle.fill"),
-        Image(systemName: "w.circle.fill"),
-        Image(systemName: "t.circle.fill"),
-        Image(systemName: "f.circle.fill"),
-        Image(systemName: "s.circle.fill")
-    ]
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -84,43 +66,17 @@ extension RegularlyTaskView {
     private var span: some View {
         HStack(spacing: 3) {
             Spacer()
-            if task.spanType == .selected {
-                spanImage
-                
-            } else if task.spanType == .custom {
-                Text("\(task.doCount) /")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
-                Text(LocalizedStringKey(task.span.spanString))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
-            } else {
-                Text(LocalizedStringKey(task.spanType.spanString))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
-            }
+            
+            Text("\(task.doCount) /")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .lineLimit(1)
+            Text(LocalizedStringKey(task.span.spanString))
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .lineLimit(1)
         }
         .frame(maxWidth: 150)
-    }
-    
-    private var spanImage: some View {
-        HStack(spacing: 2) {
-            ForEach(1..<8) { index in
-                if task.spanDate.contains(index) {
-                    spanImageListExit[index-1]
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                } else {
-                    spanImageListNotExit[index-1]
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                        .opacity(0.5)
-                }
-            }
-        }
     }
     
     private var taskList: some View {

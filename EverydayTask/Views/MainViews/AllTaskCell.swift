@@ -16,25 +16,6 @@ struct AllTaskCell: View {
     @State private var showCalendarView: Bool = false
     @Binding var prevSelectedTasks: [Tasks]
     
-    let spanImageListNotExit: [Image] = [
-        Image(systemName: "s.circle"),
-        Image(systemName: "m.circle"),
-        Image(systemName: "t.circle"),
-        Image(systemName: "w.circle"),
-        Image(systemName: "t.circle"),
-        Image(systemName: "f.circle"),
-        Image(systemName: "s.circle")
-    ]
-    let spanImageListExit: [Image] = [
-        Image(systemName: "s.circle.fill"),
-        Image(systemName: "m.circle.fill"),
-        Image(systemName: "t.circle.fill"),
-        Image(systemName: "w.circle.fill"),
-        Image(systemName: "t.circle.fill"),
-        Image(systemName: "f.circle.fill"),
-        Image(systemName: "s.circle.fill")
-    ]
-    
     var body: some View {
         HStack {
             // タスクのアクセントカラー
@@ -115,52 +96,7 @@ extension AllTaskCell {
             Spacer(minLength: 0)
             
             // タスクのスパン
-            span
-        }
-    }
-    
-    private var span: some View {
-        // タスクのスパン
-        HStack(spacing: 3) {
-            // addedDate
-            HStack {
-                Text("\(taskViewModel.returnDayString(date: task.addedDate)) ~ ")
-                    .font(.footnote)
-                    .foregroundColor(task.isAble ? .primary : .secondary)
-                Spacer()
-            }
-            .frame(width: 50)
-
-            if (task.spanType == .custom && task.span == .day) || task.spanType == .selected {
-                if task.notification {
-                    Image(systemName: "bell.badge")
-                        .font(.footnote)
-                        .foregroundColor(task.isAble ? .primary : .secondary)
-                } else {
-                    Image(systemName: "bell.slash")
-                        .font(.footnote)
-                        .foregroundColor(task.isAble ? .primary : .secondary)
-                }
-            }
-            
-            if task.spanType == .selected {
-                spanImage
-                
-            } else if task.spanType == .custom {
-                Text("\(task.doCount) /")
-                    .font(.footnote)
-                    .foregroundColor(task.isAble ? .primary : .secondary)
-                    .lineLimit(1)
-                Text(LocalizedStringKey(task.span.spanString))
-                    .font(.footnote)
-                    .foregroundColor(task.isAble ? .primary : .secondary)
-                    .lineLimit(1)
-            } else {
-                Text(LocalizedStringKey(task.spanType.spanString))
-                    .font(.footnote)
-                    .foregroundColor(task.isAble ? .primary : .secondary)
-                    .lineLimit(1)
-            }
+            Span(taskViewModel: taskViewModel, task: task)
         }
     }
     
@@ -192,23 +128,6 @@ extension AllTaskCell {
                 .onChange(of: task.isAble) { isAble in
                     taskViewModel.isAbleChange(task: task, isAble: isAble)
                 }
-        }
-    }
-    
-    private var spanImage: some View {
-        HStack(spacing: 2) {
-            ForEach(1..<8) { index in
-                if task.spanDate.contains(index) {
-                    spanImageListExit[index-1]
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                } else {
-                    spanImageListNotExit[index-1]
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                        .opacity(0.5)
-                }
-            }
         }
     }
     

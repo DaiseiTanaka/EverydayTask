@@ -23,25 +23,6 @@ struct TaskCell: View {
     
     let generator = UINotificationFeedbackGenerator()
     
-    let spanImageListNotExit: [Image] = [
-        Image(systemName: "s.circle"),
-        Image(systemName: "m.circle"),
-        Image(systemName: "t.circle"),
-        Image(systemName: "w.circle"),
-        Image(systemName: "t.circle"),
-        Image(systemName: "f.circle"),
-        Image(systemName: "s.circle")
-    ]
-    let spanImageListExit: [Image] = [
-        Image(systemName: "s.circle.fill"),
-        Image(systemName: "m.circle.fill"),
-        Image(systemName: "t.circle.fill"),
-        Image(systemName: "w.circle.fill"),
-        Image(systemName: "t.circle.fill"),
-        Image(systemName: "f.circle.fill"),
-        Image(systemName: "s.circle.fill")
-    ]
-    
     var body: some View {
         ZStack {
             switch cellStyle {
@@ -81,7 +62,7 @@ extension TaskCell {
                 HStack {
                     title
                     Spacer(minLength: 0)
-                    span
+                    Span(taskViewModel: taskViewModel, task: task)
                 }
                 Spacer(minLength: 0)
 
@@ -103,7 +84,7 @@ extension TaskCell {
                 
                 Spacer(minLength: 0)
                 
-                span
+                Span(taskViewModel: taskViewModel, task: task)
             }
             .padding(.leading, 8)
             Spacer(minLength: 0)
@@ -152,59 +133,6 @@ extension TaskCell {
             .foregroundColor(.secondary)
             .lineLimit(cellStyle == .list ? nil : 2)
             .padding(.leading, 10)
-    }
-    
-    private var span: some View {
-        // タスクのスパン
-        HStack(spacing: 3) {
-            if (task.spanType == .custom && task.span == .day) || task.spanType == .selected {
-                if task.notification {
-                    Image(systemName: "bell.badge")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                } else {
-                    Image(systemName: "bell.slash")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-            }
-            
-            if task.spanType == .selected {
-                spanImage
-                
-            } else if task.spanType == .custom {
-                Text("\(task.doCount) /")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
-                Text(LocalizedStringKey(task.span.spanString))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
-            } else {
-                Text(LocalizedStringKey(task.spanType.spanString))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
-            }
-        }
-    }
-    
-    private var spanImage: some View {
-        HStack(spacing: 2) {
-            ForEach(1..<8) { index in
-                if task.spanDate.contains(index) {
-                    spanImageListExit[index-1]
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                } else {
-                    spanImageListNotExit[index-1]
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                        .opacity(0.5)
-                }
-            }
-        }
     }
     
     private var editButton: some View {
