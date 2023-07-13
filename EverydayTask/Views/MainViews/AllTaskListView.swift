@@ -54,9 +54,11 @@ struct AllTaskListView: View {
         }
         .onDisappear {
             if taskViewModel.selectedTasks != prevSelectedTasks {
-                // タップされる前のカレンダーの状態に戻す
-                taskViewModel.selectedTasks = self.prevSelectedTasks
-                taskViewModel.loadRKManager()
+                withAnimation {
+                    // タップされる前のカレンダーの状態に戻す
+                    taskViewModel.selectedTasks = self.prevSelectedTasks
+                    taskViewModel.loadRKManager()
+                }
             }
         }
     }
