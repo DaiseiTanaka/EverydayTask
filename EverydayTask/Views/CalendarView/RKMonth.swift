@@ -10,9 +10,7 @@ import SwiftUI
 
 struct RKMonth: View {
     @ObservedObject var taskViewModel: TaskViewModel
-    @ObservedObject var rkManager: RKManager
-    @Binding var isPresented: Bool
-    
+    @ObservedObject var rkManager: RKManager    
     
     let monthOffset: Int
     @Binding var tappedBackground: Bool

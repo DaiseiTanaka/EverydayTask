@@ -12,17 +12,11 @@ struct CalendarView: View {
     @ObservedObject var taskViewModel: TaskViewModel
     
     @State var addBottomSpace: Bool
-    
-        //@State private var trueFlag = true
-    
-    var body: some View {
-        RKViewController(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, isPresented: $taskViewModel.trueFlag, tappedBackground: true, addBottomSpace: addBottomSpace)
         
-//            .overlay(alignment: .top) {
-//                if taskViewModel.selectedTasks.count == 1 {
-//                    Text("\(taskViewModel.returnContinuousCount(task: taskViewModel.selectedTasks[0]))")
-//                }
-//            }
+    var body: some View {
+        ZStack {
+            RKViewController(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, tappedBackground: true, addBottomSpace: addBottomSpace)
+        }
     }
 }
 

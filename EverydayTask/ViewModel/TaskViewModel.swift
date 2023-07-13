@@ -18,7 +18,6 @@ class TaskViewModel: ObservableObject {
     @Published var editTask: Tasks
     @Published var numberOfMonth: Int
     @Published var rkManager: RKManager
-    @Published var trueFlag: Bool
     @Published var latestDate: Date
     
     @Published var showCalendarFlag: Bool
@@ -32,7 +31,6 @@ class TaskViewModel: ObservableObject {
         self.editTask = Tasks.defaulData[0]
         self.numberOfMonth = 1
         self.rkManager = RKManager(calendar: Calendar.current, minimumDate: Date().addingTimeInterval(-60*60*24*7), maximumDate: Date(), mode: 0)
-        self.trueFlag = true
         self.latestDate = Date()
         self.showCalendarFlag = true
         
@@ -88,17 +86,12 @@ class TaskViewModel: ObservableObject {
     // MARK: - Data Settings
     // カレンダーを更新
     func loadRKManager() {
-        trueFlag = false
-        
         let firstDay = returnLatestDate(tasks: tasks)
         let today = Date()
         
         self.numberOfMonth = returnNumberOfMonth(minDate: firstDay, maxDate: today)
         
         self.rkManager = RKManager(calendar: Calendar.current, minimumDate: firstDay, maximumDate: today, mode: 0)
-        
-        trueFlag = true
-
     }
     
     func returnNumberOfMonth(minDate: Date, maxDate: Date) -> Int {

@@ -13,7 +13,6 @@ struct RKViewController: View {
     @ObservedObject var taskViewModel: TaskViewModel
     @ObservedObject var rkManager: RKManager
 
-    @Binding var isPresented: Bool
     @State var tappedBackground: Bool
     @State var addBottomSpace: Bool
     
@@ -25,7 +24,7 @@ struct RKViewController: View {
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack {
                         ForEach(0..<taskViewModel.numberOfMonth, id: \.self) { index in
-                            RKMonth(taskViewModel: taskViewModel, rkManager: self.rkManager, isPresented: self.$isPresented, monthOffset: index, tappedBackground: self.$tappedBackground, id: $id)
+                            RKMonth(taskViewModel: taskViewModel, rkManager: self.rkManager, monthOffset: index, tappedBackground: self.$tappedBackground, id: $id)
                         }
                         .padding(.top, 20)
                         
