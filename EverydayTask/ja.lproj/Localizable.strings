@@ -77,6 +77,8 @@
 "Saturday" = "土曜日";
 "Accent color:" = "タスクのアクセントカラー";
 "Select accent color" = "アクセントカラー";
+"Start date" = "開始日";
+"Set start date" = "開始日を設定";
 "Notification:" = "通知";
 "Add notification" = "通知を追加";
 "Cancel" = "キャンセル";

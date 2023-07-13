@@ -40,6 +40,8 @@ struct TaskSettingView: View {
                 span
                 // アクセントカラーを入力
                 accentColor
+                // 開始日
+                startDate
                 // 毎日のタスク or 各週のタスクの場合のみ通知を設定可能
                 if task.spanType == .selected || (task.spanType == .custom && task.span == .day) {
                     // 通知
@@ -117,6 +119,12 @@ extension TaskSettingView {
                 }
             }
             .pickerStyle(.navigationLink)
+        }
+    }
+    
+    private var startDate: some View {
+        Section( header: Text("Start date")) {
+            DatePicker("Set start date", selection: $task.addedDate, displayedComponents: [.date])
         }
     }
     
@@ -244,6 +252,7 @@ extension TaskSettingView {
             let impactLight = UIImpactFeedbackGenerator(style: .rigid)
             impactLight.impactOccurred()
             taskViewModel.addTasks(task: task)
+            taskViewModel.loadRKManager()
             dismiss()
             
         }, label: {
