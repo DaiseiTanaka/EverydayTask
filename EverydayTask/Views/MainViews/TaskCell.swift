@@ -34,22 +34,14 @@ struct TaskCell: View {
         }
         .padding(.vertical, 4)
         .padding(.trailing, 4)
-        .background(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? Color("cellBackgroundDone") : Color("cellBackground"))
+        .background(returnCellBackgroundColor())
         .frame(minHeight: cellStyle.height)
         .frame(maxWidth: .infinity)
         .cornerRadius(cellStyle.cornerRadius)
-        .shadow(color: returnBackGroundColor(), radius: returnCellRadius(), x: 0, y: 3)
-        .overlay {
-            RoundedRectangle(cornerRadius: cellStyle.cornerRadius)
-                .stroke(lineWidth: 3)
-                .fill(taskViewModel.selectedTasks == [task] ? Color.blue.opacity(0.4) : .clear)
-        }
-        .overlay(alignment: cellStyle == .list ? .trailing : .topTrailing) {
-            editButton
-        }
-        .overlay(alignment: cellStyle == .list ? .leading : .topLeading) {
-            doneTaskButton
-        }
+        .shadow(color: returnShadowColor(), radius: returnCellRadius(), x: 0, y: 3)
+        .overlay { cellStroke }
+        .overlay(alignment: cellStyle == .list ? .trailing : .topTrailing) { editButton }
+        .overlay(alignment: cellStyle == .list ? .leading : .topLeading) { doneTaskButton }
     }
 }
 
@@ -91,33 +83,23 @@ extension TaskCell {
         }
     }
     
-    private func returnBackGroundColor() -> Color {
-        if !taskViewModel.isDone(task: task, date: rkManager.selectedDate) {
-            return Color.black.opacity(0.2)
-        } else {
-            return Color.clear
-        }
+    // 選択されたセルの枠
+    private var cellStroke: some View {
+        RoundedRectangle(cornerRadius: cellStyle.cornerRadius)
+            .stroke(lineWidth: 3)
+            .fill(taskViewModel.selectedTasks == [task] ? Color.blue.opacity(0.4) : .clear)
     }
     
-    private func returnCellRadius() -> CGFloat {
-        switch cellStyle {
-        case .list:
-            return 4
-        case .grid:
-            return 7
-        }
-    }
-    
+    // タスクのアクセントカラー
     private var accentColor: some View {
-        // タスクのアクセントカラー
         Rectangle()
             .frame(width: 7)
             .cornerRadius(5)
             .foregroundColor(taskViewModel.returnColor(color: task.accentColor))
     }
     
+    // タスクのタイトル
     private var title: some View {
-        // タスクのタイトル
         Text(task.title)
             .font(.subheadline.bold())
             .foregroundColor(taskViewModel.isDone(task: task, date: rkManager.selectedDate) ? .secondary : .primary)
@@ -126,8 +108,8 @@ extension TaskCell {
             .padding(.leading, 10)
     }
     
+    // タスクの詳細
     private var detail: some View {
-        // タスクの詳細
         Text(task.detail)
             .font(.footnote)
             .foregroundColor(.secondary)
@@ -147,6 +129,7 @@ extension TaskCell {
                 .padding(10)
         }
     }
+    
     // タスク実施ボタン
     private var doneTaskButton: some View {
         Button {
@@ -182,6 +165,31 @@ extension TaskCell {
                         .padding(.leading, cellStyle == .list ? 5 : 0)
                 }
             }
+        }
+    }
+    
+    private func returnCellBackgroundColor() -> Color {
+        if taskViewModel.isDone(task: task, date: rkManager.selectedDate) {
+            return Color("cellBackgroundDone")
+        } else {
+            return Color("cellBackground")
+        }
+    }
+    
+    private func returnShadowColor() -> Color {
+        if !taskViewModel.isDone(task: task, date: rkManager.selectedDate) {
+            return Color.black.opacity(0.2)
+        } else {
+            return Color.clear
+        }
+    }
+    
+    private func returnCellRadius() -> CGFloat {
+        switch cellStyle {
+        case .list:
+            return 4
+        case .grid:
+            return 7
         }
     }
     

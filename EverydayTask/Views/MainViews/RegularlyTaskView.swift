@@ -296,7 +296,6 @@ extension RegularlyTaskView {
         let nextDateDC = calendar.dateComponents([.year, .month, .weekOfYear, .day], from: nextDate)
         // 同期間か判定
         let sameYear = dateDC.year! == nextDateDC.year!
-        let sameMonth = nextDateDC.month! == dateDC.month!
         // 連続しているか判定
         let contDay = calendar.isDate(date, inSameDayAs: nextDate.addingTimeInterval(-60 * 60 * 24))
         let contWeek = calendar.isDate(date, equalTo: nextDate.addingTimeInterval(-60 * 60 * 24 * 7), toGranularity: .weekOfYear) // 7日間戻した日付と同じ週なら連続している
