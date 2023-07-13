@@ -33,7 +33,7 @@
 		3585CA302A370956002A090C /* RegularlyTaskCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3585CA2F2A370956002A090C /* RegularlyTaskCell.swift */; };
 		3585CA322A370972002A090C /* RegularlyTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3585CA312A370972002A090C /* RegularlyTaskView.swift */; };
 		3592BB292A5C13FC00939B61 /* EditRegularlyTaskHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3592BB282A5C13FC00939B61 /* EditRegularlyTaskHistoryView.swift */; };
-		3592BB302A5FFE8300939B61 /* Span.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3592BB2F2A5FFE8300939B61 /* Span.swift */; };
+		3592BB302A5FFE8300939B61 /* SpanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3592BB2F2A5FFE8300939B61 /* SpanView.swift */; };
 		35ADE3C92A39D1F0004F3E67 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 35ADE3CB2A39D1F0004F3E67 /* InfoPlist.strings */; };
 		35ADE3CE2A39E547004F3E67 /* NotificationPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35ADE3CD2A39E547004F3E67 /* NotificationPickerView.swift */; };
 		35ADE3D62A3B4821004F3E67 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35ADE3D52A3B4821004F3E67 /* WidgetKit.framework */; };
@@ -99,7 +99,7 @@
 		3585CA2F2A370956002A090C /* RegularlyTaskCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegularlyTaskCell.swift; sourceTree = "<group>"; };
 		3585CA312A370972002A090C /* RegularlyTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegularlyTaskView.swift; sourceTree = "<group>"; };
 		3592BB282A5C13FC00939B61 /* EditRegularlyTaskHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRegularlyTaskHistoryView.swift; sourceTree = "<group>"; };
-		3592BB2F2A5FFE8300939B61 /* Span.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Span.swift; sourceTree = "<group>"; };
+		3592BB2F2A5FFE8300939B61 /* SpanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpanView.swift; sourceTree = "<group>"; };
 		35ADE3CA2A39D1F0004F3E67 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		35ADE3CC2A39D1F7004F3E67 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		35ADE3CD2A39E547004F3E67 /* NotificationPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationPickerView.swift; sourceTree = "<group>"; };
@@ -254,7 +254,7 @@
 			children = (
 				35CCF3472A2EFCA500C91B80 /* TaskSettingView.swift */,
 				3577ECF02A48882F005A6915 /* SideBarStack.swift */,
-				3592BB2F2A5FFE8300939B61 /* Span.swift */,
+				3592BB2F2A5FFE8300939B61 /* SpanView.swift */,
 				3592BB282A5C13FC00939B61 /* EditRegularlyTaskHistoryView.swift */,
 			);
 			path = SubViews;
@@ -387,7 +387,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				355B97882A2DA77F00BD0772 /* RKManager.swift in Sources */,
-				3592BB302A5FFE8300939B61 /* Span.swift in Sources */,
+				3592BB302A5FFE8300939B61 /* SpanView.swift in Sources */,
 				355B976D2A2D9F0900BD0772 /* ContentView.swift in Sources */,
 				350BA4412A528A380071FF23 /* CustomTaskPickerView.swift in Sources */,
 				35ADE3CE2A39E547004F3E67 /* NotificationPickerView.swift in Sources */,

@@ -62,7 +62,7 @@ extension TaskCell {
                 HStack {
                     title
                     Spacer(minLength: 0)
-                    Span(taskViewModel: taskViewModel, task: task)
+                    SpanView(taskViewModel: taskViewModel, task: task)
                 }
                 Spacer(minLength: 0)
 
@@ -84,7 +84,7 @@ extension TaskCell {
                 
                 Spacer(minLength: 0)
                 
-                Span(taskViewModel: taskViewModel, task: task)
+                SpanView(taskViewModel: taskViewModel, task: task)
             }
             .padding(.leading, 8)
             Spacer(minLength: 0)

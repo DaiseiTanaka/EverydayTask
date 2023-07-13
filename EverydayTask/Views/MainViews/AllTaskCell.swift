@@ -96,7 +96,7 @@ extension AllTaskCell {
             Spacer(minLength: 0)
             
             // タスクのスパン
-            Span(taskViewModel: taskViewModel, task: task)
+            SpanView(taskViewModel: taskViewModel, task: task)
         }
     }
     

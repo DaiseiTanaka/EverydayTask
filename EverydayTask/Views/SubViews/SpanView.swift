@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Span: View {
+struct SpanView: View {
     @ObservedObject var taskViewModel: TaskViewModel
     
     var task: Tasks
@@ -50,7 +50,7 @@ struct Span: View {
     }
 }
 
-extension Span {
+extension SpanView {
     private var addedDateText: some View {
         HStack {
             Text("\(taskViewModel.returnDayString(date: task.addedDate)) ~ ")
