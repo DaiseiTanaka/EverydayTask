@@ -255,7 +255,7 @@ class TaskViewModel: ObservableObject {
     // MARK: - データ解析関連
     // その日すべき全てのタスクの数を返す
     func returnTaskCount(date: Date) -> Int {
-        let tasks = selectedTasks
+        let tasks = tasks
         var taskCount = 0
         for taskIndex in 0..<tasks.count {
             let task = tasks[taskIndex]
@@ -286,7 +286,7 @@ class TaskViewModel: ObservableObject {
     
     // その日にすべき全てのタスクのうち実際に行ったタスクの数を返す
     func returnDoneTaskCount(date: Date) -> Int {
-        let tasks = selectedTasks
+        let tasks = tasks
         var doneTaskCount = 0
         for taskIndex in 0..<tasks.count {
             let task = tasks[taskIndex]
