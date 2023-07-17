@@ -260,13 +260,13 @@ class TaskViewModel: ObservableObject {
             let spanType = task.spanType
             let span = task.span
             let spanDate = task.spanDate
-            let addedDate = task.addedDate.addingTimeInterval(-60*60*24*1)
+            let addedDate = task.addedDate
             let weekdayIndex = returnWeekdayFromDate(date: date)
             let isAble = task.isAble
             // タスクがisAbleの時
             if isAble {
                 // タスクを追加した日以降
-                if addedDate <= date {
+                if isPrevDay(prevDate: addedDate, selectedDate: date) {
                     // 毎日行うタスクの場合
                     if spanType == .selected && spanDate.contains(weekdayIndex) {
                         taskCount += 1
@@ -398,7 +398,7 @@ class TaskViewModel: ObservableObject {
         
         for task in tasks {
             let selectedDate = date
-            let addedDate    = task.addedDate.addingTimeInterval(-60*60*24*1)
+            let addedDate    = task.addedDate
             let spanType     = task.spanType
             let span         = task.span
             let spanDate     = task.spanDate
@@ -406,7 +406,7 @@ class TaskViewModel: ObservableObject {
             let isAble       = task.isAble
             
             // 選択した日付よりも前にタスクを追加していた場合 & タスクが実施可能（isAble）の時
-            if addedDate < selectedDate && isAble {
+            if isPrevDay(prevDate: addedDate, selectedDate: selectedDate) && isAble {
                 switch spanType {
                 case .custom:
                     // １日単位のタスクはその日に実行するタスク一覧へ追加
@@ -429,10 +429,8 @@ class TaskViewModel: ObservableObject {
     }
     
     // 選択した日付に関連するタスクのうち、未達成のものを返す
-    func returnSelectedDateUnFinishedTasks(date: Date) -> [[Tasks]] {
+    func returnSelectedDateUnFinishedTasks(date: Date, isDailyTask: Bool) -> [Tasks] {
         let tasks = tasks
-        // 最終的に返すリスト
-        var selectedDateTasks: [[Tasks]] = []
         
         var dailyTasks: [Tasks] = []
         var regularlyTasks: [Tasks] = []
@@ -441,7 +439,7 @@ class TaskViewModel: ObservableObject {
         
         for task in tasks {
             let selectedDate = date
-            let addedDate    = task.addedDate.addingTimeInterval(-60*60*24*1)
+            let addedDate    = task.addedDate
             let spanType     = task.spanType
             let span         = task.span
             let spanDate     = task.spanDate
@@ -449,7 +447,7 @@ class TaskViewModel: ObservableObject {
             let isAble       = task.isAble
             
             // 選択した日付よりも前にタスクを追加していた場合 & タスクが実施可能（isAble）の時
-            if addedDate < selectedDate && isAble {
+            if isPrevDay(prevDate: addedDate, selectedDate: selectedDate) && isAble {
                 // タスクが未達成の時
                 if !isDone(task: task, date: selectedDate) {
                     switch spanType {
@@ -468,11 +466,13 @@ class TaskViewModel: ObservableObject {
                 }
             }
         }
-        // リストをspanTypeごとに並び替え
-        selectedDateTasks.append(dailyTasks)
-        selectedDateTasks.append(regularlyTasks)
 
-        return selectedDateTasks
+        // 選択されたタスクを返す
+        if isDailyTask {
+            return dailyTasks
+        } else {
+            return regularlyTasks
+        }
     }
     
     // 選択した日の達成したタスクの一覧を返す
@@ -488,7 +488,7 @@ class TaskViewModel: ObservableObject {
         
         for task in tasks {
             let selectedDate = date
-            let addedDate = task.addedDate.addingTimeInterval(-60*60*24*1)
+            let addedDate = task.addedDate
             let spanType = task.spanType
             let span = task.span
             let spanDate = task.spanDate
@@ -496,8 +496,8 @@ class TaskViewModel: ObservableObject {
             let isAble = task.isAble
             
             // 選択した日付よりも前にタスクを追加していた場合 & タスクが実施可能（isAble）の時
-            if addedDate < selectedDate && isAble {
-                // タスクが未達成の時
+            if isPrevDay(prevDate: addedDate, selectedDate: selectedDate) && isAble {
+                // タスクが達成の時
                 if isDone(task: task, date: selectedDate) {
                     switch spanType {
                     case .custom:
@@ -589,6 +589,16 @@ class TaskViewModel: ObservableObject {
         
         }
     }
+     
+    // 2つの日付で、prevDateがselectedDateより前の日（同じ日も含む）かどうか判定
+    // 追加日以降のタスクを選択したい時に利用
+    func isPrevDay(prevDate: Date, selectedDate: Date) -> Bool {
+        if isSameDay(date1: prevDate, date2: selectedDate) || prevDate < selectedDate {
+            return true
+        }
+        
+        return false
+    }
     
     // タスクのタイトルを返す
     // 未設定の時は（タイトルなし）と表示する
@@ -676,7 +686,9 @@ class TaskViewModel: ObservableObject {
     
     // Widget用にデータを保存
     func saveUnfinishedTasksForWidget() {
-        let unfinishedTasks: [[Tasks]] = returnSelectedDateUnFinishedTasks(date: Date())
+        var unfinishedTasks: [[Tasks]] = []
+        unfinishedTasks += ([returnSelectedDateUnFinishedTasks(date: Date(), isDailyTask: true)])
+        unfinishedTasks += ([returnSelectedDateUnFinishedTasks(date: Date(), isDailyTask: false)])
         let jsonEncoder = JSONEncoder()
         guard let data = try? jsonEncoder.encode(unfinishedTasks) else {
             print("😭: widget用のデータの保存に失敗しました。")

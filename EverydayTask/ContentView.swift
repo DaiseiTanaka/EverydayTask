@@ -11,8 +11,6 @@ struct ContentView: View {
     @StateObject var rkManager = RKManager(calendar: Calendar.current, minimumDate: Date(), maximumDate: Date(), mode: 0)
     @StateObject var taskViewModel = TaskViewModel()
     @Environment(\.scenePhase) private var scenePhase
-
-    @State private var isPresented: Bool = true
     
     // For half mordal settings
     @State private var presentationDetent: PresentationDetent = .fraction(0.5)
@@ -22,7 +20,11 @@ struct ContentView: View {
     @State private var buttonImage: Image = Image(systemName: "chevron.up.circle")
     
     @State private var badgeNum: Int = 0
-    //@State var showSidebar: Bool = false
+    @State var showHalfModal: Bool = true
+    @State var showSidebar: Bool = false
+    @State var showAllTaskView: Bool = false
+    private let sideBarWidth: CGFloat = UIScreen.main.bounds.width * 0.7
+
     
     init() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (granted, err) in
@@ -33,7 +35,14 @@ struct ContentView: View {
     }
 
     var body: some View {
-        mainView
+        ZStack(alignment: .leading) {
+            mainView
+                .offset(x: showSidebar ? sideBarWidth : 0)
+            
+            // サイドメニュー
+            SideMenuView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, showHalfModal: $showHalfModal, isOpen: $showSidebar, showAllTaskView: $showAllTaskView, sideBarWidth: sideBarWidth)
+                .offset(x: showSidebar ? 0 : -sideBarWidth)
+        }
     }
 }
 
@@ -45,9 +54,27 @@ extension ContentView {
             } else {
                 RegularlyTaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: taskViewModel.selectedTasks[0])
             }
+            
+            ZStack {}
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(showSidebar ? Color("disableFieldColor") : .clear)
+                //.offset(x: showSidebar ? UIScreen.main.bounds.width / 2 : 0)
+                .onTapGesture {
+                    withAnimation {
+                        showSidebar = false
+                        showHalfModal = true
+                    }
+                }
         }
-        .sheet(isPresented: $isPresented) {
+        .overlay(alignment: .topLeading) {
+            // サイドバー表示中　or カレンダー非表示中はボタンを非表示にする
+            showSidebar || !taskViewModel.showCalendarFlag ? nil : sideMenuButton
+        }
+        .sheet(isPresented: $showHalfModal) {
             taskView
+        }
+        .fullScreenCover(isPresented: $showAllTaskView) {
+            AllTaskListView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager)
         }
         .onAppear {
             taskViewModel.loadRKManager()
@@ -97,6 +124,29 @@ extension ContentView {
             //.presentationBackground(.ultraThickMaterial)
     }
     
+    private var sideMenuButton: some View {
+        // メニューボタン
+        Button(action: {
+            withAnimation {
+                showSidebar.toggle()
+                if showHalfModal {
+                    showHalfModal = false
+                } else {
+                    showHalfModal = true
+                }
+            }
+        }) {
+            Image(systemName: "line.horizontal.3")
+                .imageScale(.large)
+        }
+        .padding(10)
+        .foregroundColor(.primary)
+        .background(.ultraThinMaterial)
+        .cornerRadius(10)
+        .padding(.top, 15)
+        .padding(10)
+    }
+    
     private func returnTodayDay() -> Int {
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "ja_JP")
@@ -105,9 +155,6 @@ extension ContentView {
         return day
     }
     
-}
-
-extension ContentView {
     // アプリのバッジの数を算出
     func returnBadgeNumber() {
         var badgeNum: Int = 0
@@ -136,11 +183,6 @@ extension ContentView {
         let application = UIApplication.shared
         application.applicationIconBadgeNumber = self.badgeNum
     }
-}
-
-enum ViewHeight {
-    case max
-    case min
 }
 
 struct ContentView_Previews: PreviewProvider {

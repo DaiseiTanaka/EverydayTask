@@ -113,3 +113,9 @@
 // EditRegularlyTaskHistoryView
 "What time did you complete this task?" = "何時にこのタスクを実施しましたか？";
 "Previous date:" = "元の日時";
+
+// Side Bar
+"EverydayTask" = "毎日Todo";
+"Today" = "今日";
+"Tomorrow" = "明日";
+"All" = "すべて";

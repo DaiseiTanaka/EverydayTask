@@ -17,28 +17,59 @@ struct RegularlyTaskView: View {
     private let cellOpacity: CGFloat = 0.5
     
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(alignment: .center, spacing: 0) {
-                HStack(alignment: .bottom) {
-                    VStack(alignment: .leading, spacing: 5) {
-                        title
-                        
-                        detail
+        ScrollViewReader { (proxy: ScrollViewProxy) in
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(alignment: .center, spacing: 0) {
+                    HStack(alignment: .bottom) {
+                        VStack(alignment: .leading, spacing: 5) {
+                            title
+                            
+                            detail
+                        }
+                        Spacer(minLength: 0)
+                        VStack(alignment: .trailing) {
+                            Spacer()
+                            span
+                        }
                     }
-                    Spacer(minLength: 0)
-                    VStack(alignment: .trailing) {
-                        Spacer()
-                        span
-                    }
+                    .padding(.bottom, 15)
+                    
+                    taskList
+                    
+                    ZStack { }
+                        .frame(height: 400)
                 }
-                .padding(.bottom, 15)
-                
-                taskList
-                
-                ZStack { }
-                .frame(height: 400)
+                .padding(.horizontal, 10)
             }
-            .padding(.horizontal, 10)
+            // 一番下までスクロール
+            .onAppear {
+                scrollToBottom(proxy: proxy)
+            }
+            // 選択している日付の位置までスクロール
+//            .onChange(of: taskViewModel.selectedRegularlyTaskDate) { newValue in
+//                scrollToSelectedDate(proxy: proxy)
+//            }
+        }
+    }
+    
+    func scrollToBottom(proxy: ScrollViewProxy) {
+        let target: CGFloat = 0.4
+        let id: Int = task.doneDate.count - 1
+        
+        withAnimation {
+            proxy.scrollTo(id, anchor: UnitPoint(x: 1.0, y: target))
+        }
+    }
+    
+    func scrollToSelectedDate(proxy: ScrollViewProxy) {
+        let target: CGFloat = 0.4
+
+        guard let index = task.doneDate.firstIndex(where: { $0 == taskViewModel.selectedRegularlyTaskDate }) else {
+            return
+        }
+        
+        withAnimation {
+            proxy.scrollTo(index, anchor: UnitPoint(x: 1.0, y: target))
         }
     }
 }
@@ -86,6 +117,7 @@ extension RegularlyTaskView {
             }
             
             RegularlyTaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, date: date)
+                .id(index)
             
             Rectangle()
                 .foregroundColor(returnContinuousCondition(index: index, task: task) ? returnCellBackgroundColor(opacity: cellOpacity) : .clear)

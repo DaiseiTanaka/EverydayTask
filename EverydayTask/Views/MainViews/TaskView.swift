@@ -22,15 +22,15 @@ struct TaskView: View {
     
     @State var showTaskSettingView: Bool = false
     @State var showTaskSettingAlart: Bool = false
-    @State var showAllTaskListViewFlag: Bool = false
+    @State var showAllTaskView: Bool = false
     @State var showChangeCellStyleAlart: Bool = false
     @State var showRegularlyTaskAlart: Bool = false
     @State var showEditRegularlyTaskHistoryView: Bool = false
-
+    
     @AppStorage("showRegularlyTaskList") private var showRegularlyTaskList: Bool = true
     @AppStorage("showOneTimeTaskList") private var showOneTimeTaskList: Bool = true
     @AppStorage("showDoneTasks") private var showDoneTasks: Bool = false
-
+    
     @State private var offset = CGFloat.zero
     @State private var closeOffset = CGFloat.zero
     @State private var openOffset = CGFloat.zero
@@ -41,13 +41,18 @@ struct TaskView: View {
                 VStack(spacing: 20) {
                     finishedText
                     
-                    if !taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[0].isEmpty {
+                    if !taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate, isDailyTask: true).isEmpty {
                         todaysTaskList
                     }
                     
-                    if !taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[1].isEmpty {
-                        regularlyTaskList
+                    if !taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate, isDailyTask: false).isEmpty {
+                        regularlyTaskListHeader
+                        
+                        if showRegularlyTaskList {
+                            regularlyTaskList
+                        }
                     }
+                    
                     if returnDoneTaskCount() > 0 {
                         doneTaskList
                     }
@@ -82,7 +87,6 @@ struct TaskView: View {
             cellStyle = cellStyleAS
         }
         .sheet(isPresented: $showTaskSettingView, content: { taskSettingView })
-        .sheet(isPresented: $showAllTaskListViewFlag, content: { allTaskListView })
         .sheet(isPresented: $showEditRegularlyTaskHistoryView, content: { editRegularlyTaskHistoryView })
         .confirmationDialog(taskViewModel.editTask.title, isPresented: $showTaskSettingAlart, titleVisibility: .visible) {
             Button("Edit this task?") {
@@ -130,18 +134,11 @@ struct TaskView: View {
 extension TaskView {
     private var header: some View {
         HStack {
-            Button {
-                showAllTaskListViewFlag = true
-            } label: {
-                Image(systemName: "list.bullet")
-                    .font(.body.bold())
-                    .foregroundColor(.secondary)
-            }
-                        
             if !showJumpToDodayButton() {
                 Button {
                     withAnimation {
                         rkManager.selectedDate = Date()
+                        taskViewModel.selectedTasks = taskViewModel.tasks
                     }
                 } label: {
                     Image(systemName: "calendar.badge.clock")
@@ -163,13 +160,13 @@ extension TaskView {
     private var finishedText: some View {
         VStack {
             // 選択された日のタスクが全て達成済みの時
-            if taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[0].count == 0 {
+            if taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate, isDailyTask: true).count == 0 {
                 // 選択した日付にタスクが設定されていなかった場合
                 if taskViewModel.returnTaskCount(date: rkManager.selectedDate) == 0 {
                     Text("No tasks have been set.")
                         .bold()
                         .foregroundColor(.secondary)
-                // 選択した日付にタスクが設定されており、かつ選択された日が今日の時
+                    // 選択した日付にタスクが設定されており、かつ選択された日が今日の時
                 } else if taskViewModel.isSameDay(date1: rkManager.selectedDate, date2: Date()) {
                     VStack(alignment: .leading) {
                         Text("All tasks for today have been completed!")
@@ -178,7 +175,7 @@ extension TaskView {
                         Text("Good job for today.")
                             .foregroundColor(.secondary)
                     }
-                // 選択した日付にタスクが設定されており、かつ選択された日が今日以外の時
+                    // 選択した日付にタスクが設定されており、かつ選択された日が今日以外の時
                 } else {
                     Text("All tasks have been completed.")
                         .bold()
@@ -191,7 +188,7 @@ extension TaskView {
     private var todaysTaskList: some View {
         VStack(spacing: 10) {
             LazyVGrid(columns: cellStyle.columns, spacing: cellStyle.space) {
-                ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[0], id: \.id) { task in
+                ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate, isDailyTask: true), id: \.id) { task in
                     TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart, showRegularlyTaskAlart: $showRegularlyTaskAlart)
                         .onTapGesture {
                             updateCalendar(task: task)
@@ -204,40 +201,40 @@ extension TaskView {
         }
     }
     
+    private var regularlyTaskListHeader: some View {
+        Button {
+            showRegularlyTaskList.toggle()
+        } label: {
+            HStack {
+                Image(systemName: showRegularlyTaskList ? "chevron.down" : "chevron.right")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 10, height: 10)
+                    .foregroundColor(.secondary)
+                    .padding(.leading, 15)
+                Text("Regularly")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Text("(\(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate, isDailyTask: false).count))")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Spacer()
+            }
+        }
+    }
+    
     // 定期的なタスク
     private var regularlyTaskList: some View {
         VStack(spacing: 10) {
-            Button {
-                showRegularlyTaskList.toggle()
-            } label: {
-                HStack {
-                    Image(systemName: showRegularlyTaskList ? "chevron.down" : "chevron.right")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 10, height: 10)
-                        .foregroundColor(.secondary)
-                        .padding(.leading, 15)
-                    Text("Regularly")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Text("(\(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[1].count))")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                }
-            }
-            
-            if showRegularlyTaskList {
-                LazyVGrid(columns: cellStyle.columns, spacing: cellStyle.space) {
-                    ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate)[1], id: \.id) { task in
-                        TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart, showRegularlyTaskAlart: $showRegularlyTaskAlart)
-                            .onTapGesture {
-                                updateCalendar(task: task)
-                            }
-                            .onLongPressGesture() {
-                                longTapTaskAction(task: task)
-                            }
-                    }
+            LazyVGrid(columns: cellStyle.columns, spacing: cellStyle.space) {
+                ForEach(taskViewModel.returnSelectedDateUnFinishedTasks(date: rkManager.selectedDate, isDailyTask: false), id: \.id) { task in
+                    TaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, cellStyle: cellStyle, showTaskSettingAlart: $showTaskSettingAlart, showRegularlyTaskAlart: $showRegularlyTaskAlart)
+                        .onTapGesture {
+                            updateCalendar(task: task)
+                        }
+                        .onLongPressGesture() {
+                            longTapTaskAction(task: task)
+                        }
                 }
             }
         }
@@ -321,24 +318,6 @@ extension TaskView {
         return count
     }
     
-    private var showAllTaskButton: some View {
-        Button {
-            let impactLight = UIImpactFeedbackGenerator(style: .rigid)
-            impactLight.impactOccurred()
-            
-            showAllTaskListViewFlag = true
-        } label: {
-            Image(systemName: "list.bullet")
-                .font(.title2.bold())
-                .foregroundColor(Color(UIColor.systemBackground))
-                .padding()
-                .background(.green.opacity(0.9))
-                .clipShape(Circle())
-                .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 3)
-                .padding(.leading)
-        }
-    }
-    
     // cellのスタイルを変更する
     private var changeCellStyleButton: some View {
         ZStack {
@@ -369,30 +348,30 @@ extension TaskView {
             // userdefaultsに保存
             cellStyleAS = newValue
         }
-//        Menu {
-//            Picker("Sort", selection: $selectedStyle) {
-//                ForEach(TaskCellStyle.allCases) {
-//                    Text(LocalizedStringKey($0.styleString))
-//                }
-//            }
-//            .onSubmit {
-//                withAnimation {
-//                    cellStyle = selectedStyle
-//                }
-//            }
-//        } label: {
-//            switch cellStyle {
-//            case .list:
-//                Image(systemName: "square.fill.text.grid.1x2")
-//                    .foregroundColor(.secondary)
-//                    .font(.body.bold())
-//            case .grid:
-//                Image(systemName: "square.grid.2x2")
-//                    .foregroundColor(.secondary)
-//                    .font(.body.bold())
-//            }
-//        }
-//        .menuOrder(.fixed)
+        //        Menu {
+        //            Picker("Sort", selection: $selectedStyle) {
+        //                ForEach(TaskCellStyle.allCases) {
+        //                    Text(LocalizedStringKey($0.styleString))
+        //                }
+        //            }
+        //            .onSubmit {
+        //                withAnimation {
+        //                    cellStyle = selectedStyle
+        //                }
+        //            }
+        //        } label: {
+        //            switch cellStyle {
+        //            case .list:
+        //                Image(systemName: "square.fill.text.grid.1x2")
+        //                    .foregroundColor(.secondary)
+        //                    .font(.body.bold())
+        //            case .grid:
+        //                Image(systemName: "square.grid.2x2")
+        //                    .foregroundColor(.secondary)
+        //                    .font(.body.bold())
+        //            }
+        //        }
+        //        .menuOrder(.fixed)
     }
     
     // 特定のタスクをタップした時の関数
@@ -473,7 +452,7 @@ struct TaskView_Previews: PreviewProvider {
     //@StateObject static var taskViewModel = TaskViewModel()
     static let rkManager = RKManager(calendar: Calendar.current, minimumDate: Date().addingTimeInterval(-60*60*24*7), maximumDate: Date(), mode: 0)
     @State static var presentationDetent: PresentationDetent = .fraction(0.5)
-
+    
     static var previews: some View {
         //ContentView()
         TaskView(taskViewModel: TaskViewModel(), rkManager: rkManager)
