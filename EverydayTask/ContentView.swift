@@ -20,8 +20,6 @@ struct ContentView: View {
     @State private var buttonImage: Image = Image(systemName: "chevron.up.circle")
     
     @State private var badgeNum: Int = 0
-    @State var showHalfModal: Bool = true
-    @State var showSidebar: Bool = false
     @State var showAllTaskView: Bool = false
     private let sideBarWidth: CGFloat = UIScreen.main.bounds.width * 0.7
 
@@ -37,11 +35,11 @@ struct ContentView: View {
     var body: some View {
         ZStack(alignment: .leading) {
             mainView
-                .offset(x: showSidebar ? sideBarWidth : 0)
+                .offset(x: taskViewModel.showSidebar ? sideBarWidth : 0)
             
             // サイドメニュー
-            SideMenuView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, showHalfModal: $showHalfModal, isOpen: $showSidebar, showAllTaskView: $showAllTaskView, sideBarWidth: sideBarWidth)
-                .offset(x: showSidebar ? 0 : -sideBarWidth)
+            SideMenuView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, showAllTaskView: $showAllTaskView, sideBarWidth: sideBarWidth)
+                .offset(x: taskViewModel.showSidebar ? 0 : -sideBarWidth)
         }
     }
 }
@@ -51,26 +49,23 @@ extension ContentView {
         ZStack {
             if taskViewModel.showCalendarFlag {
                 CalendarView(rkManager: rkManager, taskViewModel: taskViewModel, addBottomSpace: true)
+                    .gesture(showSidebarGesture)
             } else {
                 RegularlyTaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: taskViewModel.selectedTasks[0])
             }
             
             ZStack {}
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(showSidebar ? Color("disableFieldColor") : .clear)
+                .background(taskViewModel.showSidebar ? Color("disableFieldColor") : .clear)
                 //.offset(x: showSidebar ? UIScreen.main.bounds.width / 2 : 0)
                 .onTapGesture {
                     withAnimation {
-                        showSidebar = false
-                        showHalfModal = true
+                        taskViewModel.showSidebar = false
+                        taskViewModel.showHalfModal = true
                     }
                 }
         }
-        .overlay(alignment: .topLeading) {
-            // サイドバー表示中　or カレンダー非表示中はボタンを非表示にする
-            showSidebar || !taskViewModel.showCalendarFlag ? nil : sideMenuButton
-        }
-        .sheet(isPresented: $showHalfModal) {
+        .sheet(isPresented: $taskViewModel.showHalfModal) {
             taskView
         }
         .fullScreenCover(isPresented: $showAllTaskView) {
@@ -124,27 +119,16 @@ extension ContentView {
             //.presentationBackground(.ultraThickMaterial)
     }
     
-    private var sideMenuButton: some View {
-        // メニューボタン
-        Button(action: {
-            withAnimation {
-                showSidebar.toggle()
-                if showHalfModal {
-                    showHalfModal = false
-                } else {
-                    showHalfModal = true
+    private var showSidebarGesture: some Gesture {
+        DragGesture(minimumDistance: 50)
+            .onEnded { value in
+                withAnimation {
+                    if value.translation.width > 50 {
+                        taskViewModel.showSidebar = true
+                        taskViewModel.showHalfModal = false
+                    }
                 }
             }
-        }) {
-            Image(systemName: "line.horizontal.3")
-                .imageScale(.large)
-        }
-        .padding(10)
-        .foregroundColor(.primary)
-        .background(.ultraThinMaterial)
-        .cornerRadius(10)
-        .padding(.top, 15)
-        .padding(10)
     }
     
     private func returnTodayDay() -> Int {

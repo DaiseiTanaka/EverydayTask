@@ -11,8 +11,6 @@ struct SideMenuView: View {
     @ObservedObject var taskViewModel: TaskViewModel
     @ObservedObject var rkManager: RKManager
 
-    @Binding var showHalfModal: Bool
-    @Binding var isOpen: Bool
     @Binding var showAllTaskView: Bool
     @State var sideBarWidth: CGFloat
         
@@ -34,39 +32,9 @@ struct SideMenuView: View {
         .edgesIgnoringSafeArea(.all)
         .background(
             Color(UIColor.systemBackground)
-                .gesture(
-                    DragGesture(minimumDistance: 50)
-                        .onEnded { value in
-                            withAnimation {
-                                if value.translation.width < -50 {
-                                    isOpen = false
-                                    
-                                    if showHalfModal {
-                                        showHalfModal = false
-                                    } else {
-                                        showHalfModal = true
-                                    }
-                                }
-                            }
-                        }
-                )
+                .gesture( dragSideBarGesture )
         )
-        .gesture(
-            DragGesture(minimumDistance: 50)
-                .onEnded { value in
-                    withAnimation {
-                        if value.translation.width < -50 {
-                            isOpen = false
-                            
-                            if showHalfModal {
-                                showHalfModal = false
-                            } else {
-                                showHalfModal = true
-                            }
-                        }
-                    }
-                }
-        )
+        .gesture( dragSideBarGesture )
     }
 }
 
@@ -74,7 +42,7 @@ extension SideMenuView {
     private var title: some View {
         HStack {
             Text("EverydayTask")
-                .font(.title)
+                .font(.title.bold())
                 .foregroundColor(.secondary)
             
             Spacer()
@@ -118,12 +86,12 @@ extension SideMenuView {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 20, height: 20)
-                    .foregroundColor(.primary)
+                    .foregroundColor(itemCount > 0 ? .primary : .secondary)
                 
                 Text(LocalizedStringKey(type.title))
                     .font(.body)
-                    .foregroundColor(.primary)
-                
+                    .foregroundColor(itemCount > 0 ? .primary : .secondary)
+
                 Spacer()
                 
                 // 0は表示しない
@@ -143,6 +111,23 @@ extension SideMenuView {
             .foregroundColor(.secondary)
     }
     
+    private var dragSideBarGesture: some Gesture {
+        DragGesture(minimumDistance: 50)
+            .onEnded { value in
+                withAnimation {
+                    if value.translation.width < -50 {
+                        taskViewModel.showSidebar = false
+                        
+                        if taskViewModel.showHalfModal {
+                            taskViewModel.showHalfModal = false
+                        } else {
+                            taskViewModel.showHalfModal = true
+                        }
+                    }
+                }
+            }
+    }
+    
     private func returnItemCount(taskType: PreviewTaskType) -> Int {
         switch taskType {
         case .today:
@@ -156,8 +141,8 @@ extension SideMenuView {
     
     private func close() {
         withAnimation {
-            isOpen = false
-            showHalfModal = true
+            taskViewModel.showHalfModal = true
+            taskViewModel.showSidebar = false
         }
     }
 }

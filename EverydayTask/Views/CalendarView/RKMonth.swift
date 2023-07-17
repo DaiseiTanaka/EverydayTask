@@ -25,7 +25,9 @@ struct RKMonth: View {
     
     var body: some View {
         VStack(alignment: HorizontalAlignment.center, spacing: 5) {
-            Text(getMonthHeader()).foregroundColor(self.rkManager.colors.monthHeaderColor)
+            Text(getMonthHeader())
+                .foregroundColor(self.rkManager.colors.monthHeaderColor)
+            
             VStack(alignment: .leading, spacing: 3) {
                 ForEach(monthsArray, id:  \.self) { row in
                     HStack(spacing: 2) {
@@ -49,7 +51,7 @@ struct RKMonth: View {
                                         self.dateTapped(date: column)
                                     }
                                     .background {
-                                        Color(UIColor.systemBackground)
+                                        rkManager.colors.cellBackColor
                                             .onTapGesture {
                                                 self.dateTapped(date: column)
                                             }
@@ -58,9 +60,9 @@ struct RKMonth: View {
                                     // 日付のない空白の部分
                                     VStack {
                                         Text(" ")
-                                            .frame(width: cellWidthPhone, height: cellWidthPhone*1.5)
                                         Spacer()
                                     }
+                                    .frame(width: cellWidthPhone, height: cellWidthPhone*1.5)
                                     // 余白をタップしたら、現在の日付を選択し、カレンダーを下までスクロールする
                                     .onTapGesture {
                                         rkManager.selectedDate = Date()

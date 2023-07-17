@@ -28,6 +28,7 @@ class RKColorSettings : ObservableObject {
     @Published var monthHeaderColor: Color = Color.primary
     // headers background colors
     @Published var weekdayHeaderBackColor: Color = Color(UIColor.systemBackground).opacity(0.6)
-    @Published var monthBackColor: Color = Color.clear
+    @Published var monthBackColor: Color = Color("calendarBackground")
+    @Published var cellBackColor: Color = Color("calendarCellBackground")
 
 }

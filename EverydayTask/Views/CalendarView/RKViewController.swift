@@ -26,46 +26,50 @@ struct RKViewController: View {
                         ForEach(0..<taskViewModel.numberOfMonth, id: \.self) { index in
                             RKMonth(taskViewModel: taskViewModel, rkManager: self.rkManager, monthOffset: index, tappedBackground: self.$tappedBackground, id: $id)
                         }
-                        .padding(.top, 20)
                         
                         if addBottomSpace {
                             ZStack {}
                                 .frame(height: 400)
                         }
                     }
+                    .padding(.top, 50)
+
                 }
+                .background(
+                    rkManager.colors.monthBackColor
+                )
                 // 画面がロードされた時は下へスクロール
                 .onAppear {
                     // 画面がロードされてすぐ
                     self.id = taskViewModel.returnDayStringLong(date: Date())
-                    scrollToThisMonth(proxy: proxy)
+                    scrollToThisMonth(proxy: proxy, date: rkManager.selectedDate)
                 }
                 // 選択している日付の位置までスクロール
                 .onChange(of: rkManager.selectedDate) { newValue in
                     //if taskViewModel.isSameDay(date1: newValue, date2: Date()) {
-                        scrollToThisMonth(proxy: proxy)
+                        scrollToThisMonth(proxy: proxy, date: rkManager.selectedDate)
                     //}
                 }
                 // カレンダーの余白をタップした時は下へスクロール
                 .onChange(of: tappedBackground) { _ in
-                    scrollToThisMonth(proxy: proxy)
+                    scrollToThisMonth(proxy: proxy, date: rkManager.selectedDate)
                 }
                 
                 VStack {
-                    RKWeekdayHeader(rkManager: self.rkManager)
+                    RKWeekdayHeader(taskViewModel: taskViewModel, rkManager: self.rkManager)
                     Spacer()
                 }
-                // ヘッダーをタップすると下へスクロール
+                // ヘッダーをタップすると一番上へスクロール
                 .onTapGesture {
-                    scrollToThisMonth(proxy: proxy)
+                    scrollToThisMonth(proxy: proxy, date: taskViewModel.returnLatestDate(tasks: taskViewModel.tasks))
                 }
             }
         }
     }
     
-    func scrollToThisMonth(proxy: ScrollViewProxy) {
+    func scrollToThisMonth(proxy: ScrollViewProxy, date: Date) {
         let target: CGFloat = 0.4
-        let id: String = taskViewModel.returnDayStringLong(date: rkManager.selectedDate)
+        let id: String = taskViewModel.returnDayStringLong(date: date)
         withAnimation {
             //proxy.scrollTo(id, anchor: UnitPoint(x: 0.5, y: target))
             proxy.scrollTo(id, anchor: UnitPoint(x: 1.0, y: target))

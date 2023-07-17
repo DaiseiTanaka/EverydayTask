@@ -23,6 +23,8 @@ class TaskViewModel: ObservableObject {
     @Published var showCalendarFlag: Bool
     @Published var showEditRegularlyTaskAlart: Bool = false
     @Published var selectedRegularlyTaskDate: Date = Date()
+    @Published var showHalfModal: Bool = true
+    @Published var showSidebar: Bool = false
                 
     init() {
         self.tasks = Tasks.defaulData
