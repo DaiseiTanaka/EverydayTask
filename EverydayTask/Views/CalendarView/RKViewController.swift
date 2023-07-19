@@ -15,6 +15,7 @@ struct RKViewController: View {
 
     @State var tappedBackground: Bool
     @State var addBottomSpace: Bool
+    @State var showSideBarButton: Bool
     
     @State var id: String = ""
 
@@ -56,7 +57,7 @@ struct RKViewController: View {
                 }
                 
                 VStack {
-                    RKWeekdayHeader(taskViewModel: taskViewModel, rkManager: self.rkManager)
+                    RKWeekdayHeader(taskViewModel: taskViewModel, rkManager: self.rkManager, showSideMenuButton: showSideBarButton)
                     Spacer()
                 }
                 // ヘッダーをタップすると一番上へスクロール

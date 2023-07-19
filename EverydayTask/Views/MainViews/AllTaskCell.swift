@@ -141,9 +141,9 @@ extension AllTaskCell {
                     .font(.title2.bold())
                     .padding(.horizontal, 50)
                 
-                CalendarView(rkManager: taskViewModel.rkManager, taskViewModel: taskViewModel, addBottomSpace: false)
+                CalendarView(rkManager: taskViewModel.rkManager, taskViewModel: taskViewModel, addBottomSpace: false, showSideBarButton: false)
             } else {
-                RegularlyTaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: task)
+                RegularlyTaskView(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, task: task, isEditable: false)
                     .padding(.top, 30)
             }
         }

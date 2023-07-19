@@ -13,6 +13,8 @@ struct RegularlyTaskCell: View {
 
     var task: Tasks
     var date: Date
+    
+    @State var isEditable: Bool
         
     let generator = UINotificationFeedbackGenerator()
     private let cellHeight: CGFloat = 40
@@ -59,12 +61,14 @@ extension RegularlyTaskCell {
                     .font(.subheadline)
                     .foregroundColor(Color(UIColor.systemBackground))
                 
-                Button {
-                    showEditAlart()
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .font(.headline)
-                        .foregroundColor(Color(UIColor.systemBackground))
+                if isEditable {
+                    Button {
+                        showEditAlart()
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .font(.headline)
+                            .foregroundColor(Color(UIColor.systemBackground))
+                    }
                 }
             }
         }

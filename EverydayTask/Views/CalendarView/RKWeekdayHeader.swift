@@ -11,12 +11,16 @@ import SwiftUI
 struct RKWeekdayHeader : View {
     @ObservedObject var taskViewModel: TaskViewModel
     @ObservedObject var rkManager: RKManager
+    
+    @State var showSideMenuButton: Bool
      
     var body: some View {
         VStack {
             HStack {
-                // メニューボタン
-                sideMenuButton
+                if showSideMenuButton {
+                    // メニューボタン
+                    sideMenuButton
+                }
                 
                 Spacer()
                 
@@ -98,7 +102,7 @@ extension RKWeekdayHeader {
 #if DEBUG
 struct RKWeekdayHeader_Previews : PreviewProvider {
     static var previews: some View {
-        RKWeekdayHeader(taskViewModel: TaskViewModel(), rkManager: RKManager(calendar: Calendar.current, minimumDate: Date(), maximumDate: Date().addingTimeInterval(60*60*24*365), mode: 0))
+        RKWeekdayHeader(taskViewModel: TaskViewModel(), rkManager: RKManager(calendar: Calendar.current, minimumDate: Date(), maximumDate: Date().addingTimeInterval(60*60*24*365), mode: 0), showSideMenuButton: true)
     }
 }
 #endif

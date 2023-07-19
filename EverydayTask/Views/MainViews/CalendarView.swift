@@ -12,10 +12,11 @@ struct CalendarView: View {
     @ObservedObject var taskViewModel: TaskViewModel
     
     @State var addBottomSpace: Bool
+    @State var showSideBarButton: Bool
         
     var body: some View {
         ZStack {
-            RKViewController(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, tappedBackground: true, addBottomSpace: addBottomSpace)
+            RKViewController(taskViewModel: taskViewModel, rkManager: taskViewModel.rkManager, tappedBackground: true, addBottomSpace: addBottomSpace, showSideBarButton: showSideBarButton)
         }
     }
 }

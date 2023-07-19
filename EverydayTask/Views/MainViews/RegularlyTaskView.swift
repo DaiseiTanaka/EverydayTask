@@ -13,6 +13,7 @@ struct RegularlyTaskView: View {
     @ObservedObject var rkManager: RKManager
     
     var task: Tasks
+    @State var isEditable: Bool
     
     private let cellOpacity: CGFloat = 0.5
     
@@ -116,7 +117,7 @@ extension RegularlyTaskView {
                 header(date: date, index: index)
             }
             
-            RegularlyTaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, date: date)
+            RegularlyTaskCell(taskViewModel: taskViewModel, rkManager: rkManager, task: task, date: date, isEditable: isEditable)
                 .id(index)
             
             Rectangle()
