@@ -88,8 +88,8 @@ extension Tasks {
     Tasks(title: "", detail: "", addedDate: Date(), spanType: .custom, span: .day, doCount: 1, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true)
     
     static var defaulData: [Tasks] = [
-        Tasks(title: "Task1", detail: "Every day", addedDate: Date(), spanType: .custom, span: .day, doCount: 1, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true),
-        Tasks(title: "Task2", detail: "Every day", addedDate: Date(), spanType: .custom, span: .day, doCount: 1, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true)
+        Tasks(title: "Task1", detail: "Daily to-do", addedDate: Date(), spanType: .custom, span: .day, doCount: 1, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Blue", isAble: true),
+        Tasks(title: "Task2", detail: "Weekly to-do", addedDate: Date(), spanType: .custom, span: .day, doCount: 3, spanDate: [], doneDate: [], notification: false, notificationHour: 0, notificationMin: 0, accentColor: "Green", isAble: true)
     ]
 }
 
