@@ -348,30 +348,6 @@ extension TaskView {
             // userdefaultsに保存
             cellStyleAS = newValue
         }
-        //        Menu {
-        //            Picker("Sort", selection: $selectedStyle) {
-        //                ForEach(TaskCellStyle.allCases) {
-        //                    Text(LocalizedStringKey($0.styleString))
-        //                }
-        //            }
-        //            .onSubmit {
-        //                withAnimation {
-        //                    cellStyle = selectedStyle
-        //                }
-        //            }
-        //        } label: {
-        //            switch cellStyle {
-        //            case .list:
-        //                Image(systemName: "square.fill.text.grid.1x2")
-        //                    .foregroundColor(.secondary)
-        //                    .font(.body.bold())
-        //            case .grid:
-        //                Image(systemName: "square.grid.2x2")
-        //                    .foregroundColor(.secondary)
-        //                    .font(.body.bold())
-        //            }
-        //        }
-        //        .menuOrder(.fixed)
     }
     
     // 特定のタスクをタップした時の関数
@@ -401,11 +377,6 @@ extension TaskView {
             taskViewModel.showCalendarFlag = true
             taskViewModel.selectedTasks = taskViewModel.tasks
         }
-        // rkManagerを更新　→ カレンダーの表示形式を更新
-        // カレンダーの始まりの日が更新される。
-        // カレンダーの始まりの日はデフォルトで、保存されているタスクの最も古い追加日に設定されているた、必要ないと判断
-        //taskViewModel.loadRKManager()
-        //print("Task tapped! selectedTasks:\n\(taskViewModel.selectedTasks)")
     }
     
     // dateのStringを返す ex: 0/0 00:00

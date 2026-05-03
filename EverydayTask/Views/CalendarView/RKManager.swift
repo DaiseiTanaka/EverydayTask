@@ -16,8 +16,8 @@ class RKManager : ObservableObject {
     @Published var disabledDates: [Date] = [Date]()
     @Published var selectedDates: [Date] = [Date]()
     @Published var selectedDate: Date = Date()
-    @Published var startDate: Date! = nil
-    @Published var endDate: Date! = nil
+    @Published var startDate: Date? = nil
+    @Published var endDate: Date? = nil
     
     @Published var mode: Int = 0
     

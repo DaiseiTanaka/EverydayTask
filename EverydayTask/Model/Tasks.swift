@@ -93,7 +93,9 @@ extension Tasks {
     ]
 }
 
-// Modelを更新した時用　userdefaultsからデータを持ってくるときにmodelを修正する
+// IMPORTANT: prevTasks は旧バージョンからのデータ移行に必要な構造体です。
+// 絶対に削除しないでください。削除すると旧ユーザーのデータが読み込めなくなります。
+// 参照: TaskViewModel.loadPrevTasks()
 struct prevTasks: Codable, Identifiable, Equatable, Hashable {
     var id = UUID()
     var title: String
@@ -129,4 +131,34 @@ enum prevTaskSpanType: Codable {
     case everyWeek
     case everyMonth
     case everyWeekday
+}
+
+// MARK: - カラー変換
+enum TaskColor {
+    /// アクセントカラー名からColor型へ変換する
+    static func color(for name: String) -> Color {
+        switch name {
+        case "Label":  return Color(UIColor.label)
+        case "Black":  return Color.black
+        case "Gray":   return Color.gray
+        case "Red":    return Color.red
+        case "Pink":   return Color.pink
+        case "Orange": return Color.orange
+        case "Cyan":   return Color.cyan
+        case "Blue":   return Color.blue
+        case "Indigo": return Color.indigo
+        case "Yellow": return Color.yellow
+        case "Green":  return Color.green
+        default:       return Color.blue
+        }
+    }
+}
+
+// MARK: - 定数定義
+enum AppConstants {
+    static let appGroupIdentifier = "group.myproject.EverydayTask.widget2"
+}
+
+enum UserDefaultsKeys {
+    static let tasks = "tasks"
 }

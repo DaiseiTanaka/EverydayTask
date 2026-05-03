@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /Users/s22082/Documents/EverydayTask -maxdepth 2 -type f -name *.md -o -name .cursorrules -o -name .cursor -o -name Podfile -o -name Package.swift)",
+      "Bash(git status:*)",
+      "Bash(find /Users/s22082/Documents/EverydayTask/EverydayTask -type f -name \"*.swift\" -exec wc -l {} +)",
+      "Bash(git check-ignore:*)",
+      "Bash(sort find:*)",
+      "Bash(grep -r 'import ' /Users/s22082/Documents/EverydayTask/EverydayTask/*.swift)",
+      "Bash(grep -v \"^\\\\.git\\\\|^\\\\.\\\\.$\\\\|^\\\\.git$\")",
+      "Bash(xcodebuild -scheme EverydayTask -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16' build)",
+      "Bash(xcodebuild -scheme EverydayTask -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' build)"
+    ]
+  }
+}

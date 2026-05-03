@@ -57,32 +57,7 @@ class TaskViewModel: ObservableObject {
     
     // タスクのアクセントカラーをString型からColor型へ変換する
     func returnColor(color: String) -> Color {
-        switch color {
-        case "Label":
-            return Color(UIColor.label)
-        case "Black":
-            return Color.black
-        case "Gray":
-            return Color.gray
-        case "Red":
-            return Color.red
-        case "Pink":
-            return Color.pink
-        case "Orange":
-            return Color.orange
-        case "Cyan":
-            return Color.cyan
-        case "Blue":
-            return Color.blue
-        case "Indigo":
-            return Color.indigo
-        case "Yellow":
-            return Color.yellow
-        case "Green":
-            return Color.green
-        default:
-            return Color.blue
-        }
+        TaskColor.color(for: color)
     }
     
     // MARK: - Data Settings
@@ -102,8 +77,12 @@ class TaskViewModel: ObservableObject {
         
         let firstDC = calendar.dateComponents([.year, .month], from: minDate)
         let todayDC = calendar.dateComponents([.year, .month], from: maxDate)
-        let yearDiff  = todayDC.year! - firstDC.year!
-        let monthDiff = todayDC.month! - firstDC.month!
+        guard let todayYear = todayDC.year, let todayMonth = todayDC.month,
+              let firstYear = firstDC.year, let firstMonth = firstDC.month else {
+            return 1
+        }
+        let yearDiff  = todayYear - firstYear
+        let monthDiff = todayMonth - firstMonth
         let totalMonthDiff = yearDiff * 12 + monthDiff
         
         return totalMonthDiff + 1
@@ -209,8 +188,8 @@ class TaskViewModel: ObservableObject {
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "ja_JP")
         let dayDC = Calendar.current.dateComponents([.month, .day], from: date)
-        let month: String = String(dayDC.month!)
-        let day: String = String(dayDC.day!)
+        let month: String = String(dayDC.month ?? 0)
+        let day: String = String(dayDC.day ?? 0)
         
         return month + "/" + day
     }
@@ -360,32 +339,6 @@ class TaskViewModel: ObservableObject {
         remainCount = doCount - didCount
         return remainCount
     }
-    
-    // 直近の連続タスク実施時間を返す
-//    func returnContinuousCount(task: Tasks) -> Int {
-//        var calendar = Calendar(identifier: .gregorian)
-//        calendar.locale = Locale(identifier: "ja_JP")
-//        let today = Date()
-//        let doneDates = task.doneDate.sorted(by: >) // 降順にする
-//        var day = calendar.component(.day, from: today)
-//        var continuousCount: Int = 1
-//        // タスクを一度も実行していない場合
-//        if doneDates.count == 0 { return 0 }
-//
-//        // 今日はまだタスクを実施していない場合
-//        if !isDone(task: task, date: today) { return 0 }
-//
-//        for dateIndex in 0..<doneDates.count-1 {
-//            let day = calendar.component(.day, from: doneDates[dateIndex])
-//            let prevDay = calendar.component(.day, from: doneDates[dateIndex+1])
-//            if day - prevDay == 1 {
-//                continuousCount += 1
-//            } else {
-//                break
-//            }
-//        }
-//        return continuousCount
-//    }
     
     // 選択した日付に関連するタスクを返す
     func returnSelectedDateTasks(date: Date) -> [[Tasks]] {
@@ -617,30 +570,32 @@ class TaskViewModel: ObservableObject {
     func saveTasks(tasks: [Tasks]) {
         let jsonEncoder = JSONEncoder()
         guard let data = try? jsonEncoder.encode(tasks) else {
-            print("😭: tasksの保存に失敗しました。")
+            #if DEBUG
+            print("tasksの保存に失敗しました。")
+            #endif
             return
         }
-        UserDefaults.standard.set(data, forKey: "tasks")
+        UserDefaults.standard.set(data, forKey: UserDefaultsKeys.tasks)
         saveUnfinishedTasksForWidget()
-        print("😄👍: tasksの保存に成功しました。")
     }
-    
+
     func loadTasks() -> [Tasks]? {
         let jsonDecoder = JSONDecoder()
-        guard let data = UserDefaults.standard.data(forKey: "tasks"),
+        guard let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.tasks),
               let tasks = try? jsonDecoder.decode([Tasks].self, from: data) else {
             // 変更前のTasks型のデータをロードする　→ Tasksを変更した時に使う
             return loadPrevTasks()
         }
-        print("😄👍: tasksのロードに成功しました。")
         return tasks
     }
-    
+
     func loadPrevTasks() -> [Tasks]? {
         let jsonDecoder = JSONDecoder()
         // Tasksを変更した場合、構造体に合わせてtasksを更新する
-        guard let data = UserDefaults.standard.data(forKey: "tasks"), let tasks = try? jsonDecoder.decode([prevTasks].self, from: data) else {
-            print("😭: tasksのロードに失敗しました。")
+        guard let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.tasks), let tasks = try? jsonDecoder.decode([prevTasks].self, from: data) else {
+            #if DEBUG
+            print("tasksのロードに失敗しました。")
+            #endif
             return Tasks.defaulData
         }
         var newTasks: [Tasks] = []
@@ -682,7 +637,6 @@ class TaskViewModel: ObservableObject {
             )
         }
         
-        print("😄: prevTasksの構造体に合わせてデータを更新しました。")
         return newTasks
     }
     
@@ -693,15 +647,14 @@ class TaskViewModel: ObservableObject {
         unfinishedTasks += ([returnSelectedDateUnFinishedTasks(date: Date(), isDailyTask: false)])
         let jsonEncoder = JSONEncoder()
         guard let data = try? jsonEncoder.encode(unfinishedTasks) else {
-            print("😭: widget用のデータの保存に失敗しました。")
+            #if DEBUG
+            print("widget用のデータの保存に失敗しました。")
+            #endif
             return
         }
         // App Groupsにデータを保存
-        let userDefaults = UserDefaults(suiteName: "group.myproject.EverydayTask.widget2")
-        if let userDefaults = userDefaults {
-            userDefaults.synchronize()
-            userDefaults.setValue(data, forKeyPath: "tasks")
-            print("😄: widget用のデータの保存に成功しました。")
+        if let userDefaults = UserDefaults(suiteName: AppConstants.appGroupIdentifier) {
+            userDefaults.set(data, forKey: UserDefaultsKeys.tasks)
         }
         // Widgetを更新
         WidgetCenter.shared.reloadTimelines(ofKind: "EverydayTaskWidget")
@@ -760,15 +713,12 @@ extension TaskViewModel {
         
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request)
-        print(task.title + String(format: "🔔%02d:%02dに通知をセットしました！", hour, min))
     }
-    
+
     // 登録された通知を全て削除
     func removeNotification() {
         let center = UNUserNotificationCenter.current()
         center.removeAllPendingNotificationRequests()
-        
-        print("All notifications are removed")
     }
     
 }

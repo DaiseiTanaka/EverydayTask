@@ -24,11 +24,6 @@ struct RKWeekdayHeader : View {
                 
                 Spacer()
                 
-                // 今日の日付へ移動
-                // selectedDateが今日以外の時 or 特定のタスクを選択中の時
-//                if !taskViewModel.isSameDay(date1: rkManager.selectedDate, date2: Date()) || taskViewModel.selectedTasks != taskViewModel.tasks{
-//                    resetCalendarButton
-//                }
             }
             
             weeks
@@ -56,21 +51,6 @@ extension RKWeekdayHeader {
                 .padding(.bottom, 3)
         }
     }
-    
-//    private var resetCalendarButton: some View {
-//        Button {
-//            withAnimation {
-//                rkManager.selectedDate = Date()
-//                taskViewModel.selectedTasks = taskViewModel.tasks
-//            }
-//        } label: {
-//            Image(systemName: "calendar.badge.clock")
-//                .font(.title2)
-//                .foregroundColor(.secondary)
-//                .padding(.trailing, 10)
-//        }
-//    }
-    
     private var weeks: some View {
         HStack(alignment: .center) {
             ForEach(self.getWeekdayHeaders(calendar: self.rkManager.calendar), id: \.self) { weekday in

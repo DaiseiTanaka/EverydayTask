@@ -142,27 +142,27 @@ struct RKMonth: View {
         var dateComponents = DateComponents()
         dateComponents.day = index - startOffset
         
-        return rkManager.calendar.date(byAdding: dateComponents, to: firstOfMonth)!
+        return rkManager.calendar.date(byAdding: dateComponents, to: firstOfMonth) ?? firstOfMonth
     }
-    
+
     func numberOfDays(offset : Int) -> Int {
         let firstOfMonth = firstOfMonthForOffset()
         let rangeOfWeeks = rkManager.calendar.range(of: .weekOfMonth, in: .month, for: firstOfMonth)
-        
-        return (rangeOfWeeks?.count)! * daysPerWeek
+
+        return (rangeOfWeeks?.count ?? 5) * daysPerWeek
     }
-    
+
     func firstOfMonthForOffset() -> Date {
         var offset = DateComponents()
         offset.month = monthOffset
-        
-        return rkManager.calendar.date(byAdding: offset, to: RKFirstDateMonth())!
+
+        return rkManager.calendar.date(byAdding: offset, to: RKFirstDateMonth()) ?? RKFirstDateMonth()
     }
-    
+
     func RKFormatDate(date: Date) -> Date {
         let components = rkManager.calendar.dateComponents(calendarUnitYMD, from: date)
-        
-        return rkManager.calendar.date(from: components)!
+
+        return rkManager.calendar.date(from: components) ?? date
     }
     
     func RKFormatAndCompareDate(date: Date, referenceDate: Date) -> Bool {
@@ -175,9 +175,9 @@ struct RKMonth: View {
         var components = rkManager.calendar.dateComponents(calendarUnitYMD, from: rkManager.minimumDate)
         components.day = 1
         
-        return rkManager.calendar.date(from: components)!
+        return rkManager.calendar.date(from: components) ?? rkManager.minimumDate
     }
-    
+
     // MARK: - Date Property Checkers
     
     func isToday(date: Date) -> Bool {
@@ -200,27 +200,21 @@ struct RKMonth: View {
     }
     
     func isStartDate(date: Date) -> Bool {
-        if rkManager.startDate == nil {
-            return false
-        }
-        return RKFormatAndCompareDate(date: date, referenceDate: rkManager.startDate)
+        guard let startDate = rkManager.startDate else { return false }
+        return RKFormatAndCompareDate(date: date, referenceDate: startDate)
     }
-    
+
     func isEndDate(date: Date) -> Bool {
-        if rkManager.endDate == nil {
-            return false
-        }
-        return RKFormatAndCompareDate(date: date, referenceDate: rkManager.endDate)
+        guard let endDate = rkManager.endDate else { return false }
+        return RKFormatAndCompareDate(date: date, referenceDate: endDate)
     }
-    
+
     func isBetweenStartAndEnd(date: Date) -> Bool {
-        if rkManager.startDate == nil {
+        guard let startDate = rkManager.startDate,
+              let endDate = rkManager.endDate else { return false }
+        if rkManager.calendar.compare(date, to: startDate, toGranularity: .day) == .orderedAscending {
             return false
-        } else if rkManager.endDate == nil {
-            return false
-        } else if rkManager.calendar.compare(date, to: rkManager.startDate, toGranularity: .day) == .orderedAscending {
-            return false
-        } else if rkManager.calendar.compare(date, to: rkManager.endDate, toGranularity: .day) == .orderedDescending {
+        } else if rkManager.calendar.compare(date, to: endDate, toGranularity: .day) == .orderedDescending {
             return false
         }
         return true
@@ -239,22 +233,13 @@ struct RKMonth: View {
     }
     
     func isStartDateAfterEndDate() -> Bool {
-        if rkManager.startDate == nil {
-            return false
-        } else if rkManager.endDate == nil {
-            return false
-        } else if rkManager.calendar.compare(rkManager.endDate, to: rkManager.startDate, toGranularity: .day) == .orderedDescending {
+        guard let startDate = rkManager.startDate,
+              let endDate = rkManager.endDate else { return false }
+        if rkManager.calendar.compare(endDate, to: startDate, toGranularity: .day) == .orderedDescending {
             return false
         }
         return true
     }
 }
 
-#if DEBUG
-//struct RKMonth_Previews : PreviewProvider {
-//    static var previews: some View {
-//        RKMonth(isPresented: .constant(false),rkManager: RKManager(calendar: Calendar.current, minimumDate: Date(), maximumDate: Date().addingTimeInterval(60*60*24*365), mode: 0), monthOffset: 0)
-//    }
-//}
-#endif
 

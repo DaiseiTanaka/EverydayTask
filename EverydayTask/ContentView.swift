@@ -57,7 +57,6 @@ extension ContentView {
             ZStack {}
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(taskViewModel.showSidebar ? Color("disableFieldColor") : .clear)
-                //.offset(x: showSidebar ? UIScreen.main.bounds.width / 2 : 0)
                 .onTapGesture {
                     withAnimation {
                         taskViewModel.showSidebar = false
@@ -77,19 +76,16 @@ extension ContentView {
         }
         .onChange(of: scenePhase) { phase in
             if phase == .background {
-                print("\nバックグラウンド！")
                 // 通知を設定
                 taskViewModel.setNotification()
                 // tasksを保存
                 taskViewModel.saveTasks(tasks: taskViewModel.tasks)
             }
             if phase == .active {
-                print("\nフォアグラウンド！")
                 // 通知を削除
                 taskViewModel.removeNotification()
             }
             if phase == .inactive {
-                print("\nバックグラウンドorフォアグラウンド直前")
                 // Widget用のデータを更新
                 taskViewModel.saveUnfinishedTasksForWidget()
             }
@@ -114,9 +110,6 @@ extension ContentView {
                 .enabled(upThrough: maxViewHeight)
             )
             .interactiveDismissDisabled()
-            //.overlay(changeViewSizeButton, alignment: .topTrailing)
-            //.presentationBackground(Color(UIColor.systemGray6))
-            //.presentationBackground(.ultraThickMaterial)
     }
     
     private var showSidebarGesture: some Gesture {

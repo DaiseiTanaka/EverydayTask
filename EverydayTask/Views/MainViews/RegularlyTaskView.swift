@@ -46,10 +46,6 @@ struct RegularlyTaskView: View {
             .onAppear {
                 scrollToBottom(proxy: proxy)
             }
-            // 選択している日付の位置までスクロール
-//            .onChange(of: taskViewModel.selectedRegularlyTaskDate) { newValue in
-//                scrollToSelectedDate(proxy: proxy)
-//            }
         }
     }
     
@@ -287,11 +283,11 @@ extension RegularlyTaskView {
         let dateDC = calendar.dateComponents([.year, .month, .weekOfYear, .day], from: date)
         let nextDateDC = calendar.dateComponents([.year, .month, .weekOfYear, .day], from: nextDate)
         // 同期間か判定
-        let sameYear = dateDC.year! == nextDateDC.year!
-        let sameMonth = nextDateDC.month! == dateDC.month!
-        let sameWeek = nextDateDC.weekOfYear! == dateDC.weekOfYear!
-        let sameDay = nextDateDC.day! == dateDC.day!
-        
+        let sameYear = (dateDC.year ?? 0) == (nextDateDC.year ?? 0)
+        let sameMonth = (nextDateDC.month ?? 0) == (dateDC.month ?? 0)
+        let sameWeek = (nextDateDC.weekOfYear ?? 0) == (dateDC.weekOfYear ?? 0)
+        let sameDay = (nextDateDC.day ?? 0) == (dateDC.day ?? 0)
+
         switch span {
         case .day:
             if sameYear && sameMonth && sameWeek && sameDay {
@@ -312,23 +308,23 @@ extension RegularlyTaskView {
         case .infinite:
             return true
         }
-            
+
         return false
     }
-    
+
     // 連続する期間で実施している場合。Cellの間のラインが繋がるかどうかのBoolを返す　→ true: 表示する
     // ヘッダーの隣に表示するラインを表示するかどうかのフラグを返す。
     private func returnContinuousSpanCondition(index: Int, task: Tasks) -> Bool {
         let calendar = Calendar(identifier: .gregorian)
         let doneDate = task.doneDate.sorted()
         let span = task.span
-        
+
         let date = doneDate[index-1]
         let nextDate = doneDate[index]
         let dateDC = calendar.dateComponents([.year, .month, .weekOfYear, .day], from: date)
         let nextDateDC = calendar.dateComponents([.year, .month, .weekOfYear, .day], from: nextDate)
         // 同期間か判定
-        let sameYear = dateDC.year! == nextDateDC.year!
+        let sameYear = (dateDC.year ?? 0) == (nextDateDC.year ?? 0)
         // 連続しているか判定
         let contDay = calendar.isDate(date, inSameDayAs: nextDate.addingTimeInterval(-60 * 60 * 24))
         let contWeek = calendar.isDate(date, equalTo: nextDate.addingTimeInterval(-60 * 60 * 24 * 7), toGranularity: .weekOfYear) // 7日間戻した日付と同じ週なら連続している

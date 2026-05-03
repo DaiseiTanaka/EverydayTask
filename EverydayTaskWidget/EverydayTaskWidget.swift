@@ -16,10 +16,10 @@ struct Provider: TimelineProvider {
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
         var unfinishedTasks: [[Tasks]] = []
 
-        let userDefaults = UserDefaults(suiteName: "group.myproject.EverydayTask.widget2")
+        let userDefaults = UserDefaults(suiteName: AppConstants.appGroupIdentifier)
         if let userDefaults = userDefaults {
             let jsonDecoder = JSONDecoder()
-            guard let data = userDefaults.data(forKey: "tasks"),
+            guard let data = userDefaults.data(forKey: UserDefaultsKeys.tasks),
                   let tasks = try? jsonDecoder.decode([[Tasks]].self, from: data) else {
                 return
             }
@@ -33,12 +33,14 @@ struct Provider: TimelineProvider {
         var entries: [SimpleEntry] = []
         var unfinishedTasks: [[Tasks]] = []
 
-        let userDefaults = UserDefaults(suiteName: "group.myproject.EverydayTask.widget2")
+        let userDefaults = UserDefaults(suiteName: AppConstants.appGroupIdentifier)
         if let userDefaults = userDefaults {
             let jsonDecoder = JSONDecoder()
-            guard let data = userDefaults.data(forKey: "tasks"),
+            guard let data = userDefaults.data(forKey: UserDefaultsKeys.tasks),
                   let tasks = try? jsonDecoder.decode([[Tasks]].self, from: data) else {
-                print("😭: tasksのロードに失敗しました。")
+                #if DEBUG
+                print("tasksのロードに失敗しました。")
+                #endif
                 return
             }
             unfinishedTasks = tasks
@@ -47,7 +49,9 @@ struct Provider: TimelineProvider {
         // Generate a timeline consisting of five entries an hour apart, starting from the current date.
         let currentDate = Date()
         for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
+            guard let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate) else {
+                continue
+            }
             let entry = SimpleEntry(date: entryDate, allUnfinishedTaskList: unfinishedTasks)
             entries.append(entry)
         }
@@ -61,43 +65,6 @@ struct SimpleEntry: TimelineEntry {
     let date: Date
     let allUnfinishedTaskList: [[Tasks]]
 }
-
-//struct Tasks: Codable, Identifiable, Equatable, Hashable {
-//    var id = UUID()
-//    var title: String
-//    var detail: String
-//    var addedDate: Date
-//    var spanType: TaskSpanType
-//    var spanDate: [Int]
-//    var doneDate: [Date]
-//    var notification: Bool
-//    var notificationHour: Int
-//    var notificationMin: Int
-//    var accentColor: String
-//    var isAble: Bool
-//
-//    init(title: String, detail: String, addedDate: Date, spanType: TaskSpanType, spanDate: [Int], doneDate: [Date], notification: Bool, notificationHour: Int, notificationMin: Int, accentColor: String, isAble: Bool) {
-//        self.title = title
-//        self.detail = detail
-//        self.addedDate = addedDate
-//        self.spanType = spanType
-//        self.spanDate = spanDate
-//        self.doneDate = doneDate
-//        self.notification = notification
-//        self.notificationHour = notificationHour
-//        self.notificationMin = notificationMin
-//        self.accentColor = accentColor
-//        self.isAble = isAble
-//    }
-//}
-
-//enum TaskSpanType: Codable {
-//    case oneTime
-//    case everyDay
-//    case everyWeek
-//    case everyMonth
-//    case everyWeekday
-//}
 
 struct EverydayTaskWidgetEntryView : View {
     @Environment(\.widgetFamily) var family: WidgetFamily
@@ -146,32 +113,7 @@ struct EverydayTaskWidgetEntryView : View {
     
     // タスクのアクセントカラーをString型からColor型へ変換する
     private func returnColor(color: String) -> Color {
-        switch color {
-        case "Label":
-            return Color(UIColor.label)
-        case "Black":
-            return Color.black
-        case "Gray":
-            return Color.gray
-        case "Red":
-            return Color.red
-        case "Pink":
-            return Color.pink
-        case "Orange":
-            return Color.orange
-        case "Cyan":
-            return Color.cyan
-        case "Blue":
-            return Color.blue
-        case "Indigo":
-            return Color.indigo
-        case "Yellow":
-            return Color.yellow
-        case "Green":
-            return Color.green
-        default:
-            return Color.blue
-        }
+        TaskColor.color(for: color)
     }
 }
 
@@ -187,8 +129,6 @@ extension EverydayTaskWidgetEntryView {
                 Spacer()
                 Text("\(previewListCount)")
                     .font(.title.bold())
-                //                Text(entry.date, style: .time)
-                //                    .font(.caption)
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 8)
@@ -273,14 +213,6 @@ extension EverydayTaskWidgetEntryView {
                 }
                 
                 Spacer(minLength: 0)
-                
-//                if previewListCount > lineLimitMedium {
-//                    HStack {
-//                        Text("+ \(previewListCount-returnLineLimit(limit: lineLimitMedium))")
-//                            .font(.footnote)
-//                        Spacer()
-//                    }
-//                }
             }
             .padding(.trailing)
             .padding(.vertical, 15)
